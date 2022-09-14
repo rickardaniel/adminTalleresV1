@@ -1,0 +1,168 @@
+<app-nav-bar> </app-nav-bar>
+<app-sidebar-reporte></app-sidebar-reporte>
+
+<div class="main-panel">
+    <button class="btn" id="boton-sidebar_left" style="float: right; margin-right: 1em; margin-top: 7em;"><i class="fas fa-angle-double-left" ></i></button>
+    <div class="content" id="main">
+  
+    <!-- <p class="p1" style="margin-top: 2em;">Órdenes Abiertas</p> -->
+    <p id="titulos" style="margin-top: 3.5em; text-align: center;" >Reporte por Técnico</p>
+    <!-- ============================================= BUSCADOR POR FECHA ================================================= -->
+    <form [formGroup]="formReporte">
+        <div class="container  mb-4 mt-4">
+          <div class="row  divSelect">
+            <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+              <label id="labelReporte" class=" text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar">
+                Desde: <i class="far fa-calendar"></i>
+              </label>
+  
+              <input formControlName="fechaI" type="date" class="form-control " style="cursor: pointer; height: 1.9em;" />
+            </div>
+            <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+              <label  id="labelReporte" class="text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar">
+                Hasta: <i class="fas fa-calendar"></i>
+              </label>
+              <input formControlName="fechaF" type="date" class="form-control " style="height: 1.9em;" />
+            </div> 
+            <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+              <label id="labelReporte" class=" text-white p-1 font-weight-bold rounded w-100 text-center mb-0" style="background-color: #828282;">
+                Tecnico <i class="fas fa-tools"></i>
+              </label>
+  
+              <select
+                formControlName="idTecnico"
+                class="form-control"
+                style="height: 2em;"
+                name="idTecnico"
+                id="idTecnico"
+              >
+              <option value="{{tecDefectoID}}">{{tecDefectoNombre |titlecase}}</option>
+              <ng-container *ngFor="let tec of tecnicos" >
+                <option *ngIf="tec.nombres != tecNombre" value="{{ tec.id }}">
+                  {{ tec.nombres |titlecase  }} {{ tec.apellidos |titlecase  }}
+                </option>
+                <!-- <input hidden formControlName="valN" value="{{ tec.nombres}} "> -->
+               
+              </ng-container>
+              </select>
+              <!-- <input  formControlName="valA" name="servicioSelecionado" id="servicioSelecionado" > -->
+            </div>
+            <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+              <button
+                class="btn btn-sm  btnTrash btn-block"
+                style="font-size: small;"
+                (click)="buscarInformacionReporte(formReporte.value)"
+              ><i class="fas fa-search"></i>
+                Buscar
+            
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+        <!-- ==========================================   BUSCADOR TABLA REPORTES =============================================== -->
+        <div class="container " *ngIf="banderaSearchExcel">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 divSelect mb-2" >
+                <div id="search-autocomplete" class="form-outline">
+                    <input type="search" id="form1" class="form-control"  [(ngModel)]="searchText"   style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                    <label class="form-label" for="form1">Buscar</label>
+                </div>
+                <button type="submit" class="btn btnLupa" style="height: 2.5em; " >
+                    <i class="fas fa-search" style="color: white;"></i>
+                </button>
+                </div>
+                <div class="col-xl-6 col-lg-5 col-md-6 col-sm-12 col-xs-12 divSelect">
+            
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-success btO"  (click)="exportarEXCEL(tecSelecionado)"> <i class="fas fa-file-excel"></i> EXCEL</button>
+                    </div>
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-danger btO"  (click)="abrirModal(ingresarComision)"> <i class="fas fa-file-pdf"></i> PDF</button>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+  
+    <div class="table-responsive"  style="box-shadow: 0px 4px 8px -4px #a9a8a8; border-radius: 1%;">
+    
+        <table mdbTable  #tableEl="mdbTable" class="z-depth-1 mt-2" id="tablaReporteTec"> 
+        <thead class="thead1">
+            <tr class="text-center" >          
+                <th>Técnico</th>
+                <th>#Orden</th>
+                <th>Fecha</th>
+                <th>Placa</th>
+                <th> Marca</th>
+                <th> Km</th>     
+                <th >Problema</th>
+                <th >Servicio</th>
+                <th >Precio</th>
+            </tr>
+        </thead>
+        <tbody  *ngIf="banderaPaginador">
+            <tr>
+              <td style="border-color: aliceblue;"  colspan="9" class="text-center">
+                <img src="./assets/img/icons-no-report.svg" style="width: 100%; height: 20em;">
+              </td>
+            </tr>
+          </tbody>
+        <tbody>
+            
+            <ng-container *ngFor="let el of arregloProvisional; let i = index "  >
+                <!-- <tr mdbTableCol *ngFor="let el of arregloProvisional; let i = index " class="text-center"> -->
+                    
+                    <tr mdbTableCol *ngFor="let serv of el.arrServicio; let j= index" class="text-center">
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.tecnico |titlecase}}</td>
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.no}}</td>
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.fecha}}</td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" class="fw-bold">  {{el.arrayValAuto[0]}} </td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex "> {{el.arrayValAuto[1] |titlecase}}</td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex "> {{el.arrayValAuto[2]}}</td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex ">{{el.problema}}</td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex ">{{serv.productname}}</td>
+                        <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex "> $ {{serv.costopromedio}}</td>
+                    </tr>
+                
+                <!-- </tr> -->
+            </ng-container>
+        </tbody>
+        <td class="" colspan="11">
+            <mdb-table-pagination
+             class=""
+             hidden
+             id="pag"
+             [tableEl]="tableEl"
+             [searchDataSource]="arregloProvisional"                        
+           ></mdb-table-pagination>
+
+       </td>
+        </table>
+    </div>
+ </div>
+</div>
+
+
+<ng-template #ingresarComision let-modal>
+  <form [formGroup]="formPorcentaje">
+  <div class="modal-header">
+    <h4 class="modal-title">Comisión de pago</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="password" id="tituloF">Ingrese Porcentaje <i class="fas fa-percent"></i></label>
+      <input   id="username"  formControlName="percent"  type="text" name="percent" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" >
+      <!-- <span *ngIf="f.descripcion.invalid && (f.descripcion.dirty || f.descripcion.touched)" class="text-danger animated fadeIn"> Debe ingresar una descripción</span> -->
+  </div>
+  </div>
+  <div class="modal-footer">
+    <div class="button-group divSelect">
+      <button type="button" class="btn bExit" (click)="modal.close('Close click')">Cerrar</button>
+      <button type="button" class="btn bSave" (click)="enviarPorcentaje(formPorcentaje.value)">Enviar</button>
+    </div>
+  </div>
+</form>
+</ng-template>

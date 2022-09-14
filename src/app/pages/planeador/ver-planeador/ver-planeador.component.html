@@ -1,0 +1,887 @@
+<app-nav-bar></app-nav-bar>
+
+                                                           
+<!-- ============================================================== PLANEADOR ================================================================== -->
+
+<div class="box m-1 animated fadeIn" *ngIf="banderaVistaDefecto" >
+
+        <form class="filter" >
+
+          <div class=" divSelect">
+            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+              <button class="btn btn-dark btn-block" style="opacity: 0.70;" (click)="vistaPorTecnicos()"> 
+                <i class="fas fa-users-cog"></i> Vista Técnicos
+              </button>
+            </div>
+            <!-- <div class=" col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+              <div class="filter-group">
+              <select name="color" class="custom-select" style=" border-bottom: 1px solid rgb(122, 121, 121); height: 2.5em; opacity: .70; ">
+                <option value="*" >Elegir Prioridad</option>
+                <option value="*">Ver todas</option>
+                <option value="urgentes">Urgentes</option>
+                <option value="correctivo">Correctivo</option>
+                <option value="preventivo">Preventivo</option>
+              </select>
+              </div>
+            </div> -->
+            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+              <div class="form-outline">
+                <input type="search"  id="slidename" (keyup)=buscar(textoBuscar) [(ngModel)]="textoBuscar"  name="textoBuscar" class="form-control" style=" border-bottom: 1px solid rgb(122, 121, 121); height: 2.5em; opacity: .70; ">
+                <label class="form-label" for="typeText"><i class="fas fa-search" style="float: right;"></i></label>
+              </div>
+            </div>
+            <!-- <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+              <div class="form-outline">
+                <input type=""  id="slidename" class="form-control" style=" border-bottom: 1px solid rgb(122, 121, 121); height: 2.5em; opacity: .70; ">
+                <label class="form-label" for="typeText"><i class="fas fa-search" style="float: right;"></i></label>
+              </div>
+            </div> -->
+          </div>
+        </form>
+<!-- 
+        <div class="container pt-4">
+
+          <div class="form-group">
+            <label class="lbl lbl-danger"><span>Urgente</span></label>
+            <label class="lbl lbl-warning"><span>Correctivo</span></label>
+            <label class="lbl lbl-success"><span>Preventivo</span></label>
+        </div> 
+        </div> -->
+        
+        <!-- <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%;"> -->
+  <div id="accordion" *ngIf="banderaCardU" class=" animated animate__backInDown">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <label class="lbl lbl-danger"><span>Urgentes</span></label>
+      </button>
+    </h5>
+  <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+    <div class="container" style="padding-left: 2em;padding-right: 2em;">
+      <div class="row divSelect">  
+        <ng-container *ngFor="let el of elements | pipeTransform:textoBuscar; let i = index" >           
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-xs-12">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2 preventivo">
+            <div class="inforide  ">
+              <div class="row ">               
+                <div class="col-lg-3 col-md-4 col-sm-3 col-4 rideone ">
+                    <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO" (click)="enviarIdOrden(el.id)"> </i>  
+                    <p class="font-weight-bold" style="font-size: 0.69em; color: black;">  <a href="#"  id="disabled" style="color:white"># {{el.no}}</a></p>
+                    <p class="font-weight-bold pb-1" style="font-size: 0.67em;">  <a href="#"  id="disabled" style="color:white">{{el.tecnico |uppercase}}</a></p>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm- col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)">
+                  <p style="font-size: 0.67em;"><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                  <p  style="font-style: italic; font-weight: 500; font-size: 0.79em;" ><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.cliente |titlecase }}</a></p>
+                  <ng-container  *ngFor="let el2 of el.atributo">
+                    <p class="text-center"  style="font-size: 0.67em;"><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                  </ng-container> 
+                </div>                  
+              </div>
+            </div>
+        </div>
+        </div>
+      </ng-container>
+      </div>
+    </div>
+</div>
+</div>
+<div id="accordion2" *ngIf="banderaCardC" class=" animated animate__backInDown">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1">
+        <label class="lbl lbl-warning"><span>Correctivas</span></label>
+      </button>
+    </h5>
+  <div id="collapseOne1" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion2">
+    <div class="container" style="padding-left: 2em;padding-right: 2em;">
+      <div class="row divSelect ">  
+        <ng-container *ngFor="let el of dataCorrectivo| pipeTransform:textoBuscar; let i = index" >           
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-xs-12">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2 preventivo">
+            <div class="inforide1  ">
+              <div class="row  ">               
+                <div class="col-lg-3 col-md-4 col-sm-4 col-4 rideone1 ">
+                    <i class="fas fa-pen text-dark"type='button'  data-toggle="modal" data-target="#modalEO"  (click)="enviarIdOrden(el.id)" > </i>  
+                    <p class="font-weight-bold" style="font-size: 0.69em; color: black;">  <a href="#"  id="disabled" style="color:black"># {{el.no}}</a></p>
+                     <p class="font-weight-bold" style="font-size: 0.66em;">  <a href="#"  id="disabled" style="color:black">{{el.tecnico |uppercase}}</a></p>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)" >
+                  <p style="font-size: 0.67em;" ><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                  <p style="font-style: italic; font-weight: 500; font-size: 0.79em;" ><a href="#" id="disabled" style="color:black">{{el.cliente |titlecase }}</a></p>
+                  <ng-container  *ngFor="let el2 of el.atributo">
+                    <p class="text-center"  style="font-size: 0.67em;"><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                  </ng-container>       
+                </div>                  
+              </div>
+            </div>
+
+        </div>
+        </div>
+      </ng-container>
+      </div>
+    </div>
+</div>
+</div>
+<div id="accordion3" *ngIf="banderaCardP" class=" animated animate__backInDown">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne2" aria-expanded="true" aria-controls="collapseOne2">
+        <label class="lbl lbl-success"><span>Preventivas</span></label>
+      </button>
+    </h5>
+  <div id="collapseOne2" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion3">
+    <div class="container" style="padding-left: 2em;padding-right: 2em; padding-bottom: 2em;">
+      <div class="row divSelect">  
+        <ng-container *ngFor="let el of dataPreventivo | pipeTransform:textoBuscar; let i = index" >           
+        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-xs-12">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2 preventivo">
+            <div class="inforide2  ">
+              <div class="row  ">               
+                <div class="col-lg-3 col-md-4 col-sm-4 col-4 rideone2 ">
+                    <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO" (click)="enviarIdOrden(el.id)" > </i>  
+                    <p class="font-weight-bold" style="font-size: 0.68em;">  <a href="#"  id="disabled" style="color:white"># {{el.no}}</a></p>
+                      <p class="font-weight-bold" style="font-size: 0.67em;">  <a href="#"  id="disabled" style="color:white">{{el.tecnico |uppercase}}</a></p>                 
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)">
+                  <p style="font-size: 0.679em;"><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                  <p style="font-style: italic; font-weight: 500;" ><a href="#" id="disabled" style="color:black">{{el.cliente |titlecase }}</a></p>
+                  <ng-container  *ngFor="let el2 of el.atributo">
+                    <p class="text-center"  style="font-size: 0.67em;"><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                  </ng-container> 
+                </div>                  
+              </div>
+            </div>
+
+        </div>
+        </div>
+      </ng-container>
+      </div>
+    </div>
+</div>
+</div>
+<!-- </div> -->
+
+
+        
+
+        <!-- <div class="divSelect" id="cardPlaneador">
+          <ul id="myslides" class="items">
+            <ng-container *ngFor="let el of dataPreventivo; let i = index" >
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2 preventivo">
+                      <div class="inforide2  ">
+                        <div class="row  ">               
+                          <div class="col-lg-3 col-md-4 col-sm-4 col-4 rideone2 ">
+                              <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO" (click)="enviarIdOrden(el.id)" > </i>  
+                              <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">Nro. {{el.no}}</a></p>
+                              <ng-container  *ngFor="let el2 of el.tecnico">
+                                <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">{{el2.tecnico |uppercase}}</a></p>
+                               </ng-container>
+                             
+                          </div>
+                          <div class="col-lg-9 col-md-8 col-sm-8 col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)">
+                            <p><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                            <p style="font-style: italic; font-weight: 500;" ><a href="#" id="disabled" style="color:black">{{el.cliente |titlecase }}</a></p>
+                            <ng-container  *ngFor="let el2 of el.atributo">
+                                  <p class="text-center" ><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                            </ng-container> 
+                          </div>                  
+                        </div>
+                      </div>
+                  </div>
+             </ng-container>
+          </ul>
+        </div> -->
+</div>
+
+<div class="box m-1"  *ngIf="banderaVistaTecnico">
+  <form class="filter" >
+
+    <div class=" divSelect pb-2">
+      <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+        <button class="btn btn-dark btn-block" style="opacity: 0.70;" (click)="vistaPorPrioridad()"> 
+          <i class="far fa-clock"></i> Vista Prioridades
+        </button>
+      </div>
+      <div class=" col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+        <div class="filter-group">
+        <select name="color" class="custom-select" style=" border-bottom: 1px solid rgb(122, 121, 121); height: 2.5em; opacity: .70; ">
+          <option value="*" >Elegir Prioridad</option>
+          <option value="*">Ver todas</option>
+          <option value="urgentes">Urgentes</option>
+          <option value="correctivo">Correctivo</option>
+          <option value="preventivo">Preventivo</option>
+        </select>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-12">
+        <div class="form-outline">
+          <input type=""  id="slidename" class="form-control" style=" border-bottom: 1px solid rgb(122, 121, 121); height: 2.5em; opacity: .70; ">
+          <label class="form-label" for="typeText"><i class="fas fa-search" style="float: right;"></i></label>
+        </div>
+      </div>
+    </div>
+  </form>
+   <ng-container  *ngFor="let el of vistaTecnicos; let i = index" >
+     <ng-container *ngIf="el.orden.length > 0">
+      <p>
+          <button  class="btn btn-dark btn-sm font-weight-bold"  style="width: 20em; opacity: 0.70; color: white;" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+i" aria-expanded="false">
+
+          {{el.tecnico}} <strong> TOTAL: {{el.orden.length}}</strong>
+        </button>
+      </p>
+    <div class="collapse show" [attr.id]="'collapse'+i">
+
+
+
+      <div class="divSelect" id="cardPlaneador">
+        <ul id="myslides" class="items">
+            <ng-container *ngFor="let el of el.orden; let i = index" >
+              
+              <ng-container *ngIf="el.prioridad == 'URGENTE'" >
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2  urgentes">
+                    <div class="inforide  ">
+                      <div class="row  ">               
+                        <div class="col-lg-3 col-md-4 col-sm-3 col-4 rideone ">
+                            <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO" (click)="enviarIdOrden(el.id)"> </i>  
+                            <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">Nro. {{el.no}}</a></p>
+                            <ng-container  *ngFor="let el2 of el.tecnico">
+                            <p class="font-weight-bold pb-1">  <a href="#"  id="disabled" style="color:white">{{el2.tecnico |uppercase}}</a></p>
+                            </ng-container>
+                        </div>
+                        <div class="col-lg-9 col-md-8 col-sm- col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)">
+
+                          <p ><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                          <p  style="font-style: italic; font-weight: 500;" ><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.cliente |titlecase }}</a></p>
+
+                              <ng-container  *ngFor="let el2 of el.atributos">
+                                <p class="text-center"  ><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                          </ng-container> 
+                                             
+                        </div>                  
+                      </div>
+                    </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="el.prioridad == 'CORRECTIVO'" >
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2  correctivo">
+                  <div class="inforide1  ">
+                    <div class="row  ">               
+                      <div class="col-lg-3 col-md-4 col-sm-4 col-4 rideone1 ">
+                          <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO"  (click)="enviarIdOrden(el.id)" > </i>  
+                          <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">Nro. {{el.no}}</a></p>
+                          <ng-container  *ngFor="let el2 of el.tecnico">
+                           <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">{{el2.tecnico |uppercase}}</a></p>
+                          </ng-container>
+                      </div>
+                      <div class="col-lg-9 col-md-8 col-sm-8 col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)" >
+                        <p ><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                        <p style="font-style: italic; font-weight: 500;" ><a href="#" id="disabled" style="color:black">{{el.cliente |titlecase }}</a></p>
+
+                        <ng-container  *ngFor="let el2 of el.atributos">                
+                              <p class="text-center" ><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                        </ng-container> 
+               
+                      </div>                  
+                    </div>
+                  </div>
+              </div>
+
+              </ng-container>
+              <ng-container *ngIf="el.prioridad == 'PREVENTIVO'" >
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2 preventivo">
+                  <div class="inforide2  ">
+                    <div class="row  ">               
+                      <div class="col-lg-3 col-md-4 col-sm-4 col-4 rideone2 ">
+                          <i class="fas fa-pen text-white"type='button'  data-toggle="modal" data-target="#modalEO" (click)="enviarIdOrden(el.id)" > </i>  
+                          <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">Nro. {{el.no}}</a></p>
+                          <ng-container  *ngFor="let el2 of el.tecnico">
+                            <p class="font-weight-bold">  <a href="#"  id="disabled" style="color:white">{{el2.tecnico |uppercase}}</a></p>
+                           </ng-container>
+                         
+                      </div>
+                      <div class="col-lg-9 col-md-8 col-sm-8 col-8 fontsty pt-2 pb-2"  type="button"(click)="enviarDatos1(el.id)" (click)="scrollToElement(pagInferior)">
+                        <p><a href="#" id="disabled" style="color:black; padding-right: 0.5em;" >{{el.fecha}} {{el.hora}} </a></p>
+                        <p style="font-style: italic; font-weight: 500;" ><a href="#" id="disabled" style="color:black">{{el.cliente |titlecase }}</a></p>
+                        <ng-container  *ngFor="let el2 of el.atributos">
+                              <p class="text-center" ><a href="#"   id="disabled" style="color: black;">{{el2.valor| uppercase}}</a></p>
+                        </ng-container> 
+                      </div>                  
+                    </div>
+                  </div>
+              </div>
+
+              </ng-container>
+           </ng-container>
+        </ul>
+      </div>
+    
+  </div>
+     </ng-container>
+     </ng-container >
+    
+
+        <!-- <div class="card" >
+          <div class="card-body">
+            <h5 class="card-title font-weight-bold">{{el.tecnico | uppercase}}</h5>
+            <h5 class="card-title" style="font-style: italic;"> Nro.Órdenes {{el.orden.length}}</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+              <li class="list-group-item" style="font-size: 0.8em;" *ngFor="let ord of el.orden; let i = index">
+              
+                  {{ord.cliente |titlecase}}
+                  <ng-container  *ngFor="let atr of ord.atributos; let j= index" >
+
+                   <p> <strong>{{atr.nombre}}</strong>: {{atr.valor}}</p>
+                  </ng-container>
+
+                </li>
+          </ul>
+        </div> -->
+       
+
+     
+         
+
+ 
+</div>
+
+<div #pagInferior>
+<app-planeador-detalle [total]="total1" [subTotal12]="subTotal12" [subTotalcero]="subTotalcero" [subTotal]="subTotal"
+[iva12]="iva12"
+[elements2]="elements2"  [pedidoProductos]="pedidoProductos" [tamPyS]="tamPyS"  
+[informacionOrden]="informacionOrden" [banderaFacturar]="banderaFacturar" [banderaPrefactura]="banderaPrefactura" 
+[banderaBusqueda]="banderaBusqueda" [banderaAcciones]="banderaAcciones" [tieneS]="tieneS" [tieneP]="tieneP" [facturadoS]="facturadoS" [facturadoP]="facturadoP"
+[banderaFacturarServicio]="banderaFacturarServicio" [banderaFacturarProducto]="banderaFacturarProducto"
+[banderaCerrarCaso]="banderaCerrarCaso"  *ngIf="banderaCard" [pedidoTecnicos]="pedidoTecnicos"  (CDP)="cerrarPlaneador($event)" ></app-planeador-detalle>
+</div>
+
+    <div class="modal fade object coin" id="modalEO" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:rgba(233, 231, 231, 0.829) ;">
+                <h5 class="modal-title"  style=" font-family: 'Roboto'; font-weight: bold;">Editar Orden</h5>
+                <!-- <button type="button" class="btn" data-dismiss="modal"  ><i class="fas fa-times"></i></button> -->
+            </div>
+            <div class=" mt-4 mb-4">
+              <div class="col" >
+                <div class="row divSelect">
+                  <button class="btn btPrint  mt-2"  style="width: 14em;" (click)="cambiarEstadoOrden()" > <i class="fas fa-exchange-alt"></i> Enviar a espera </button>
+                </div>
+
+                <div class="row divSelect">
+                    <button class="btn btn-warning  mt-2"  style="width: 14em;" data-toggle="modal" data-target="#modalEV" (click)="enviarAtributoVehiculo()" > <i class="fas fa-pencil-alt"></i> Editar Orden </button>
+                </div>
+                <div class="row divSelect">
+                  <button class="btn  mt-2"  style="background-color: #508A22; opacity: 0.70; color: white; width: 14em;" data-toggle="modal" data-target="#modalEU"  (click)="editarUsuario()" > <i class="fas fa-user-edit"></i> Editar Usuario </button>
+                </div>
+                <div class="row divSelect">
+                  <button class="btn   mt-2" style="width: 14em; background-color: #7A7A7A;"   data-dismiss="modal"   > <i class="fas fa-sign-out-alt"></i> Salir </button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+        <!-- ===================================== MODAL EDITAR COTIZACION ========================================= -->
+
+        <div class="modal fade bd-example-modal-xl"   id="modalEV" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"  style="overflow-y: scroll;">
+            <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel" style=" font-family: 'Roboto'; font-weight: bold;">Editar Datos de la Orden</h5>
+            </div>
+            <div>
+                 <form [formGroup]="formEditarVehiculo">               
+                
+                    <div class="container">
+                      <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-2 ">
+                    <h4 class="mt-4 mb-3 text-center text-dark">Datos Vehículo <i class="fas fa-car-side"></i></h4>
+                    <div class="row pl-3 pr-3">
+                      <div class="col-xl-6 col-lg-6 col-md-10 col-sm-5 col-xs-12" *ngFor="let el of atributos; let i=index" >
+                      <div class="input-group input-group-sm mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text titleAtributo" id="inputGroup-sizing-sm">{{el.atributo |titlecase}} :</span>
+                          </div>
+                          <input type="text" class="form-control"  id="floatingInputNombre1{{i}}"  value="{{el.valor}}" >
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-4 col-md-10 col-sm-10 col-xs-12  " >
+                  <h4 class="mt-4 mb-3 text-center text-dark">Observación <i class="fas fa-eye"></i></h4>
+                  <textarea class="form-control"  formControlName="problema" rows="4" value="{{problema}}" ></textarea>           
+                </div>
+                </div>
+              </div>
+    
+              <div class="container ">
+    
+              <div class="row ">
+                 <div class="col-xl-4 col-lg-3 col-md-10 col-sm-10 col-xs-8 mb-2 ">
+                  <h4 class="mt-4 mb-2 text-center text-dark">Técnico <i class="fas fa-user-cog"></i></h4>
+                      <select class="custom-select"  formControlName="tecnico_id" >
+                        <option selected value="">{{tecnico |titlecase}}</option>
+                        <ng-container *ngFor="let tec of tecnicos" >
+                        <option *ngIf="tecID != tec.id" value="{{tec.id}}" >{{tec.nombres | titlecase}} {{tec.apellidos | titlecase}} </option>
+                      </ng-container>
+                      </select>
+    
+                 </div>
+                 <div class="col-xl-4 col-lg-3 col-md-10 col-sm-10 col-xs-8  mb-2 ">
+                  <h4 class="mt-4 mb-2 text-center text-dark">Servicio <i class="far fa-calendar"></i></h4>
+                  <select class="custom-select" formControlName="servicio_id" >
+                    <option value="" selected  >{{servicio |titlecase}}</option>
+                    <ng-container *ngFor="let serv of servicios" >
+                      <option *ngIf="servID != serv.id" value=" {{serv.id}}" >{{serv.tipo | titlecase}} </option>
+                    </ng-container>
+                  </select>
+    
+                 </div>
+                 <div class="col-xl-4 col-lg-3 col-md-10 col-sm-10 col-xs-8  mb-2 ">
+                  <h4 class="mt-4 mb-2 text-center text-dark">Prioridad <i class="fas fa-list-alt"></i></h4>
+                  <select class="custom-select" formControlName="prioridad_id">
+                    <option value="" selected>{{prioridad |titlecase}}</option>
+                    <ng-container *ngFor="let pri of prioridades" >
+                      <option *ngIf="priID != pri.pri_id" value="{{pri.pri_id}}" >{{pri.nombre | titlecase}} </option>
+                    </ng-container>
+                  </select>
+    
+                 </div>
+              </div>
+            </div>
+    
+                <div class="divSelect mt-4 mb-4">
+                  <button class="btn bExit btO" #closebutton (click)="cerrarMODAL()"><i class="fas fa-times"></i> Cancelar </button>
+                  <button class="btn  bSave btO" (click)="editarCotizacionDATOS(formEditarVehiculo.value)"><i class="fas fa-save"></i> Guardar </button>
+                </div>           
+                 </form>   
+            </div>
+            </div>
+            </div>
+        </div>
+        <!-- ===================================== MODAL EDITAR USUARIO ========================================= -->
+
+        <div class="modal fade bd-example-modal"   id="modalEU" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"  style="overflow-y: scroll;">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-xl">
+            <div class="modal-content">
+            <div class="modal-header titleAtributo1" >
+                <h5 class="modal-title text-dark" id="exampleModalLabel" style=" font-family: 'Roboto'; font-weight: bold;">Editar Usuario</h5>
+            </div>
+            <div>
+              <div class="col">
+                <form [formGroup]="formCliente" >
+                  <div class="input-group justify-content-center" style="align-items: center;">
+                    <div id="search-autocomplete" class="form-outline">
+                      <input 
+                      [class.is-invalid]="
+                      formCliente.get('PersonaComercio_cedulaRuc')?.touched &&
+                      formCliente.get('PersonaComercio_cedulaRuc')?.invalid
+                      "
+                     
+                      type="search" id="form1" class="form-control"  formControlName="PersonaComercio_cedulaRuc"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder="Ingrese la cédula"/>
+                      <label class="form-label" for="form1">Cliente</label>
+                      <span
+                      *ngIf="f1.PersonaComercio_cedulaRuc.invalid && (f1.PersonaComercio_cedulaRuc.dirty || f1.PersonaComercio_cedulaRuc.touched)"
+                      class="text-danger animated fadeIn"
+                      style="text-align: center"
+                    > Debe ingresar CI/RUC válido</span>
+                    </div>
+                    <button
+                    [disabled]="formCliente.invalid"
+                    type="submit" class="btn btnLupa"  (click)="obtenerCliente(formCliente.value)">
+                      <i class="fas fa-search" style="color: white;"></i>
+                    </button>
+                  </div>
+          
+        
+                </form>
+              </div>
+                 <!-- <form [formGroup]="formEditarUsuario">   -->
+                  <form [formGroup]="formEditarCliente">  
+                    <div class="row divSelect">
+                          <div class="col-xl-10 col-lg-10  col-md-10 col-sm-6  divSelect "><h5 class="mt-4 mb-3">Datos del cliente <i class="fas fa-user-tie"></i></h5></div> 
+                          <!-- <div class="col-xl-2 col-lg-2 col-md-2 col-sm-5 pt-3 btn-group-sm"> <button class="btn btnCarrito" [disabled]="formEditarCliente.invalid" (click)="editarCliente(formEditarCliente.value)"><i class="fas fa-sync-alt"></i></button></div> -->
+                        </div>
+                        <div style="padding-left: 2em; padding-right: 2em;">
+                      
+                              <div class="row">
+                              <!-- <div class="col"  > -->
+                              <!-- <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  > -->
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1"  style="width: 6em;" id="inputGroup-sizing-sm">Nombres :</span>
+                                  </div>
+                                  <!-- [ngModel]='text' 
+                                  (ngModelChange)='onChange($event)' -->
+                                  <input 
+                                  (keyup)=cambiosDetectados(text) [(ngModel)]="text" 
+                               
+                                  [class.is-invalid]="
+                                  formEditarCliente.get('nombres')?.touched &&
+                                  formEditarCliente.get('nombres')?.invalid
+                                  "
+                                  type="text" class="form-control"  formControlName="nombres" value="" >
+                     
+                                </div>
+                                <span
+                                *ngIf="f4.nombres.invalid && (f4.nombres.dirty || f4.nombres.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese nombre válido</span>
+                                </div>
+    
+                              <div class="row"  >
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1" style="width: 6em;" id="inputGroup-sizing-sm">Apellidos :</span>
+                                  </div>
+                                  <input
+                                  (keyup)=cambiosDetectados(apellido) [(ngModel)]="apellido" 
+                                  [class.is-invalid]="
+                                  formEditarCliente.get('apellidos')?.touched &&
+                                  formEditarCliente.get('apellidos')?.invalid
+                                  "
+                                   type="text" class="form-control"   formControlName="apellidos" value="" >
+                            
+                                </div>
+                                <span
+                                *ngIf="f4.apellidos.invalid && (f4.apellidos.dirty || f4.apellidos.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese apellido válido</span>
+                              </div>
+                              <div class="row"  >
+                              <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1" style="width: 6em;" id="inputGroup-sizing-sm">CI/RUC :</span>
+                                  </div>
+                                  <input
+                                   type="text" class="form-control"   formControlName="PersonaComercio_cedulaRuc" value=""  readonly >
+
+                                </div>
+<!-- 
+                                <form [formGroup]="formCedulaCliente">
+
+                                  <div  class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text titleAtributo1" style="width: 6em;" id="inputGroup-sizing-sm">CI/RUC :</span>
+                                    </div>
+                                    <input
+                                     type="text" class="form-control"   formControlName="cliente_id" value="{{cedulaGlobal}}"  readonly >
+  
+                                  </div>
+                                </form> -->
+                              <div hidden class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1" style="width: 6em;" id="inputGroup-sizing-sm">CI/RUC :</span>
+                                  </div>
+                                  <input
+                                   type="text" class="form-control"   formControlName="clientetipo_idclientetipo" value=""  >
+
+                              </div>
+                              </div>
+                                <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                                  <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text titleAtributo1"  style="width: 6em;" id="inputGroup-sizing-sm">Teléfono :</span>
+                                    </div>
+                                    <input
+                                    (keyup)=cambiosDetectados(telf) [(ngModel)]="telf" 
+                                    [class.is-invalid]="
+                                    formEditarCliente.get('celular')?.touched &&
+                                    formEditarCliente.get('celular')?.invalid
+                                    "   
+                                    type="text" class="form-control"   formControlName="celular"  value="" >
+                          
+                                  </div>
+                                  <span
+                                  *ngIf="f4.celular.invalid && (f4.celular.dirty || f4.celular.touched)"
+                                  class="text-danger animated fadeIn"
+                                  style="text-align: center"
+                                > Ingrese celular válido</span>
+                                </div>
+                              </div>
+                              <div class="row"  >
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1"  style="width: 6em;" id="inputGroup-sizing-sm">Correo :</span>
+                                  </div>
+                                  <input 
+                                  (keyup)=cambiosDetectados(email) [(ngModel)]="email" 
+                                  [class.is-invalid]="
+                                  formEditarCliente.get('email')?.touched &&
+                                  formEditarCliente.get('email')?.invalid
+                                  "
+                                  type="text" class="form-control"  formControlName="email" value="" >
+                              
+                                </div>
+                                <span
+                                *ngIf="f4.email.invalid && (f4.email.dirty || f4.email.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese correo válido</span>
+                              </div>
+                              <!-- <div class="row"  >
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1"  style="width: 6em;" id="inputGroup-sizing-sm">Teléfono :</span>
+                                  </div>
+                                  <input
+                                  [class.is-invalid]="
+                                  formEditarCliente.get('celular')?.touched &&
+                                  formEditarCliente.get('celular')?.invalid
+                                  "   
+                                  type="text" class="form-control"   formControlName="celular"  value="" >
+                                  <span
+                                  *ngIf="f4.celular.invalid && (f4.celular.dirty || f4.celular.touched)"
+                                  class="text-danger animated fadeIn"
+                                  style="text-align: center"
+                                > Ingrese celular válido</span>
+                                </div>
+                              </div> -->
+                              <div class="row"  >
+                              <div class="input-group input-group-sm mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text titleAtributo1" style="width: 6;" id="inputGroup-sizing-sm">Dirección :</span>
+                                  </div>
+                                  <input
+                                  (keyup)=cambiosDetectados(dir) [(ngModel)]="dir" 
+                                  type="text" class="form-control" formControlName="direccion"   value="" >
+                                </div>
+                              </div>
+                            </div>
+                        </form>              
+                
+                   
+    
+                <div class="divSelect mt-4 mb-4">
+                  <button class="btn bExit btO" (click)="cerrarMODAL2()"><i class="fas fa-times"></i> Cancelar </button>
+                  <!-- <button class="btn btn-success btO" *ngIf="banderaActualizar" title="ACTUALIZAR USUARIO"  [disabled]="formEditarCliente.invalid" (click)="editarCliente(formEditarCliente.value)"><i class="fas fa-sync-alt"> </i> Actualizar</button> -->
+                  <button (click)="editarCliente(formEditarCliente.value)"
+                   class="btn btn-success btO" 
+                   *ngIf="banderaActualizar" title="ACTUALIZAR USUARIO"  
+                   [disabled]="banderaAC" >
+                    <i [ngClass]="{'fa-save':!banderaAC, 'fa-refresh fa-spin':banderaAC}" class="fa"> </i>
+                     <span *ngIf="!banderaAC"> ACTUALIZAR</span>
+                     <span *ngIf="banderaAC"> GRABANDO CAMBIOS</span>
+                    </button>
+                  <button class="btn  bSave btO" (click)="cambiarUsuario(formEditarCliente.value)" id="btnAU" disabled><i class="fas fa-save"></i> Guardar </button>
+                </div>           
+                 <!-- </form>    -->
+            </div>
+            </div>
+            </div>
+        </div>
+   
+   
+      <!-- ==================================================== TABLA PARA SELECCIONAR CLIENTE ======================================================== -->
+
+  <ng-template #modalSelecionarCliente class="modal fade" >
+    <div class="modal-content">
+      <div class="table-responsive  p-4" >
+        <div class="form-header mt-4">
+          <h1 class="" id="tituloForm">Seleccionar Cliente</h1>
+      </div>
+        <!-- <form [formGroup]="formElegirCliente"  class="login100-form validate-form flex-sb flex-w animated text-center"> -->
+          <table class="table" >
+            <thead class="thead1" >
+              <tr>
+                <th scope="col"><i class="fas fa-signature"></i> Nombre</th>
+                <th scope="col"><i class="fas fa-fingerprint"></i> Cédula</th>
+                <th scope="col"><i class="fas fa-tools"></i> Acciones</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr  *ngFor="let cl of cliente; let i = index" >
+                <td>
+                  {{ cl.nombres | titlecase }} {{ cl.apellidos | titlecase }}
+                </td>
+                <td>
+                  {{ cl.ci }}
+                </td>
+                <td>
+                  <button
+                  class="btn btO titleAtributo"
+                  
+
+                  (click)="seleccionarCliente(cl)"
+
+                >
+                  <i class="fas fa-check"></i> Seleccionar
+                </button>
+
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+          <div *ngIf="banderaPaginacion" class="d-flex justify-content-center" >
+            <ngb-pagination  [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (pageChange)="refreshClientes()">
+            </ngb-pagination>
+          </div>
+        <!-- </form> -->
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- =========================== MODAL REGISTRAR CLIENTE ============================ -->
+
+  <!-- <ng-template #modalRegistrarCliente class="modal fade "  data-backdrop="static" data-keyboard="false" >
+    <div class="modal-content " > -->
+
+      <div class="modal fade bd-example-modal-xl"   id="modalRC" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"  style="overflow-y: scroll;">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+        <!-- <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title text-dark" id="exampleModalLabel" style=" font-family: 'Roboto'; font-weight: bold;">Editar Datos de la Orden</h5>
+        </div> -->
+
+      <div class="modal-header mh">
+          <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+        
+      </div>
+      <div class="form-header mt-3">
+          <h1 class="" id="tituloForm">Registro Nuevo Cliente <i class="fas fa-user-alt"></i></h1>
+      </div>
+ 
+      <div class="modal-body">
+          
+
+          <form  class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formRegistrarCliente">
+
+                <div class=" ml-4 mr-4" *ngIf="banderaCliente">
+                           <!-- INGRESAR CEDULA-->
+
+                           <div class="form-group">
+                            <div class="row">
+
+                              <div class="col">
+                                  <label for="username" id="tituloF">IDENTIFICACIÓN <i class="fas fa-fingerprint"></i></label>
+                                  <input 
+                                   id="username"  formControlName="cedula" type="text" name="cedula" class="form-control form-icon-trailing entrada1" id="floatingInputNombre"
+                                  /> 
+                                 
+                              </div>
+                            
+                              <div class="col">
+                                  <label for="username" id="tituloF">Tipo <i class="fas fa-users"></i></label>
+                                <select class="custom-select" id="floatingInputNombre" formControlName="tipoCli"  name="tipoCli">
+                         
+                                  <option selected value="{{tipoUsuarioID}}">{{tipoUsuarioDefecto}}</option>
+                                  <ng-container *ngFor="let el of tipoUsuario" >
+                                    <option  *ngIf="el.idclientetipo != tipoUsuarioID" value="{{el.idclientetipo}}">{{el.tipo}}</option>
+                                  </ng-container>
+                                  
+                                </select>  
+                              </div>
+                            </div>
+                           </div>
+
+                                     <!-- INGRESAR Telefonos Contacto -->
+                                     <div class="form-group">
+                                      <div class="row">
+                                          <div class="col">
+                                            <label for="username" id="tituloF">NOMBRES <i class="fas fa-signature"></i></label>
+                                            <input  [class.is-invalid]="formRegistrarCliente.get('nombres')?.touched && formRegistrarCliente.get('nombres')?.invalid" 
+                                             formControlName="nombres" type="text" name="nombres" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" >
+                                             <span *ngIf="f3.nombres.invalid && (f3.nombres.dirty || f3.nombres.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese nombre válido</span>
+
+                                          </div>
+                                          <div class="col">
+                                            <label for="username" id="tituloF">APELLIDOS <i class="fas fa-signature"></i></label>
+                                            <input  [class.is-invalid]="formRegistrarCliente.get('apellidos')?.touched && formRegistrarCliente.get('apellidos')?.invalid" 
+                                             formControlName="apellidos" type="text" name="apellidos" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                                            />  
+                                            <span *ngIf="f3.apellidos.invalid && (f3.apellidos.dirty || f3.apellidos.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese apellido válido</span>
+
+                                          </div>
+                                      </div>
+                                  </div>
+
+                               <!-- INGRESAR DIRECCION -->
+                          <div class="form-group">
+                              <label for="password" id="tituloF">DIRECCIÓN <i class="fas fa-home"></i></label>
+                              <textarea  formControlName="direccion" type="text" name='direccion' class="form-control form-icon-trailing" id="tA2"></textarea>
+                              <!-- <span *ngIf="f.descripcion.invalid && (f.descripcion.dirty || f.descripcion.touched)" class="text-danger animated fadeIn"> Debe ingresar una descripción</span> -->
+                          </div>
+                          <div class="form-group" >
+                            <label for="username" id="tituloF">Email <i class="fas fa-at"></i></label>
+                            <input [class.is-invalid]="formRegistrarCliente.get('email')?.touched && formRegistrarCliente.get('email')?.invalid" 
+                              id="username"  formControlName="email" type="email" name="email" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                            />                            
+                            <span *ngIf="f3.email.invalid && (f3.email.dirty || f3.email.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese un correo válido</span>
+
+                         </div>
+                                <!-- INGRESAR Telefonos Contacto -->
+                              <div class="form-group">
+                                  <div class="row">
+                                      <div class="col">
+                                         <label for="username" id="tituloF">Teléfono <i class="fas fa-phone"></i></label>
+                                         <input formControlName="telefonos" type="text" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;" >
+                                      </div>
+                                      <div class="col">
+                                         <label for="username" id="tituloF">Celular <i class="fas fa-mobile-alt"></i></label>
+                                             <input [class.is-invalid]="formRegistrarCliente.get('celular')?.touched && formRegistrarCliente.get('celular')?.invalid" 
+                                             formControlName="celular" type="text" class="form-control "  id="floatingInputNombre" style="height: 2.5em;"  >
+                                             <span *ngIf="f3.celular.invalid && (f3.celular.dirty || f3.celular.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese celular válido</span>
+
+                                      </div>
+                                  </div>
+                              </div>
+                          
+              <hr>
+              <div class=" button group row m-3 ">
+
+                  <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarMODAL3()" ><i class="fas fa-window-close"></i> Cancelar</button>
+                  <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar"  [disabled]="formRegistrarCliente.invalid" (click)="registrarCliente(formRegistrarCliente.value)" ><i class="fas fa-save "></i>  Crear</button>
+
+              </div>
+                </div>
+          </form>
+       
+      </div>
+    </div>
+  </div>
+      </div>
+<!-- </ng-template> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

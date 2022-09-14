@@ -1,0 +1,80 @@
+export interface Cliente{
+PersonaComercio_cedulaRuc: string
+actividad_comercial: null
+anio_aportacion: null
+apellidos: string
+app: string
+aseguradora_id: string
+banco_id: null
+billing_cliente_id: string
+canton: string
+categoria_id: null
+cedula_representantelegal: null
+celular: string
+celular2: null
+ci: string
+ciudad: string
+clase: null
+clave:string
+client_notificacion: null
+clientetipo_idclientetipo: string
+codigo_cliente: null
+comentarios: string
+credito: string
+cuenta_gasto: null
+cupo_temporal: string
+cupocredito: string
+default_price: string
+descuento_valor: null
+descuentomaxporcent: string
+descuentotemp: string
+diasCredito: string
+direccion: string
+direccion2: null
+docidentificacion_id: string
+edad_cli: null
+email: string
+email2: null
+es_parking:string
+es_pasaporte:string
+essocio: null
+estaActivo:string
+estado: null
+estado_civil: null
+fecha: string
+fecha_creacion_cli: null
+fecha_fallecimiento: null
+fecha_nacimiento_cli: null
+fecha_nacimiento_repre: null
+fecha_update: null
+fecha_updateestados: null
+fecha_updateultimopago: null
+id_institucion: null
+id_nro_poste: string
+id_recaudador: string
+id_sector: string
+imagen: null
+latitud: null
+longitud: null
+nombre_aseguradora: null
+nombre_comercial: string
+nombre_representantelegal: null
+nombres: string
+origen_ingresos: null
+pais: null
+parroquia: string
+precio_afilicacion: null
+profesion_cli: null
+provincia: string
+razonsocial: string
+redsocial_id: null
+referencia_direccioncomercial: null
+referencia_domicilio: null
+sexo: null
+telefono2: null
+telefonos:string
+tipo_identificacion: null
+tipo_ruc: string
+usuario: string
+vendedor_id: string
+}

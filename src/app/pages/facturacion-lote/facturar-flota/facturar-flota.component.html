@@ -1,0 +1,352 @@
+<app-nav-bar></app-nav-bar>
+<div class="box2 animated fadeIn">
+
+    <div class="justify-center align-items-center pt-3">
+        <!-- <h4 class="font-weight-bold" style="font-family: Ubuntu; margin-top: 3em;"> Nueva Cotización Vehículo </h4> -->
+        <p id="titulos" style="margin-top: 3.5em;" >Facturación por Flota</p>
+      </div>
+      <div class="container divSelect">   
+            <div class=" col-xl-5 col-lg-6 col-md-6 col-sm-12">
+                <form [formGroup]="formFacturarFlota" >
+                <div class="input-group justify-content-center" style="align-items: center;">
+                    <div id="search-autocomplete" class="form-outline">
+                    <input 
+                    maxlength="13"
+                    [class.is-invalid]="
+                    formFacturarFlota.get('ci_ruc')?.touched &&
+                    formFacturarFlota.get('ci_ruc')?.invalid
+                    "
+                    type="search" id="form1" class="form-control "  formControlName="ci_ruc"  style="border-bottom: 1px solid silver;  height: 2.5em; " placeholder=""/>
+                    <label class="form-label" for="form1">Ingrese Indentificación</label>
+                    </div>
+                    <button 
+                    [disabled]="formFacturarFlota.invalid"
+                    type="submit" class="btn btnLupa" (click)="buscarFlota(formFacturarFlota.value)">
+                    <i class="fas fa-search" style="color: white;"></i>
+                    </button>
+                </div>
+                <span
+                        *ngIf="f.ci_ruc.invalid && (f.ci_ruc.dirty || f.ci_ruc.touched)"
+                        class="text-danger animated fadeIn"
+                        style="text-align: center"
+                > Debe ingresar un CI/RUC válido</span>
+            
+                </form>
+            </div>
+     </div>
+     <div class="container">
+     <div class="table-responsive" style="width: 100%; padding-top: 2em; ">
+
+        <table class="table">
+            <thead class="thead1" >
+            <tr>
+                <th scope="col">Nro.</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Placa</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Km</th>
+                <th scope="col">Problema</th>
+                <th scope="col">Seleccionar</th>
+                
+            </tr>
+            </thead>
+            <tbody >
+                <tr *ngFor="let el of arregloProvisional; let i =index" >
+
+                 <ng-container  >
+
+                    <td class="font-weight-bold" >{{el.no}}</td>
+                    <td>{{el.fecha}}</td>
+                    <td>{{el.cliente}}</td>
+                    <td>{{el.arrayValAuto[0]}} </td>
+                    <td>{{el.arrayValAuto[1]}} </td>
+                    <td>{{el.arrayValAuto[2]}} </td>
+                    <td>{{el.problema}}</td>
+                    <td  style="width: 12em;">
+                        <div class="button-group btn-group-sm" >
+                                <button class="btn btnEdit" (click)="enviar_Tabla(el.id, i)" id="btnAgregarFlota{{i}}"> 
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn  btn-danger" style="width: 2.3em;" disabled (click)="quitar_Tabla(el.id,i)" id="btnBorrarFlota{{i}}"> 
+                                    <i class="fas fa-times" ></i>
+                                </button>
+                            </div>
+                        <!-- <input type="check"> -->
+                    </td>
+                </ng-container>
+                </tr>
+            </tbody>
+      
+        </table>
+     </div>
+     </div>
+
+
+     <div class="container pt-2 pb-2" *ngIf="banderaEBT">
+        <!-- <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td *ngIf="banderaEBT"> -->
+                <div class="button-group ">
+                    <button class="btn btn-sm btnEdit" id="btnET" (click)="enviarTODOS()">
+                        <i class="fas fa-check"></i> Enviar todos
+                    </button>
+                    <button class="btn btn-sm btn-danger" id="btnQT" (click)="quitarTODOS()">
+                        <i class="fas fa-times" ></i> Quitar todos
+                    </button>
+                </div>
+               
+            <!-- </td>
+        </tr> -->
+     </div>
+
+     <div class="container" *ngIf="banderaTotales" >
+        <div class="row">
+            <div class="col">
+                <table class="table"  style="box-shadow: 0px 2px 8px 0px #858484; border-radius: 1%;" >
+                    <tbody class="">
+                        <tr class="thead1">
+                    
+                            <th >SubTotal 12%</th>
+                            <th >$ {{subTotal12S |currency:'':'':'1.2-2' }}</th>
+                        </tr>
+                        <tr >                             
+                            <th >SubTotal 0%</th>
+                            <th >$ {{subTotalceroS |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotalcero | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >SubTotal </th>
+                            <th >$ {{subTotalS |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotal | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr >                             
+                            <th >IVA 12%</th>
+                            <th >$ {{iva12S |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{iva12 | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >TOTAL SERVICIOS </th>
+                            <th >$ {{subTotalS+iva12S |currency:'':'':'1.2-2'}}</th>
+                            <!-- <th >$ {{total | number:'.0-2' }}</th> -->
+                        </tr>
+                    </tbody>
+              
+                </table>
+            </div>
+            <div class="col">
+                <table class="table"  style="box-shadow: 0px 2px 8px 0px #858484; border-radius: 1%;" >
+                    <tbody class="">
+                        <tr class="thead1">
+                    
+                            <th >SubTotal 12%</th>
+                            <th >$ {{subTotal12SP |currency:'':'':'1.2-2' }}</th>
+                        </tr>
+                        <tr >                             
+                            <th >SubTotal 0%</th>
+                            <th >$ {{subTotalceroSP |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotalcero | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >SubTotal </th>
+                            <th >$ {{subTotalSP |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotal | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr >                             
+                            <th >IVA 12%</th>
+                            <th >$ {{iva12SP |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{iva12 | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >TOTAL PRODUCTOS </th>
+                            <th >$ {{subTotalSP+iva12SP |currency:'':'':'1.2-2'}}</th>
+                            <!-- <th >$ {{total | number:'.0-2' }}</th> -->
+                        </tr>
+                    </tbody>
+              
+                </table>
+            </div>
+            <div class="col">
+                <table class="table"  style="box-shadow: 0px 2px 8px 0px #858484; border-radius: 1%;" >
+                    <tbody class="">
+                        <tr class="thead1">
+                    
+                            <th >SubTotal 12%</th>
+                            <th >$ {{subTotal12SP + subTotal12S |currency:'':'':'1.2-2' }}</th>
+                        </tr>
+                        <tr >                             
+                            <th >SubTotal 0%</th>
+                            <th >$ {{subTotalceroSP + subTotalceroS |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotalcero | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >SubTotal </th>
+                            <th >$ {{subTotalSP + subTotalS |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{subTotal | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr >                             
+                            <th >IVA 12%</th>
+                            <th >$ {{iva12SP + iva12S |currency:'':'':'1.2-2' }}</th>
+                            <!-- <th >$ {{iva12 | number:'.0-2' }}</th> -->
+                        </tr>
+                        <tr class="thead1">                             
+                            <th >TOTAL </th>
+                            <th >$ {{subTotalSP+iva12SP + subTotalS+iva12S |currency:'':'':'1.2-2'}}</th>
+                            <!-- <th >$ {{total | number:'.0-2' }}</th> -->
+                        </tr>
+                    </tbody>
+              
+                </table>
+            </div>
+        </div>
+
+     </div>
+
+
+        <div class="container">
+ 
+          
+                <p id="titulos1"> Mano de obra - Servicios</p>
+          
+                <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #858484; border-radius: 1%;">
+          
+                    <table mdbTable #tableEl="mdbTable" class="" >
+                        <thead class="thead1">
+                            <tr>
+                                <th scope="col">#Orden</th> 
+                                <th scope="col">Técnico</th> 
+                                <th scope="col">Servicio</th>
+                                <th scope="col">Cod.</th>
+                                <th scope="col">Mano-Obra</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Precio Unitario</th>
+                                <th scope="col">Precio Total</th>
+                                <!-- <th   scope="col">Acciones</th>                     -->
+                            </tr>
+                        </thead>
+                        <tbody class="tbody">
+
+                            <ng-container  *ngFor="let el of arr2 ;let i =index">
+
+                            <tr *ngFor="let obj of el[0]; let j = index">
+                            
+                                <ng-container *ngIf="obj.esservicio == '1'" >
+                                    <td class="font-weight-bold"> {{el[2]}}</td>
+                                    <td>{{obj.tecnico_nombres | titlecase}} {{obj.tecnico_apellidos |titlecase}}</td>
+                                    <td>{{obj.tipo}}</td>
+                                    <td>{{obj.producto_id}}</td>
+                                    <td *ngIf=" obj.alias != null && obj.alias != ''"  >
+ 
+                                        {{obj.alias }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                                        mdbPopover="{{obj.productname}}"
+                                         placement="right"
+                                        mdbPopoverHeader="Nombre del producto" ></i>
+                                      </td>
+                              
+                                      <td *ngIf="obj.alias == '' || obj.alias == null"   >{{obj.productname}}</td>
+                                    <td>{{obj.cant}}</td>
+                                    <td>{{obj.itemprecio |currency:'':'':'1.2-2'}}</td>
+                                    <td>{{obj.itemprecio * obj.cant |currency:'':'':'1.2-2'}}</td>
+                                </ng-container>
+
+                            </tr>
+                        </ng-container>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="font-weight: bold;">TOTAL:</td>
+                            <td  style="font-weight: bold;"> $ {{subTotalS|currency:'':'':'1.2-2' }} </td>
+                            <!-- <td></td> -->
+                        </tr>
+          
+                        
+                        </tbody>
+                    </table>
+                </div>
+                 <!-- ========================================================================= REPUESTOS - PIEZAS ============================================================================================= -->
+          
+          
+                 <p id="titulos1" class="mt-3"> Repuestos Utilizados</p>
+          
+              <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #858484; border-radius: 1%;" >
+          
+                  <table mdbTable #tableEl="mdbTable" class=""  >
+                      <thead class="thead1">
+          
+                          <tr>
+                              <th scope="col">#Orden</th> 
+                              <th scope="col">Técnico</th>
+                              <th scope="col">Servicio</th>
+                              <th scope="col">Cod.</th>
+                              <th scope="col">Item</th>
+                              <th scope="col">Cantidad</th>
+                              <th scope="col">Precio Unitario</th>
+                              <th scope="col">Precio Total</th>
+                              <!-- <th    scope="col">Acciones</th> -->
+                          </tr>
+                      </thead>
+          
+                      <tbody class="tbody">
+                       
+                      </tbody>
+
+                      <ng-container  *ngFor="let el of arr2 ;let i =index">
+
+                        <tr *ngFor="let obj of el[0];let j = index" >
+                        
+                            <ng-container *ngIf="obj.esservicio == '0'" >
+                                <td class="font-weight-bold"> {{el[2]}}</td>
+                                <td>{{obj.tecnico_nombres | titlecase}} {{obj.tecnico_apellidos |titlecase}}</td>
+                                <td>{{obj.tipo}}</td>
+                                <td>{{obj.producto_id}}</td>
+                                <td *ngIf=" obj.alias != null && obj.alias != ''"  >
+ 
+                                    {{obj.alias }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                                    mdbPopover="{{obj.productname}}"
+                                     placement="right"
+                                     mdbPopoverHeader="Nombre del producto" ></i>
+                                </td>
+                                <td *ngIf="obj.alias == '' || obj.alias == null"   >{{obj.productname}}</td>
+                                <td>{{obj.cant}}</td>
+                                <td>{{obj.itemprecio |currency:'':'':'1.2-2'}}</td>
+                                <td>{{obj.itemprecio  * obj.cant |currency:'':'':'1.2-2'}}</td>
+                            </ng-container>
+
+                        </tr>
+                    </ng-container>
+                      <tr>
+
+
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="font-weight: bold;">TOTAL:</td>
+                        <td  style="font-weight: bold;"> $ {{subTotalSP|currency:'':'':'1.2-2' }} </td>
+                        <!-- <td></td> -->
+                    </tr>
+                  </table>
+              </div>
+           </div>
+
+           <div class="container pt-4">
+
+            <!-- <button class="btn btn-sm btn-primary"  *ngIf="banderaFacturar"   (click)="getUserID()" > <i class="fas fa-dollar-sign"></i> Facturar</button> -->
+            <button class="btn btn-sm btn-danger"  *ngIf="banderaFacturar"   (click)="hacerFactura()" > <i class="fas fa-dollar-sign"></i> Facturar</button>
+
+           </div>
+          
+            
+
+</div>

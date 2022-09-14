@@ -1,0 +1,252 @@
+<app-nav-bar></app-nav-bar>
+<app-side-bar></app-side-bar>
+
+
+<div class="main-panel animated fadeIn" >
+    <button class="btn" id="boton-sidebar_left" style="float: right; margin-right: 1em; margin-top: 5em;"><i class="fas fa-angle-double-left" ></i></button>
+    <div class="content" id="main">
+
+
+        <!-- <p class="p1" style="margin-top: 3em;" >Administración Atributos</p> -->
+
+        <p id="titulos" style="margin-top: 4em; margin-bottom: 2em; text-align: center;" >Administración Atributos del Vehículo</p>
+
+        <div class="container ">
+            <div class="row ">
+              <!-- <div class="col-sm divSelect mb-2">
+                <fieldset><input type="search" id="btnSearch" [(ngModel)]="searchText" /><button id="bSearch" type="submit"><i class="fa fa-search" id="idSearch"></i></button></fieldset>
+              </div> -->
+              <div class="col-sm divSelect mb-2" style="align-items: center;">
+                <div id="search-autocomplete" class="form-outline">
+                  <input type="search" id="form1" class="form-control"  [(ngModel)]="searchText"   style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                  <label class="form-label" for="form1">Buscar atributo</label>
+                </div>
+                <button type="submit" class="btn btnLupa"  >
+                  <i class="fas fa-search" style="color: white;"></i>
+                </button>
+              </div>
+
+              <div class="col-sm divSelect">
+                <button type="button" class="btn mb-3 db btn-sm botonCrear" (click)="abrirModal(modalCrear)" ><i class="fas fa-plus"></i>
+                    Crear Atributo
+                 </button>
+              </div>
+            
+            </div>
+          </div>
+
+
+
+        <div class="table-responsive table-striped "  style="box-shadow: 0px 2px 8px 0px #a9a8a8; border-radius: 1%;">
+
+            <table mdbTable #tableEl="mdbTable" class="tt  ">
+                <thead class="thead">
+                    <tr >
+                        <th scope="col"><i class="fas fa-signature"></i> Nombre</th>
+                        <th scope="col"><i class="fas fa-book-open"></i> Descripción </th>
+                        <th scope="col"><i class="fas fa-eye"></i> Ver en Planeador </th>
+                        <th scope="col"><i class="fas fa-tools"></i> Acciones</th>
+
+                    </tr>
+                </thead>
+                <tbody class="tbody">
+
+                    <tr mdbTableCol  *ngFor="let el of elements; let i =index">
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" style="font-weight:500;"> <div style="padding-top: 1em;"> {{el.nombreattr | titlecase}} </div> </td>
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex "> <div style="padding-top: 1em;"> {{el.descripcion | titlecase}} </div> </td>
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex"> 
+                            
+                            <div class="button-group btn-group-sm">
+                                <button class=" btn  bExit"  title="VER EN TARJETAS DEL PLANEADOR" *ngIf="el.en_planeador =='0'" (click)="verPlaneador(el.id)">
+                                    <!-- <abbr title="VER EN TARJETAS DEL PLANEADOR">  <i class="fas fa-eye"></i>  </abbr> -->
+                                    <i class="fas fa-eye"></i>
+                                </button>
+
+                                <button class=" btn btn-danger" title="DEJAR DE VER EN TARJETAS DEL PLANEADOR" style="opacity: .70;" *ngIf="el.en_planeador =='1'" (click)="quitarPlaneador(el.id)">
+                                    <!-- <abbr title="DEJAR DE VER EN TARJETAS DEL PLANEADOR">  <i class="fas fa-eye-slash"></i>  </abbr>  -->
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+
+                            </div>
+                        </td>
+
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">
+                            <div class="button-group btn-group-sm ">
+
+                                <button *ngIf="el.deleted == '1'" hidden type="button" class="btn  btn-sm bEditar " title="Editar" (click)="obtenerPorID(el.id); abrirModal(modalEditar)"><i class="fas fa-pencil-alt"></i> </button>
+                                <button *ngIf="el.deleted == '0'" type="button" class="btn  btn-sm  bEditar" title="Editar" (click)="obtenerPorID(el.id); abrirModal(modalEditar)"><i class="fas fa-pencil-alt"></i> </button>
+                                <button *ngIf="el.deleted == '1'" type="button" class="btn  btn-sm btn-success" title="Habilitar" (click)="enviar(el); abrirModal(modalHabilitar)"><i class="fas fa-check"></i> </button>
+                                <button *ngIf="el.deleted == '0'" type="button" class="btn  btn-sm  bEliminar" title="Deshabilitar" (click)="enviar(el); abrirModal(modalDeshabilitar)"><i class="fas fa-ban "></i></button>
+                                <!-- <button *ngIf="el.deleted == '1'" hidden type="button" class="btn  btn-sm bEditar"  (click)="obtenerPorID(el.id); abrirModal(modalEditar)"><i class="fas fa-pencil-alt"></i> Editar</button>
+                                <button *ngIf="el.deleted == '0'" type="button" class="btn  btn-sm bEditar" (click)="obtenerPorID(el.id); abrirModal(modalEditar)"><i class="fas fa-pencil-alt"></i> Editar</button>
+                                <button *ngIf="el.deleted == '1'" style="width: 12.5em;" type="button" class="btn  btn-sm bEliminar" (click)="enviar(el); abrirModal(modalHabilitar)"><i class="fas fa-check"></i> Habilitar</button>
+                                <button *ngIf="el.deleted == '0'" type="button" class="btn  btn-sm bEliminar"  (click)="enviar(el); abrirModal(modalDeshabilitar)"><i class="fas fa-ban "></i> Deshalibitar</button> -->
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <td class="" colspan="11">
+                    <mdb-table-pagination class="" [tableEl]="tableEl" [searchDataSource]="elements"></mdb-table-pagination>
+                </td>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL CREAR ATRIBUTO-->
+
+
+<ng-template #modalCrear class="modal fade" >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+          
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Crear Atributo</h1>
+        </div>
+   
+        <div class="modal-body">
+            <form class="login100-form validate-form flex-sb flex-w animated" style="color: #757575;" [formGroup]="formCrear" (ngSubmit)="crear(formCrear.value)">
+                <div class="m-4">
+
+                    <!-- INGRESAR NOMBRE DE USUARIO -->
+
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Nombre <i class="fas fa-signature"></i></label>
+                        <input [class.is-invalid]="formCrear.get('nombreattr')?.touched && formCrear.get('nombreattr')?.invalid" formControlName="nombreattr" id="username" type="text" name="username" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" required="required"
+                        />
+                        <span *ngIf="f.nombreattr.invalid && (f.nombreattr.dirty || f.nombreattr.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Debe ingresar un nombre</span>
+
+                    </div>
+
+                    <!-- INGRESAR DETALLE -->
+                    <div class="form-group">
+                        <label for="password" id="tituloF">Descripción <i class="fas fa-book-open"></i></label>
+                        <textarea [class.is-invalid]="formCrear.get('descripcion')?.touched && formCrear.get('descripcion')?.invalid" formControlName="descripcion" type="text" name='descripcion' class="form-control form-icon-trailing" id="tA"></textarea>
+                        <span *ngIf="f.descripcion.invalid && (f.descripcion.dirty || f.descripcion.touched)" class="text-danger animated fadeIn"> Debe ingresar una descripción</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class=" button group row m-3 ">
+
+                    <button type="button" class="btn col btn-md btnGuardar"  (click)="resetear();cerrarModal()"><i class="fas fa-window-close"></i> Cancelar</button>
+                    <button type="submit" class="btn col btn-md btnModal" [disabled]="formCrear.invalid" id="btnGuardar"><i class="fas fa-save"></i> crear Atributo</button>
+
+                </div>
+            </form>
+         
+        </div>
+    </div>
+</ng-template>
+
+<!-- MODAL EDITAR ATRIBUTO-->
+
+<ng-template #modalEditar class="modal fade" >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+          
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Editar Atributo</h1>
+        </div>
+   
+        <div class="modal-body">
+            <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formEditar" (ngSubmit)="editar(formEditar.value, elements1.id)">
+
+                <div class="m-4">
+
+                    <!-- INGRESAR NOMBRE DE USUARIO -->
+
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Nombre <i class="fas fa-signature"></i></label>
+                        <input [class.is-invalid]="formCrear.get('nombreattr')?.touched && formCrear.get('nombreattr')?.invalid" formControlName="nombreattr" id="username" type="text" name="username" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" required="required"
+                        />
+                        <span *ngIf="f.nombreattr.invalid && (f.nombreattr.dirty || f.nombreattr.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Debe ingresar un nombre</span>
+
+                    </div>
+
+                    <!-- INGRESAR DETALLE -->
+                    <div class="form-group">
+                        <label for="password" id="tituloF">Descripción <i class="fas fa-book-open"></i></label>
+                        <textarea [class.is-invalid]="formCrear.get('descripcion')?.touched && formCrear.get('descripcion')?.invalid" formControlName="descripcion" type="text" name='descripcion' class="form-control form-icon-trailing" id="tA"></textarea>
+                        <span *ngIf="f.descripcion.invalid && (f.descripcion.dirty || f.descripcion.touched)" class="text-danger animated fadeIn"> Debe ingresar una descripción</span>
+                    </div>
+                </div>
+
+
+                <hr>
+                <div class=" button group row m-3 ">
+
+                    <button type="button" class="btn col btn-md  btnGuardar "  (click)="resetear();cerrarModal()"><i class="fas fa-window-close"></i> Cancelar</button>
+                    <button type="submit" class="btn col btn-md btnModal" [disabled]="formEditar.invalid" id="btnGuardar"><i class="fas fa-save "></i>  Guardar cambios</button>
+
+                </div>
+
+            </form>
+         
+        </div>
+    </div>
+</ng-template>
+
+
+<!-- MODAL INHABILITAR -->
+
+
+<ng-template #modalDeshabilitar class="modal fade" >
+
+        <div class="modal-content">
+            <div class="modal-header mh">
+
+            </div>
+            <div class="modal-body  mr-3 ml-3">
+
+                <div class="form-header">
+                    <h1 class="" id="tituloForm">Deshabilitar Atributo</h1>
+                </div>
+
+                <p class="titulo-eliminar"> ¿Está seguro de deshabilitar el atributo: {{elements1.nombreattr | uppercase}} ?</p>
+            </div>
+
+            <div class=" button group row m-4 ">
+
+                <button type="button" class="btn col btn-md  btnGuardar " (click)="cerrarModal()"><i class="fas fa-window-close"></i> Cancelar</button>
+                <button type="button" class="btn col btn-md btnModal " aria-label="Close" data-dismiss="modal" (click)="deshabilitar(elements1.id)"><i class="fas fa-ban"></i> Sí, deshabilitar</button>
+            </div>
+        </div>
+  
+</ng-template>
+
+<!-- MODAL HABILITAR  -->
+
+<!-- <div class="modal fade" id="modalHabilitar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> -->
+<ng-template #modalHabilitar class="modal fade" >
+    
+        <div class="modal-content">
+            <div class="modal-header mh">
+
+            </div>
+            <div class="modal-body  mr-3 ml-3">
+
+                <div class="form-header">
+                    <h1 class="" id="tituloForm">Habilitar Atributo</h1>
+                </div>
+
+                <p class="titulo-eliminar"> ¿Está seguro de habilitar el atributo: {{elements1.nombreattr | uppercase}} ?</p>
+            </div>
+
+            <div class=" button group row m-4 ">
+
+                <button type="button" class="btn col btn-md  btnGuardar " (click)="cerrarModal()"><i class="fas fa-window-close"></i> Cancelar</button>
+                <button type="button" class="btn col btn-md btnModal " aria-label="Close" data-dismiss="modal" (click)="habilitar(elements1.id)"><i class="fas fa-check"></i> Sí, habilitar</button>
+            </div>
+        </div>
+
+</ng-template>

@@ -1,0 +1,482 @@
+<div class=" modal fade  bd-example-modal-xl animated fadeIn" id="bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+data-backdrop="static" data-keyboard="false"
+aria-hidden="true" style="overflow-y: scroll;">
+    <div class="modal-dialog  modal-xl">
+        <div class="modal-content modal-xl">
+
+            <form [formGroup]="formCerrarOrden">
+                <div class="modal-header">
+                    <h5 class="modal-title" style=" font-family: 'Roboto'; font-weight: bold;">Cierre de Orden de trabajo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #b8b4b4; border-radius: 1%;">
+                        <table mdbTable #tableEl="mdbTable" class="tt4 table">
+                            <thead class="thead1" style="text-align: center;">
+                                <tr>
+                                    <th scope="col"> No.</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col"> Cliente</th>
+                                    <th scope="col"> Placa</th>
+                                
+                                    <th scope="col"> Marca</th>
+                                    <th scope="col"> <strong class="text-danger" style="font-size: larger;"> Km</strong></th>
+                                   
+                                </tr>
+                            
+                            </thead>
+
+                            <tbody class="tbody" style="text-align: center;">
+
+                                <tr mdbTableCol *ngFor="let el of informacionOrden">
+                                    <th scope="row">{{el.secuencia}}</th>
+                                    <td>{{el.fecha}}</td>
+                                    <th scope="row">{{el.cliente | titlecase}}</th>
+                                    <th>{{el.arrayValAuto[0]}}</th>
+                                    <th>{{el.arrayValAuto[1]}}</th>
+                                    <th><span class="badge badge-danger" style="font-size: small ;">{{el.arrayValAuto[2]}}</span></th>
+                                    <input hidden formControlName="nro_ordenAbierta" value="{{el.idOrden}}">            
+                                </tr>
+                            </tbody>
+                            <thead class="thead1" style="text-align: center;">
+                                <th colspan="1" style="text-align: center;"> Problema</th>
+                                <td  *ngFor="let el of informacionOrden" colspan="5" style="text-align: center; background-color: white; font-size: small;" >{{el.problema}}</td>
+                            </thead>
+                        </table>
+
+                    </div>
+
+                    <div class="container">
+
+                    <div class="row mt-3 mb-3 ">
+
+                        <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12  divSelect">
+
+                            <h6 class="titulosModal">Recomendaciones:</h6>
+
+                        </div>
+                        <div class="col col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                            <textarea [class.is-invalid]="formCerrarOrden.get('recomendacion')?.touched && formCerrarOrden.get('recomendacion')?.invalid" formControlName="recomendacion" class="form-control" rows="2" cols="5" placeholder="Detalle...."></textarea>
+                        </div>
+                        <span *ngIf="f.recomendacion.invalid && (f.recomendacion.dirty || f.recomendacion.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Debe escribir una recomendación para cerrar la orden</span>
+
+                    </div>
+
+                    <div class="row  ">
+                        <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 divSelect">
+                            <h6 class="titulosModal mt-1">
+                                Prox. Mantenimiento
+                            </h6>
+                        </div>
+                        <div class="col col-lg-3 col-md-12  col-sm-12 col-xs-12 mb-1">
+                            <input formControlName="kmProximoMan" type="number" class="form-control" placeholder="Km" min="0" oninput="this.value = 
+                            !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" value="{{0}}">
+                        </div>
+                        <div class="col col-lg-2 col-md-12 col-sm-12 col-xs-12 divSelect">
+                            <h6 class="titulosModal mt-1 ">
+                                Fecha Prox. Mante
+                            </h6>
+                        </div>
+                        <div class="col col-lg-4 col-md-12  col-sm-12 col-xs-12 ">
+                            <input formControlName="fechaProximoMan" type="date" class="form-control" value="0">
+                        </div>
+                    </div>
+
+                    <div class="row  mt-2 ">
+                        <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 divSelect">
+                            <h6 class="titulosModal mt-3 ">
+                                <!-- <mdb-badge id="subTitulo1 "> <i class="fas fa-user "></i> Quién retira el vehículo </mdb-badge> -->
+                                Quién retira el vehículo
+                            </h6>
+
+                        </div>
+                        <div class="col col-lg-9 col-md-12 col-sm-12 col-xs-12 ">
+                            <input formControlName="nombreRetira" type="text " name=" " id=" " class="form-control ">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                    <!-- ===================================================== FORMULARIO DE BUSQUEDA ==================================================================== -->
+
+
+    
+                        <div class="container divSelect pt-2">
+
+                            <button class="btn btn-sm btnCarrito" style="color: black; font-weight: 600;"  id="btnCCS" (click)="listarTodos()" >
+                                Control de Salida
+                            </button>
+
+                        </div>
+
+
+                    <!-- </div> -->
+
+                    <div class="container-fluid" style="margin-top: 1em;" >
+                        <div class="row  divSelect ">
+                            <h6 class="text-center pb-2">Ingrese productos/repuestos o servicios recomendados para el próximo mantenimiento</h6>
+                  
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12" style="text-align: left;">
+                                <form [formGroup]="formBusquedaN" class="login100-form validate-form flex-sb flex-w animated text-center">
+                
+                                    <div class="input-group justify-content-center" style="align-items: center;">
+                                        <div id="search-autocomplete" class="form-outline">
+                                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                                        <label class="form-label" for="form1">Nombre Producto</label>
+                                        </div>
+                                        <button
+                                        [disabled]="formBusquedaN.invalid"
+                                        type="submit" class="btn btnLupa"  (click)="buscarProductoServicio(formBusquedaN.value);">
+                                        <i class="fas fa-search" style="color: white;"></i>
+                                        </button>
+                                    </div>
+                                </form>    
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12" style="text-align: left;">
+                                <form [formGroup]="formBusquedaCU" class="login100-form validate-form flex-sb flex-w animated text-center">
+                
+                                    <div class="input-group justify-content-center" style="align-items: center;">
+                                        <div id="search-autocomplete" class="form-outline">
+                                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  id="BCU" style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                                        <label class="form-label" for="form1" >Código Único Producto</label>
+                                        </div>
+                                        <button 
+                                        [disabled]="formBusquedaCU.invalid"
+                                        type="submit" class="btn btnLupa"  (click)="buscarProductoNombreUnico(formBusquedaCU.value);">
+                                        <i class="fas fa-search" style="color: white;"></i>
+                                        </button>
+                                    </div>
+                                </form>    
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 ccol-sm-12 col-xs-12" style="text-align: left;">
+                                <form [formGroup]="formBusquedaCB" class="login100-form validate-form flex-sb flex-w animated text-center">
+                
+                                    <div class="input-group justify-content-center" style="align-items: center;">
+                                        <div id="search-autocomplete" class="form-outline">
+                                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                                        <label class="form-label" for="form1">Código de Barras</label>
+                                        </div>
+                                        <button 
+                                        [disabled]="formBusquedaCB.invalid"
+                                        type="submit" class="btn btnLupa"  (click)="buscarProductoCodBarras(formBusquedaCB.value);">
+                                        <i class="fas fa-search" style="color: white;"></i>
+                                        </button>
+                                    </div>
+                                </form>    
+                          </div>
+                    
+                        </div>
+                    </div>
+
+                  
+
+                    <!-- ================================================================ TABLA PARA SELECCIONAR PRODUCTOS O SERVICIOS ========================================================================== -->
+
+
+                    <!-- <ng-template #modalSelecionarPC class="modal fade" >
+                        <div class="modal-content"> -->
+
+                 <div class="modal fade bd-example-modal-xl"   id="modalTyS" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+                     <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+
+                          <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%;">
+                            <div class="form-header mt-4">
+                                <h1 class="" id="tituloForm">Seleccionar producto o servicio</h1>
+                            </div>
+                            <form [formGroup]="formProductoServicio" class="login100-form validate-form flex-sb flex-w animated">
+                    
+                                <table class="table">
+                                    <thead class="thead1" >
+                                        <tr class="text-center">
+                                            <th scope="col">Cod</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Precio</th>
+                                            <th scope="col"> Cantidad</th>
+                                            <th scope="col"> Km</th>
+                                            <th scope="col"> Agregar </th>                                    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr  *ngFor="let el of ps;let i =index">
+                                            <th >
+                                                {{el.id_producto}}
+                                             </th>
+                                            <td > 
+                                                
+                                                {{el.pro_nom}} <i class="far fa-eye" type="btn"  style="color: black"  (click)="desplegarAlias(i)" id="iAA{{i}}" ></i> <i class="fas fa-minus" id="iAC{{i}}" hidden style="color: #007bff" (click)="ocultarAlias(i)"></i>
+                                                <input hidden class="form-control form-control-sm"  style="text-transform: uppercase;" id="verAlias2{{i}}" placeholder="Ingrese alias" formControlName="alias"> 
+
+                                            </td>
+                                            <td >
+                                                <input  class=" form-control form-control-sm"  id="precioItem{{i}}" value="{{el.valor |currency:'':'':'1.2-2'  }}" style="width: 8em" >
+                                            </td>
+                           
+                                            <td>
+                                                <input formControlName="cantidad" type="number" class="form-control cantidad form-control-sm text-center" id="cantidad{{i}}" style="height: 2.5em; width: 5em;" placeholder="" min="0" oninput="this.value = 
+                                                !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" value="">
+                                            </td>
+
+                                            <td *ngIf="el.esServicio =='1'" >
+                                                <input 
+                                                [class.is-invalid]="formProductoServicio.get('km')?.touched && formProductoServicio.get('km')?.invalid"
+                                                formControlName="km" type="number" class="form-control cantidad form-control-sm" id="cantidad{{i}}" style="height: 2.5em; width: 9em;" placeholder="" min="0" oninput="this.value = 
+                                                !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" placeholder="Ingrese km">
+                                                <span *ngIf="fp.km.invalid && (fp.km.dirty || fp.km.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Debe ingresar una cantidad en Km</span>
+
+                                            </td>
+                                            <td *ngIf="el.esServicio =='0'" >
+                                                <input 
+                                                formControlName="km" type="number" class="form-control cantidad form-control-sm" id="cantidad{{i}}" style="height: 2.5em; width: 9em;" placeholder="" min="0" oninput="this.value = 
+                                                !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" placeholder="Ingrese km" readonly>
+                                            </td>
+
+                                            <td>
+                                                <div class="button-group btn-group-sm">
+                                                    <button class="btn btn-success"  (click)="agregarProducto1(el, i, formProductoServicio.value)"><i class="fas fa-plus"></i> </button>
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+                                  </table>
+                    
+                                 
+                                  
+                                  <div *ngIf="banderaPaginacion" class="d-flex justify-content-center mt-4 divSelect" >
+                                    <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page1" [pageSize]="pageSize1" (pageChange)="refreshPyS()">
+                                    </ngb-pagination>
+                                  </div>           
+                            </form>    
+                          </div>
+                        <div class=" button group row m-3 ">
+                            <button type="button" class="btn col btn-md btnModal " (click)="salirModal()" ><i class="fas fa-window-close"></i> Salir</button>  
+                        </div>
+                        </div>
+                  </div>
+                 </div>
+              
+
+                    <!-- ============================================================================================================================================================ -->
+
+                    <hr>
+
+                    <div class="table-responsive"style="box-shadow: 0px 2px 8px 0px #a9a8a8; border-radius: 1%;">
+                        <table mdbTable #tableEl="mdbTable" class="tt4 table">
+                            <thead class="thead" style="text-align: center;">
+                                <tr>
+                                    <th scope="col"><i class="fas fa-hashtag"></i> Cantidad</th>
+                                    <th scope="col"><i class="fas fa-book-open"></i> Detalle</th>
+                                    <th scope="col"><i class="fas fa-dollar-sign"></i> Valor</th>
+                                    <th scope="col"><i class="fas fa-tachometer-alt"></i> Km</th>
+                                    <th scope="col" class="text-center"><i class="fas fa-clock"></i> Prioridad Mantenimiento</th>
+                                    <th scope="col"><i class="fas fa-tools"></i> Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody" style="text-align: center;">
+
+                                <tr mdbTableCol *ngFor="let el of productos; let i = index">
+                                    <th scope="row">{{el.cant}}</th>
+                                    <input hidden formControlName="prodProx_cant" value="{{el.cant}}">
+
+                                    <td *ngIf="el.alias != ''" >
+                                        {{el.alias |uppercase }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                                        mdbPopover="{{el.productname | uppercase}}"
+                                        placement="right"
+                                        mdbPopoverHeader="Nombre del producto" ></i>
+
+                                    </td>
+                                    <input formControlName="prodProx_alias" value="{{el.alias}}" hidden>
+                                    <td *ngIf="el.alias == ''" >{{el.productname |uppercase}}</td>
+                                    <input hidden formControlName="prodProx_nombre" value="{{el.productname}}">
+                                    <td> $ {{el.itemprecio * el.cant |currency:'':'':'1.2-2' }}</td>
+                                    <input hidden formControlName="prodProx_pU" value="{{el.total }}">
+                                    <input hidden formControlName="prodProx_pT" value="{{el.costopromedio}}">
+                                    <td>{{el.kmT}}</td>
+                                    <input hidden formControlName="prodProx_km" value="{{el.kmT}}">
+
+
+                                    <td class="divSelect">
+                                        <!-- formCerrarOrden.get('prodProx_priori')?.touched &&
+                                        formCerrarOrden.get('prodProx_priori')?.invalid -->
+                                        <select [class.is-invalid]="
+                                  
+                                        " formControlName="prodProx_priori" class="custom-select custom-select-sm" id="" style="width: 13em;">
+                                            <!-- <option selected value="{{priId}}">{{priValor}}</option> -->
+                                        <option selected value="">Elegir..</option>
+                                        <option *ngFor="let prio of prioridades" value="{{prio.pri_id}}">{{prio.nombre |titlecase}} </option>
+                                       </select>
+
+                                    </td>
+                                    <!-- <span
+                                    *ngIf="f.prodProx_priori.invalid && (f.prodProx_priori.dirty || f.prodProx_priori.touched)"
+                                    class="text-danger animated fadeIn"
+                                    style="text-align: center"
+                                  > Debe elegir una fecha estimada</span> -->
+                                    <td>
+                                        <div class="button-group btn-group-sm">
+
+                                            <button type="button" class="btn btnEdit"  data-toggle="modal" data-target="#modalEditarOC" (click)="enviarPedido(productos, i)" ><i class="fas fa-pencil-alt"></i></button>
+                                            <button type="button" class="btn  btnTrash "  (click)="quitarProducto(i, productos)"><i class="fas fa-trash "></i> </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer divSelect">
+                    <button type="button" class="btn bExit btO" data-dismiss="modal" (click)="resetearForm()"> <i class="fas fa-times"></i> Cancelar</button>
+                    <button type="button" class="btn bSave btO" [disabled]="formCerrarOrden.invalid" (click)="guardarOrdenCerrada(informacionOrden[0].idOrden, informacionOrden[0].atributos, formCerrarOrden.value, productos)"><i class="fas fa-save" ></i> Guardar</button>
+                  
+
+                </div>
+
+            </form>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- modal reporte orden nueva -->
+
+
+
+<!-- MODAL MODIFICAR CANTIDAD Y KM -->
+
+<div class="modal fade" id="modalEditarOC" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog   modal-dialog-centered" role="document">
+        <div class="modal-content ">
+            <div class="modal-header mh">
+                <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+              
+            </div>
+            <div class="form-header mt-3">
+                <h1 class="" id="tituloForm">Editar Producto/Servicio</h1>
+            </div>
+
+            <div class="modal-body">
+            <form [formGroup]="formCantidad">
+                <div class="modal-body">
+
+                             <!-- INGRESAR CANTIDAD - PRECIO -->
+
+                             <div class="form-group">
+                                <div class="row" style="text-align:center">
+                                    <div class="col">
+                                       <label for="username" id="tituloF">Cantidad <i class="fas fa-hashtag"></i></label>
+                                       <input formControlName="c" type="number" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;"  min="1" oninput="this.value = 
+                                       !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" value="">
+                                    </div>
+                                    <div class="col">
+                                       <label for="username" id="tituloF">Precio <i class="fas fa-dollar-sign"></i></label>
+                                           <input formControlName="precio" type="number" class="form-control decimales"  id="floatingInputNombre" style="height: 2.5em;"  min="1" pattern="^[0-9]+" >
+                                    </div>
+                                    <div class="col">
+                                       <label for="username" id="tituloF">Km <i class="fas fa-road"></i></label>
+                                       <input formControlName="kilometro" type="number" class="form-control cantidad" id="cantidad" style="height: 2.5em"  min="1" oninput="this.value = 
+                                       !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" >                                    </div>
+                                </div>
+                           </div>
+
+                                    <!-- INGRESAR NOMBRE DE ALIAS -->
+
+                                    <div class="form-group" >
+                                        <label for="username" id="tituloF" >Alias del Producto<i class="fas fa-signature"></i></label>
+                                        <input   id="username"  formControlName="nombreA" type="text" name="username" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" required="required"
+                                        />    
+                                    </div>
+                    <!-- <div class=" row text-center ">
+                        <ng-container *ngFor="let ped of productoFormCantidad">
+                           <div class="col ">
+                            <strong>Cantidad <i class="fas fa-hashtag"></i></strong>
+                            <input formControlName="c" type="number" class="form-control cantidad" id="cantidad" style="height: 2.5em"  min="1" oninput="this.value = 
+                             !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null">
+                           </div>
+                           <div class="col">
+                            <strong> Kilometros </strong> 
+                            <input formControlName="kilometro" type="number" class="form-control cantidad" id="cantidad" style="height: 2.5em"  min="1" oninput="this.value = 
+                             !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" >
+                            </div>
+                         <div class="col" >
+                            <strong>Precio Unitario <i class="fas fa-dollar-sign"></i></strong> 
+                            <input formControlName="precio" type="number" class="form-control decimales"  style="height: 2.5em;"  min="1" pattern="^[0-9]+" >
+
+                        </div>
+                        </ng-container>
+                    </div> -->
+                </div>
+                <div class="button-group divSelect mt-2 mb-4">
+                    <button type="button" class="btn bExit btO" aria-label="Close" data-dismiss="modal"><i class="fas fa-times"></i> Salir </button>
+                    <button *ngFor="let ped of productoFormCantidad; let i=index" type="button" class="btn  bSave btO" (click)="modificarCantidad(formCantidad.value,productos)"><i class="fas fa-save"></i> Guardar </button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalControl class="modal fade" >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>        
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Check Control de salida del vehículo</h1>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+          <form class="login100-form validate-form flex-sb flex-w animated"  [formGroup]="formCheck"  >
+            <table class="table table-bordered">
+              <thead class="thead1" >
+                <tr>
+                  <th scope="col" colspan="2"><i class="fas fa-list"></i> Nombre</th>
+                  <th scope="col" colspan="2" class="text-center"><i class="far fa-edit"></i> Valoración</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr  class=""  *ngFor="let ite of arregloCategoria; let j = index" >
+                    <td colspan="2">
+                      {{ ite.nombre | titlecase }}
+                      <input hidden formControlName="item" value="{{ite.id}}">
+                    </td>
+                      <td colspan="2" class="text-center">
+                        <div class="form-check" style="display: flex; justify-content: center;">
+                          <div class="form-check" *ngFor="let val of evaluacion" style="padding: 0em 2em; align-items: center;">
+                            <input class="form-check-input" checked type="radio" name="flexRadioDefault{{j}}" id="flexRadioDefault1{{j}}" (click)="isChecked(j)" value="{{val.id}}"  required>
+                            <label style="padding-top: 0.3em;">  {{val.nombre | titlecase}} </label>
+                          </div>
+                        </div>
+                      </td>
+                </tr>  
+              </tbody>
+            </table>
+          <div class="divSelect mt-4 mb-4">
+            <button class="btn bExit btO"  (click)="cerrarModal()"><i class="fas fa-times"></i> Cancelar </button>
+            <!-- <button class="btn  btn-info btO" ><i class="fas fa-save"></i> Guardar </button> -->
+            <button class="btn  bSave btO" (click)="guardarCheck(formCheck.value)"><i class="fas fa-save"></i> Guardar </button>
+          </div>
+          </form> 
+
+          </div>
+   
+           
+         
+        </div>
+    </div>
+</ng-template>
+
+

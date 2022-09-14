@@ -1,0 +1,1052 @@
+<app-nav-bar></app-nav-bar>
+
+<div class="box1 m-1  animated fadeIn">
+
+
+    <div class="justify-center align-items-center pt-3">
+        <!-- <h4 class="font-weight-bold" style="font-family: Ubuntu; margin-top: 3em;"> Nueva Cotización Vehículo </h4> -->
+        <p id="titulos" style="margin-top: 3.5em;" >Nueva Cotización Vehículo</p>
+      </div>
+
+        <!-- ========================================== BUSCADOR DE PLACA Y  CLIENTE =============================================================== -->
+
+      <div class="container mt-4" id="containerCard">
+        <div class="cabecera m-3 ">
+        <div class="row divSelect ">
+          <div class=" col-xl-5 col-lg-6 col-md-6  col-sm-12">
+            <form [formGroup]="formAuto">
+              
+              <div class="input-group justify-content-center" style="align-items: center;">
+                <div id="search-autocomplete" class="form-outline">
+                  <input
+                  [class.is-invalid]="
+                  formAuto.get('placa')?.touched &&
+                  formAuto.get('placa')?.invalid
+                "
+                  type="search" id="form1" class="form-control"  formControlName="placa"  style="border-bottom: 1px solid silver; height: 2.5em; " placeholder="Ingrese la placa"/>
+                  <label class="form-label" for="form1">Vehículo</label>
+                </div>
+                <button
+                [disabled]="formAuto.invalid"
+               
+                type="submit" class="btn btnLupa"   (click)="obtenerVehiculo(formAuto.value)">
+                  <i class="fas fa-search " style="color: white"></i>
+                </button>
+              </div>
+              <span
+              *ngIf="f.placa.invalid && (f.placa.dirty || f.placa.touched)"
+              class="text-danger animated fadeIn"
+              style="text-align: center"
+            > Debe ingresar una placa válida</span>
+            </form>
+          </div>
+      
+          <div class="col-xl-5 col-lg-6 col-md-6 col-sm-12 ">
+            <form [formGroup]="formCliente" >
+              <div class="input-group justify-content-center" style="align-items: center;">
+                <div id="search-autocomplete" class="form-outline">
+                  <input 
+                  [class.is-invalid]="
+                  formCliente.get('PersonaComercio_cedulaRuc')?.touched &&
+                  formCliente.get('PersonaComercio_cedulaRuc')?.invalid
+                  "
+                  type="search" id="form1" class="form-control"  formControlName="PersonaComercio_cedulaRuc"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder="Ingrese la cédula" maxlength="13"/>
+                  <label class="form-label" for="form1">Cliente</label>
+                </div>
+                <button
+                [disabled]="formCliente.invalid"
+                type="submit" class="btn btnLupa"  (click)="obtenerCliente(formCliente.value)">
+                  <i class="fas fa-search" style="color: white;"></i>
+                </button>
+              </div>
+              <span
+              *ngIf="f1.PersonaComercio_cedulaRuc.invalid && (f1.PersonaComercio_cedulaRuc.dirty || f1.PersonaComercio_cedulaRuc.touched)"
+              class="text-danger animated fadeIn"
+              style="text-align: center"
+            > Debe ingresar CI/RUC válido</span>
+    
+            </form>
+          </div>
+        </div>
+         </div>
+        </div>
+        
+  <!-- ==================================================== TABLA PARA SELECCIONAR CLIENTE ======================================================== -->
+
+  <ng-template #modalSelecionarCliente class="modal fade" >
+    <div class="modal-content animated fadeIn">
+      <div class="table-responsive" style="width: 100%; ">
+        <div class="form-header mt-4">
+          <h1 class="" id="tituloForm">Seleccionar Cliente</h1>
+      </div>
+        <form [formGroup]="formElegirCliente"  class="login100-form validate-form flex-sb flex-w animated text-center">
+          <table class="table">
+            <thead class="thead1" >
+              <tr>
+                <th scope="col"><i class="fas fa-signature"></i> Nombre</th>
+                <th scope="col"><i class="fas fa-fingerprint"></i> Cédula</th>
+                <th scope="col"><i class="fas fa-tools"></i> Acciones</th>
+         
+              </tr>
+            </thead>
+            <tbody>
+              <tr  *ngFor="let cl of cliente; let i = index" >
+                <td>
+                  {{ cl.nombres | titlecase }} {{ cl.apellidos | titlecase }}
+                </td>
+                <td>
+                  {{ cl.ci }}
+                </td>
+                <td>
+                  <button
+                  class="btn btO titleAtributo"
+                 
+                  (click)="seleccionarCliente(cl)"
+                >
+         
+                  <i class="fas fa-check"></i> Seleccionar
+                </button>
+              
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+          <div *ngIf="banderaPaginacion" class="d-flex justify-content-center"  >
+            <ngb-pagination  [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (pageChange)="refreshClientes()">
+            </ngb-pagination>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+        <!-- ========================== FORMULARIO CREAR COTIZACION ================================== -->
+    <div class="">
+        <form
+        [formGroup]="formNuevaCotizacion"      
+        enctype="multipart/form-data"  >
+
+        <div class="container pb-4">
+          <div class="row" style=" display: flex;
+          justify-content: center;">
+          <div *ngIf="banderaAutoExiste" class="col-xl-5 col-lg-5 col-md-8 col-sm-12 col-xs-12 mr-1 mb-2 animated fadeIn" style=" border-radius: 0.5em; border-width: 1px; border-color: silver; border-style:solid; border-style:solid; box-shadow: 1px 2px 8px 0px #cfc6c6;">
+    
+                  <h4 class="mt-4 mb-3">Datos Vehículo <i class="fas fa-car-side"></i></h4>
+                      <div class="row">
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12" *ngFor="let el of datosVehiculo; let i=index" >
+                      <div class="input-group input-group-sm mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">{{el.nombreattr |titlecase}} :</span>
+                          </div>
+                          <input type="text" class="form-control"  id="floatingInputNombre2{{i}}"  value="{{el.valor}}" >
+                        </div>
+                      </div>
+                  </div>
+    
+          </div>
+          <div *ngIf="banderaAutoCrea" class="col-xl-5 col-lg-5 col-md-8  col-sm-12 col-xs-12 mr-1 animated fadeIn" style=" border-radius: 0.5em; border-width: 1px; border-color: silver; border-style:solid; border-style:solid; box-shadow: 1px 2px 8px 0px #cfc6c6;">
+    
+                  <h4 class="mt-4 mb-3">Ingresar datos vehículo <i class="fas fa-car-side"></i></h4>
+                      <div class="row">
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12" *ngFor="let el of atributos; let i=index" >
+                      <div class="input-group input-group-sm mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">{{el.nombreattr|titlecase}}:</span>
+                          </div>
+                          <input type="text" class="form-control" id="floatingInputNombre1{{i}}" formControlName="valor" value="{{el.valor}}" >
+                        </div>
+                      </div>
+                  </div>
+    
+          </div>
+          <div *ngIf="banderaCardCliente"  class="col-xl-5 col-lg-5 col-md-8  col-sm-12 col-xs-12 ml-1 animated fadeIn" style=" border-radius: 0.5em; border-width: 1px; border-color: silver; border-style:solid;border-style:solid; box-shadow: 1px 2px 8px 0px #cfc6c6;">
+                  <!-- <h4 class="mt-4 mb-3">Datos del cliente <i class="fas fa-user-tie"></i></h4>
+                  <div class="row divSelect">
+                    <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Nombres :</span>
+                        </div>
+                        <input type="text" class="form-control" disabled value="{{clienteCard[0].nombres |titlecase}}" >
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text titleAtributo" id="inputGroup-sizing-sm">Apellidos :</span>
+                        </div>
+                        <input type="text" class="form-control" disabled value="{{clienteCard[0].apellidos |titlecase}}" >
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Correo</span>
+                        </div>
+                        <input type="text" class="form-control" disabled value="{{clienteCard[0].email }}" >
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Teléfono:</span>
+                        </div>
+                        <input type="text" class="form-control"  disabled value="{{clienteCard[0].celular |titlecase}}" >
+                      </div>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Dirección:</span>
+                        </div>
+                        <input type="text" class="form-control"  disabled value="{{clienteCard[0].direccion |titlecase}}" >
+                      </div>
+                    </div>
+                </div> -->
+
+                <form [formGroup]="formEditarCliente">  
+                  <div class="row">
+                        <div class="col-xl-10 col-lg-10  col-md-10 col-sm-6  "><h4 class="mt-4 mb-3">Datos del cliente <i class="fas fa-user-tie"></i></h4></div> 
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-5 pt-3 btn-group-sm"> <button class="btn btn-success" title="ACTUALIZAR CLIENTE" [disabled]="formEditarCliente.invalid" (click)="editarCliente(formEditarCliente.value)"><i class="fas fa-sync-alt"></i></button></div>
+                      </div>
+                    
+                            <div class="row divSelect">
+                            <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Nombres :</span>
+                                </div>
+                                <input 
+                                [class.is-invalid]="
+                                formEditarCliente.get('nombres')?.touched &&
+                                formEditarCliente.get('nombres')?.invalid
+                                "
+                                type="text" class="form-control"  formControlName="nombres" value="" >
+                                <span
+                                *ngIf="f4.nombres.invalid && (f4.nombres.dirty || f4.nombres.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese nombre válido</span>
+                              </div>
+                          
+                            </div>
+                            <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text titleAtributo" id="inputGroup-sizing-sm">Apellidos :</span>
+                                </div>
+                                <input
+                                [class.is-invalid]="
+                                formEditarCliente.get('apellidos')?.touched &&
+                                formEditarCliente.get('apellidos')?.invalid
+                                "
+                                 type="text" class="form-control"   formControlName="apellidos" value="" >
+                                 <span
+                                 *ngIf="f4.apellidos.invalid && (f4.apellidos.dirty || f4.apellidos.touched)"
+                                 class="text-danger animated fadeIn"
+                                 style="text-align: center"
+                               > Ingrese apellido válido</span>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Correo</span>
+                                </div>
+                                <input 
+                                [class.is-invalid]="
+                                formEditarCliente.get('email')?.touched &&
+                                formEditarCliente.get('email')?.invalid
+                                "
+                                type="text" class="form-control"  formControlName="email" value="" >
+                                <span
+                                *ngIf="f4.email.invalid && (f4.email.dirty || f4.email.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese correo válido</span>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Teléfono:</span>
+                                </div>
+                                <input
+                                [class.is-invalid]="
+                                formEditarCliente.get('celular')?.touched &&
+                                formEditarCliente.get('celular')?.invalid
+                                "   
+                                type="text" class="form-control"   formControlName="celular"  value="" >
+                                <span
+                                *ngIf="f4.celular.invalid && (f4.celular.dirty || f4.celular.touched)"
+                                class="text-danger animated fadeIn"
+                                style="text-align: center"
+                              > Ingrese celular válido</span>
+                              </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-10 col-sm-12 col-xs-12"  >
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text titleAtributo"  id="inputGroup-sizing-sm">Dirección:</span>
+                                </div>
+                                <input type="text" class="form-control" formControlName="direccion"   value="" >
+                              </div>
+                            </div>
+                        </div>
+                      </form>  
+          </div>
+    
+      </div>
+      </div>
+        <!-- ========================================== DIV OBSERVACIÓN  ======================================= -->
+        <div class="container divSelect"  >
+
+          <div class="col-xl-8 col-lg-7 col-md-12 pb-3">
+          <h5 >
+      
+              <mdb-badge id="subTitulo1"> Observaciones : </mdb-badge>
+
+          </h5>
+          <textarea
+          [class.is-invalid]="
+          formNuevaCotizacion.get('problema')?.touched &&
+          formNuevaCotizacion.get('problema')?.invalid
+        "
+          formControlName="problema"
+          type=" "
+          class="form-control"
+          name=" "
+          id=" "
+          rows="2"
+       
+          placeholder="Detalle.... "
+          id="floatingInputNombre1 "
+        ></textarea>
+        </div>
+          <!-- <h6>
+            <mdb-badge id="subTitulo1"> Observaciones : </mdb-badge>
+          </h6>
+          <div class="col-lg-6">
+          <textarea
+          [class.is-invalid]="
+          formNuevaCotizacion.get('problema')?.touched &&
+          formNuevaCotizacion.get('problema')?.invalid
+        "
+          formControlName="problema"
+          type=" "
+          class="form-control"
+          name=" "
+          id=" "
+          rows="2"
+       
+          placeholder="Detalle.... "
+          id="floatingInputNombre1 "
+        ></textarea>
+      </div> -->
+        </div>
+        <span
+        *ngIf="fNC.problema.invalid && (fNC.problema.dirty || fNC.problema.touched)"
+        class="text-danger animated fadeIn"
+        style="text-align: center"
+      > Debe ingresar una descripción de la cotización</span>
+        <!-- =============================== DIV TECNICO Y SERVICIO ========================================== -->
+
+        
+    <div
+    class="container mt-1 "
+    id="containerCards"
+      style="
+        border-radius: 0.5em;
+        border-style: solid;
+        box-shadow: 0px px 0px 0px silver;
+        border-width: 1px;
+        border-color: silver;
+        
+      "
+        id="cTYS"
+  >
+  <!-- <p class="p1 pt-2" style="font-size: x-large; font-family: Ubuntu;">Seleccionar Técnico y Servicio  </p> -->
+  <p class="p1 pt-2" id="titulos">Seleccionar Técnico y Servicio  </p>
+
+    <div class="row divSelect">
+      <div
+      class="col-xl-5 col-lg-6 col-md-6 col-sm-10 col-xs-9 pb-3"
+    >
+      <h5 >
+        <mdb-badge id="subTitulo1"  >
+          Técnico: <i class="fas fa-tools"></i
+        ></mdb-badge>
+      </h5>
+      <select
+      id="priID"
+        class="form-control-sm b-2 "
+        formControlName="tecnico_id2"
+        style="border-color: silver;"
+      >
+        <option selected value="">{{tecnicoDefecto+'' | titlecase}}</option>
+        <ng-container *ngFor="let tec of tecnicos"  >
+        <option *ngIf="tec.id != tecnicoDefectoId" value="{{ tec.id }}">
+          {{ tec.nombres | titlecase }} {{ tec.apellidos | titlecase }}
+        </option>
+      </ng-container>
+      </select>
+    </div>
+
+        <div
+          class="col-xl-5 col-lg-6 col-md-6 col-sm-10 col-xs-9 pb-2"
+        >
+          <h5 >
+            <mdb-badge id="subTitulo1"  >
+              Servicios: <i class="far fa-calendar"></i
+            ></mdb-badge>
+          </h5>
+       
+
+          <select
+          id="priID"
+            class="form-control-sm mb-2 "
+             formControlName="servicio_id"
+             style="border-color: silver;"
+          >
+            <option selected value="">Elejir..</option>
+            <option *ngFor="let ser of servicios" value="{{ ser.id }}">
+              {{ ser.tipo | titlecase }}
+            </option>
+          </select>
+        </div>
+
+        </div>
+    </div>
+       <!-- </form> -->
+
+    <!-- </div> -->
+<!-- </div> -->
+
+
+   <!-- ===================================================== FORMULARIO DE BUSQUEDA ==================================================================== -->
+   <div class="container" style="margin-top: 2em;" >
+    <div class="row divSelect  ">
+
+      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+            <form [formGroup]="formBusquedaN" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                <div class="input-group justify-content-center" style="align-items: center;">
+                    <div id="search-autocomplete" class="form-outline">
+                    <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                    <label class="form-label" for="form1">Nombre Producto</label>
+                    </div>
+                    <button 
+                    [disabled]="formBusquedaN.invalid"
+                    type="submit" class="btn btnLupa"  (click)="buscarProductoServicio(formBusquedaN.value);">
+                    <i class="fas fa-search" style="color: white;"></i>
+                    </button>
+                </div>
+            </form>    
+      </div>
+      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+            <form [formGroup]="formBusquedaCU" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                <div class="input-group justify-content-center" style="align-items: center;">
+                    <div id="search-autocomplete" class="form-outline">
+                    <input type="search" id="form1" class="form-control"  maxlength="6" formControlName="nombre" id="BCU"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                    <label class="form-label" for="form1">Código Único Producto</label>
+                    </div>
+                    <button [disabled]="formBusquedaCU.invalid" type="submit" class="btn btnLupa"  (click)="buscarProductoNombreUnico(formBusquedaCU.value);">
+                    <i class="fas fa-search" style="color: white;"></i>
+                    </button>
+                </div>
+            </form>    
+      </div>
+      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+            <form [formGroup]="formBusquedaCB" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                <div class="input-group justify-content-center" style="align-items: center;">
+                    <div id="search-autocomplete" class="form-outline">
+                    <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                    <label class="form-label" for="form1">Código de Barras</label>
+                    </div>
+                    <button  [disabled]="formBusquedaCB.invalid" type="submit" class="btn btnLupa"  (click)="buscarProductoCodBarras(formBusquedaCB.value);">
+                    <i class="fas fa-search" style="color: white;"></i>
+                    </button>
+                </div>
+            </form>    
+      </div>
+      <!-- <div class=" col-xl-5  col-lg-5 col-md-5 col-sm  " style="text-align: center;" >
+        <button  class="btn" style=" background-color: #03a9f4; color: white;  font-size: 12px; height: 3.5em;
+        font-family: 'Ubuntu';
+        font-weight: bold;"><i class="fas fa-plus"></i> Crear Producto</button>
+      </div> -->
+
+    </div>
+</div>
+  <br>
+
+  <!-- ================================================================ TABLA PARA SELECCIONAR PRODUCTOS O SERVICIOS ========================================================================== -->
+  <ng-template #modalSelecionarPC class="modal fade" >
+    <div class="modal-content animated fadeIn">
+      <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%;">
+        <div class="form-header mt-4">
+            <h1 class="" id="tituloForm">Seleccionar producto o servicio</h1>
+        </div>
+        <form [formGroup]="formProductoServicio" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+            <table class="table">
+                <thead class="thead1" >
+                <tr>
+                    <th scope="col">Cod</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Valor P.V.P</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Técnico</th>
+                    <th scope="col">Servicio</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+                </thead>
+                <tbody >
+                <tr  *ngFor="let el of ps;let i =index" >
+                  <th scope="col">
+                    {{el.id_producto}}
+                  </th>
+                  <td>
+                    {{el.pro_nom}} <i class="far fa-eye" type="btn"  style="color: black"  (click)="desplegarAlias(i)" id="iAA{{i}}" ></i> <i class="fas fa-minus" id="iAC{{i}}" hidden style="color: #007bff" (click)="ocultarAlias(i)"></i>
+                    <input hidden class="form-control form-control-sm"   style="text-transform: uppercase;" id="verAlias{{i}}" placeholder="Ingrese alias" formControlName="alias"> 
+                  </td>
+                  <td >
+                    {{el.stock | number: '1.0-0'}}                    
+                  </td>
+
+                  <td >
+                    <input  class="form-control form-control-sm"  id="precioItem{{i}}" value="{{el.valor |currency:'':'':'1.2-2'  }}" style="width: 5.5em;" >
+                </td>
+
+                  
+                  <td>
+                    <input   formControlName="cantidad" type="number" class="form-control cantidad form-control-sm " id="cantidad{{i}}" style="height: 2.5em ;width: 4em;" placeholder="" min="0" oninput="this.value = 
+                    !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" value="">
+                  </td>
+                  <td>
+                    <select style="height: 2.5em; width: 12em;" formControlName="tecnicoS"  class="form-control form-control-sm " id="selectT" >
+                        <option *ngFor="let tec of tecnicos" value="{{ tec.id }}" 
+                        >
+                            {{ tec.nombres | titlecase }} {{ tec.apellidos | titlecase }}
+                          </option>                               
+                    </select> 
+                  </td>
+                  <td>
+                    <select 
+                    style="height: 2.5em ; width: 12em;"
+                    formControlName="servicio"  class="form-control form-control-sm "
+                    >
+                        <option *ngFor="let ser of servicios" value="{{ ser.id }}">
+                            {{ ser.tipo | titlecase }}
+                          </option>
+                        
+                    </select> 
+                  </td>
+                  <td>
+                    <div class="button-group  btn-group-sm">
+                        <button class="btn btn-success" title="AGREGAR ITEM" (click)="agregarProducto1(el, i, formProductoServicio.value)"><i class="fas fa-cart-plus" style="height: 1em;"></i> </button>
+                    </div>
+                  </td>
+         
+                </tr>
+                </tbody>
+              </table>
+
+             
+              
+              <div *ngIf="banderaPaginacion" class="d-flex justify-content-center mt-4 divSelect" >
+                <ngb-pagination [collectionSize]="collectionSize1" [(page)]="page1" [pageSize]="pageSize1" (pageChange)="refreshPyS()">
+                </ngb-pagination>
+              </div>           
+        </form>    
+      </div>
+    <div class=" button group row m-3 ">
+        <button type="button" class="btn col btn-md btnModal " (click)="cerrarModal()"  ><i class="fas fa-window-close"></i> Salir</button>        
+    </div>
+    </div>
+</ng-template>
+
+
+
+
+ <!-- =============================================== DIV CUANDO ENCUENTRA PRODUCTOS =============================================== -->
+ <div class="container">
+  <!-- <form > -->
+      <!-- <h1 class="mt-4">
+          Mano de obra - Servicios
+      </h1> -->
+
+      <p id="titulos1"> Mano de obra - Servicios</p>
+
+      <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 2%;">
+
+          <table mdbTable #tableEl="mdbTable" class="" >
+              <thead class="thead1">
+                  <tr>
+                      <th scope="col">Técnico</th>
+                      <th scope="col">Servicio</th>
+                      <th scope="col">Cod.</th>
+                      <th scope="col">Mano-Obra</th>
+                      <th scope="col">Cantidad</th>
+                      <th scope="col">Precio Unitario</th>
+                      <th scope="col">Precio Total</th>
+                      <th   scope="col">Acciones</th>                    
+                  </tr>
+              </thead>
+              <tbody class="tbody">
+                <ng-container *ngFor="let el of productos; let i = index">
+                  <tr *ngIf="el.esservicio == '1'">
+                    <th>{{el.tecnico_nombres |titlecase}} {{el.tecnico_apellidos | titlecase}}</th>
+                  <input hidden formControlName="tecnico_id" value="{{el.tecnico_id}}">
+                  <td>{{el.tipo}}</td>
+                  <input formControlName="tiposervicio_id" value="{{el.tiposervicio_id}}" hidden>
+                  <td>{{el.producto_id}}</td>
+                  <input formControlName="producto_id" value="{{el.producto_id}}" hidden>
+                  
+                  <td *ngIf="el.alias != ''"  >
+     
+                    {{el.alias | uppercase }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                    mdbPopover="{{el.productname}}"
+                    placement="right"
+                    mdbPopoverHeader="Nombre del producto" ></i>
+                  </td>
+                  <input formControlName="alias" value="{{el.alias}}" hidden>
+                  <td *ngIf="el.alias == ''"  >                     
+                    {{el.productname |uppercase}} 
+
+                  </td>
+                  <input formControlName="productname" value="{{el.productname}}" hidden>
+                  <td>{{el.cant}}</td>
+                  <input  formControlName="cant" value="{{el.cant}}" hidden>
+                  <td>$ {{el.itemprecio |currency:'':'':'1.2-2' }}</td>            
+                              <input formControlName="itemprecio" value="{{el.itemprecio}}" hidden>
+                              <input formControlName="ivaporcent" value="{{el.ivaporcent}}" hidden>
+                              <input formControlName="iva" value="{{el.iva}}" hidden>
+                              <input formControlName="total" value="{{el.total}}" hidden>
+                              <input formControlName="bodega_id" value="{{el.bodega_id}}" hidden>
+                              <input formControlName="esservicio" value="{{el.esservicio}}" hidden>
+                  <th>$ {{el.itemprecio * el.cant  |currency:'':'':'1.2-2' }}</th>
+                  <input hidden formControlName="costopromedio" value="{{el.costopromedio}}">
+                  <td  >
+                    <div class="button-group  btn-group-sm">
+                        <button type="button" class="btn btnEdit" (click)="enviarPedido(productos, i)" (click)="abrirModal(modalEditarP)" ><i class="fas fa-pencil-alt"></i></button>
+                        <button type="button" class="btn  btnTrash "(click)="quitarProducto(i, productos)"><i class="fas fa-trash "></i> </button>
+                    </div>
+                </td>
+
+                  </tr>
+                </ng-container>
+
+              
+              </tbody>
+          </table>
+      </div>
+       <!-- ========================================================================= REPUESTOS - PIEZAS ============================================================================================= -->
+
+       <!-- <h1 class="mt-4">
+        Repuestos Utilizados
+       </h1> -->
+
+       <p id="titulos1" class="mt-3"> Repuestos Utilizados</p>
+
+    <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 2%;" >
+
+        <table mdbTable #tableEl="mdbTable" class=""  >
+            <thead class="thead1">
+
+                <tr>
+                    <th scope="col">Técnico</th>
+                    <th scope="col">Servicio</th>
+                    <th scope="col">Cod.</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio Unitario</th>
+                    <th scope="col">Precio Total</th>
+                    <th    scope="col">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody class="tbody">
+              <ng-container *ngFor="let el of productos; let i=index">
+                <tr *ngIf="el.esservicio == '0'">
+                  <th>{{el.tecnico_nombres |titlecase}} {{el.tecnico_apellidos | titlecase}}</th>
+                  <input hidden formControlName="tecnico_id" value="{{el.tecnico_id}}">
+                  <td>{{el.tipo}}</td>
+                  <input formControlName="tiposervicio_id" value="{{el.tiposervicio_id}}" hidden>
+                  <td>{{el.producto_id}}</td>
+                  <input formControlName="producto_id" value="{{el.producto_id}}" hidden>
+                  <td *ngIf="el.alias != ''"  >
+                    {{el.alias  | uppercase  }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                    mdbPopover="{{el.productname}}"
+                    placement="right"
+                    mdbPopoverHeader="Nombre del producto" ></i>
+
+                  </td>
+                  <input formControlName="alias" value="{{el.alias}}" hidden>
+                  <td *ngIf="el.alias == ''"  >{{el.productname}}</td>
+                  <input formControlName="productname" value="{{el.productname}}" hidden>
+                  <td>{{el.cant}}</td>
+                  <input  formControlName="cant" value="{{el.cant}}" hidden>
+                  <td>$ {{el.itemprecio  |currency:'':'':'1.2-2'}}</td>            
+                              <input formControlName="itemprecio" value="{{el.itemprecio}}" hidden>
+                              <input formControlName="ivaporcent" value="{{el.ivaporcent}}" hidden>
+                              <input formControlName="iva" value="{{el.iva}}" hidden>
+                              <input formControlName="total" value="{{el.total}}" hidden>
+                              <input formControlName="bodega_id" value="{{el.bodega_id}}" hidden>
+                              <input formControlName="esservicio" value="{{el.esservicio}}" hidden>
+                  <!-- <th>$ {{el.costopromedio |number:'.0-2'}}</th> -->
+                  <th>$ {{el.itemprecio * el.cant  |currency:'':'':'1.2-2' }}</th>
+
+                  <input hidden formControlName="costopromedio" value="{{el.costopromedio}}">
+                  <td  >
+                    <div class="button-group  btn-group-sm">
+                        <button type="button" class="btn btnEdit" (click)="enviarPedido(productos, i)" (click)="abrirModal(modalEditarP)" ><i class="fas fa-pencil-alt"></i></button>
+                        <button type="button" class="btn  btnTrash " (click)="quitarProducto(i, productos)" ><i class="fas fa-trash "></i> </button>
+                    </div>
+                </td>
+                </tr>
+            
+              </ng-container>
+            </tbody>
+            <!-- <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td style="font-weight: bold;">TOTAL:</td>
+              <td  style="font-weight: bold;"> $ {{total| number:'.0-2' }}</td>
+              <td></td>
+          </tr> -->
+        </table>
+    </div>
+ </div>
+ <div class="container pt-3">
+
+  <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+          <table class="table  table-bordered" style="box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 1%;" >
+              <tbody class="">
+                  <tr class="thead1">
+              
+                      <th >SubTotal 12%</th>
+                      <th >$ {{subTotal12 |currency:'':'':'1.2-2' }}</th>
+                  </tr>
+                  <tr >                             
+                      <th >SubTotal 0%</th>
+                      <th >$ {{subTotalcero |currency:'':'':'1.2-2' }}</th>
+                      <!-- <th >$ {{subTotalcero | number:'.0-2' }}</th> -->
+                  </tr>
+                  <tr class="thead1">                             
+                      <th >SubTotal </th>
+                      <th >$ {{subTotal |currency:'':'':'1.2-2' }}</th>
+                      <!-- <th >$ {{subTotal | number:'.0-2' }}</th> -->
+                  </tr>
+                  <tr >                             
+                      <th >IVA 12%</th>
+                      <th >$ {{iva12 |currency:'':'':'1.2-2' }}</th>
+                      <!-- <th >$ {{iva12 | number:'.0-2' }}</th> -->
+                  </tr>
+                  <tr class="thead1">                             
+                      <th >TOTAL </th>
+                      <th >$ {{total |currency:'':'':'1.2-2'}}</th>
+                      <!-- <th >$ {{total | number:'.0-2' }}</th> -->
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+
+  </div>
+</div>
+
+    <div class="col mt-4">
+      <button class=" btn pl-4 pr-4 titleAtributo " style="font-size: 12px; height: 3.5em;
+      font-family: 'Ubuntu'; 
+      font-weight: bold; "  
+      id="btnCC"
+      
+      
+      [disabled]="formNuevaCotizacion.invalid"
+       (click)="crearCotizacion(formNuevaCotizacion.value, productos)" >Crear Cotización</button>
+     </div>
+ <br>
+
+
+</form>
+</div>
+</div>
+
+
+<!-- ================================================= MODAL EDITAR CANTIDAD PRODUCTO =============================================== -->
+<!-- Modal -->
+
+<ng-template #modalEdita class="modal fade" >
+  <div class="modal-content animated fadeIn">
+          <div class="modal-header">
+              <!-- <h1 class="modal-title" id="exampleModalLongTitle">Editar Producto/Servicio</h1> -->
+              <h5 class="modal-title" id="exampleModalLabel">Editar Producto/Servicio</h5>
+              <!-- <button type="button" class="btn" (click)="cerrarModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+          </div>
+          <form [formGroup]="formCantidad">
+              <div class="modal-body">
+                  <div class="divSelect">
+                      <ng-container *ngFor="let ped of productoFormCantidad">
+                          <div class="col text-center" >
+                              <strong>Cantidad <i class="fas fa-hashtag"></i></strong>
+                              <input formControlName="c" type="number" class="form-control cantidad" id="cantidad" style="height: 2.5em;"  min="1" oninput="this.value = 
+                              !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" value="">
+ 
+                          </div>
+             
+
+                          <div class="col text-center" >
+                            <strong>Precio Unitario <i class="fas fa-dollar-sign"></i></strong> 
+                            <input formControlName="precio" type="number" class="form-control "  style="height: 2.5em;"  min="1" pattern="^[0-9]+" >
+                        </div>
+                    </ng-container>
+                  </div>
+              </div>
+              <div class="button-group divSelect mt-2 mb-4">
+                  <button type="button" class="btn  btO bExit" (click)="cerrarModal()"><i class="fas fa-times"></i> Salir </button>
+                  <button *ngFor="let ped of productoFormCantidad; let i=index" type="button" class="btn btO bSave" (click)="modificarCantidad(formCantidad.value,productos)"><i class="fas fa-save"></i> Guardar </button>
+              </div>
+          </form>
+      </div>
+</ng-template>
+
+
+<ng-template #modalEditarP class="modal fade" >
+  <div class="modal-content animated fadeIn">
+
+      <div class="modal-header mh">
+          <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+        
+      </div>
+      <div class="form-header mt-3">
+          <h1 class="" id="tituloForm">Editar Producto/Servicio</h1>
+      </div>
+ 
+      <div class="modal-body">
+          <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formCantidad" >
+
+              <div class=" ml-4 mr-4">
+
+                  <!-- SELECCIONAR TECNICO -->
+
+                  <div class="form-group">
+                      <label for="username" id="tituloF">Técnico <i class="fas fa-user-cog"></i></label>
+                      <div class="mb-2">
+                          <select class="custom-select" formControlName="nombreT" id="selectModal">
+                              <option value="{{idTecSeleccionado}}">{{tecSeleccionado |titlecase}}</option>
+                              <ng-container *ngFor="let el of tecnicos" >
+                                  <option *ngIf="el.nombres != tecNombre  " value="{{el.id}}">{{el.nombres | titlecase}} {{el.apellidos | titlecase}}</option>
+                              </ng-container>
+                          </select>
+                      </div>
+                  </div>
+                   <!-- SELECCIONAR SERVICIO -->
+                  <div class="form-group">
+                      <label for="username" id="tituloF">Servicio <i class="fas fa-tools"></i></label>
+                      <div class="mb-2">
+                          <select class="custom-select" formControlName="nombreS" id="selectModal">
+                              <option value="{{idServSeleccionado}}">{{servSelecccionado}}</option>
+                              <ng-container *ngFor="let el of servicios" >
+                                  <option  *ngIf="el.tipo !=  servSelecccionado  " value="{{el.id}}">{{el.tipo}}</option>
+                              </ng-container>
+                              
+
+                          </select>
+                      </div>
+                  </div>
+                           <!-- INGRESAR NOMBRE DE ALIAS -->
+
+                           <div class="form-group" >
+                              <label for="username" id="tituloF">Alias del Producto<i class="fas fa-signature"></i></label>
+                              <input   id="username"  formControlName="nombreA" type="text" name="username" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" required="required"
+                              />    
+                          </div>
+                           <!-- INGRESAR CANTIDAD - PRECIO -->
+
+                           <div class="form-group">
+                               <div class="row">
+                                   <div class="col">
+                                      <label for="username" id="tituloF">Cantidad <i class="fas fa-hashtag"></i></label>
+                                      <input formControlName="c" type="number" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;"  min="1" oninput="this.value = 
+                                      !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" value="">
+                                   </div>
+                                   <div class="col">
+                                      <label for="username" id="tituloF">Precio <i class="fas fa-dollar-sign"></i></label>
+                                          <input formControlName="precio" type="number" class="form-control decimales"  id="floatingInputNombre" style="height: 2.5em;"  min="1" pattern="^[0-9]+" >
+                                   </div>
+                               </div>
+                          </div>
+              </div>
+
+
+              <hr>
+              <div class=" button group row m-3 ">
+
+                  <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarModal()" ><i class="fas fa-window-close"></i> Cancelar</button>
+                  <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar" (click)="modificarCantidad(formCantidad.value,productos)"><i class="fas fa-save "></i>  Guardar cambios</button>
+
+              </div>
+
+          </form>
+       
+      </div>
+  </div>
+</ng-template>
+
+<!-- =========================== MODAL REGISTRAR CLIENTE ============================ -->
+
+<ng-template #modalRegistrarCliente class="modal fade "  data-backdrop="static" data-keyboard="false" >
+  <div class="modal-content  animated fadeIn" >
+
+    <div class="modal-header mh">
+        <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+      
+    </div>
+    <div class="form-header mt-3">
+        <h1 class="" id="tituloForm">Registro Nuevo Cliente <i class="fas fa-user-alt"></i></h1>
+    </div>
+
+    <div class="modal-body">
+        
+
+            <div class=" ml-4 mr-4">
+
+                        <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formValidarIdentifiacion">
+                                <!-- INGRESAR IDENTIFIACION Y VALIDADOR -->
+                                <div class="form-group " *ngIf="banderaValidarDOC">
+                                  <div class="row">
+                                      <div class="col">
+                                        <label for="username" id="tituloF">IDENTIFICACIÓN <i class="fas fa-fingerprint"></i></label>
+                                         <input formControlName="cedula"  type="number" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;"  min="1" oninput="this.value = 
+                                         !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" value="">
+                                      </div>
+                                      <div class="col" style="padding-top: 2em;">
+                                        <button class="btn btn-small btnTrash btn-block"(click)="validarDocumento(formValidarIdentifiacion.value)" >
+                                          Validar
+                                        </button>
+                                      </div>
+                                  </div>
+                              </div>
+                        </form>
+            </div>
+
+            <form  class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formRegistrarCliente">
+
+              <div class=" ml-4 mr-4" *ngIf="banderaCliente">
+                         <!-- INGRESAR CEDULA-->
+
+                         <div class="form-group">
+                          <div class="row">
+
+                            <div class="col">
+                                <label for="username" id="tituloF">IDENTIFICACIÓN <i class="fas fa-fingerprint"></i></label>
+                                <input 
+                                 id="username"  readonly formControlName="cedula" type="text" name="cedula" class="form-control form-icon-trailing entrada1" id="floatingInputNombre"
+                                /> 
+                               
+                            </div>
+                          
+                            <div class="col">
+                                <label for="username" id="tituloF">Tipo <i class="fas fa-users"></i></label>
+                              <select class="custom-select" id="floatingInputNombre" formControlName="tipoCli"  name="tipoCli">
+                       
+                                <option selected value="{{tipoUsuarioID}}">{{tipoUsuarioDefecto}}</option>
+                                <ng-container *ngFor="let el of tipoUsuario" >
+                                  <option  *ngIf="el.idclientetipo != tipoUsuarioID" value="{{el.idclientetipo}}">{{el.tipo}}</option>
+                                </ng-container>
+                                
+                              </select>  
+                            </div>
+                          </div>
+                         </div>
+
+                                   <!-- INGRESAR Telefonos Contacto -->
+                                   <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                          <label for="username" id="tituloF">NOMBRES <i class="fas fa-signature"></i></label>
+                                          <input  [class.is-invalid]="formRegistrarCliente.get('nombres')?.touched && formRegistrarCliente.get('nombres')?.invalid" 
+                                           formControlName="nombres" type="text" name="nombres" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" >
+                                           <span *ngIf="f3.nombres.invalid && (f3.nombres.dirty || f3.nombres.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese nombre válido</span>
+
+                                        </div>
+                                        <div class="col">
+                                          <label for="username" id="tituloF">APELLIDOS <i class="fas fa-signature"></i></label>
+                                          <input  [class.is-invalid]="formRegistrarCliente.get('apellidos')?.touched && formRegistrarCliente.get('apellidos')?.invalid" 
+                                           formControlName="apellidos" type="text" name="apellidos" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                                          />  
+                                          <span *ngIf="f3.apellidos.invalid && (f3.apellidos.dirty || f3.apellidos.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese apellido válido</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                         <!-- INGRESAR NOMBRES -->
+                         <!-- <div class="form-group" >
+                            <label for="username" id="tituloF">NOMBRES <i class="fas fa-signature"></i></label>
+                            <input   id="username"  formControlName="nombres" type="text" name="nombres" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                            />    
+                         </div> -->
+                         <!-- INGRESAR APELLIDOS -->
+                         <!-- <div class="form-group" >
+                            <label for="username" id="tituloF">APELLIDOS <i class="fas fa-signature"></i></label>
+                            <input   id="username"  formControlName="apellidos" type="text" name="apellidos" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                            />    
+                         </div> -->
+                             <!-- INGRESAR DIRECCION -->
+                        <div class="form-group">
+                            <label for="password" id="tituloF">DIRECCIÓN <i class="fas fa-home"></i></label>
+                            <textarea  formControlName="direccion" type="text" name='direccion' class="form-control form-icon-trailing" id="tA2"></textarea>
+                            <!-- <span *ngIf="f.descripcion.invalid && (f.descripcion.dirty || f.descripcion.touched)" class="text-danger animated fadeIn"> Debe ingresar una descripción</span> -->
+                        </div>
+                        <div class="form-group" >
+                          <label for="username" id="tituloF">Email <i class="fas fa-at"></i></label>
+                          <input [class.is-invalid]="formRegistrarCliente.get('email')?.touched && formRegistrarCliente.get('email')?.invalid" 
+                            id="username"  formControlName="email" type="email" name="email" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" 
+                          />                            
+                          <span *ngIf="f3.email.invalid && (f3.email.dirty || f3.email.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese un correo válido</span>
+
+                       </div>
+                              <!-- INGRESAR Telefonos Contacto -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col">
+                                       <label for="username" id="tituloF">Teléfono <i class="fas fa-phone"></i></label>
+                                       <input formControlName="telefonos" type="text" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;" >
+                                    </div>
+                                    <div class="col">
+                                       <label for="username" id="tituloF">Celular <i class="fas fa-mobile-alt"></i></label>
+                                           <input [class.is-invalid]="formRegistrarCliente.get('celular')?.touched && formRegistrarCliente.get('celular')?.invalid" 
+                                           formControlName="celular" type="text" class="form-control "  id="floatingInputNombre" style="height: 2.5em;"  >
+                                           <span *ngIf="f3.celular.invalid && (f3.celular.dirty || f3.celular.touched)" class="text-danger animated fadeIn" style="text-align: center;"> Ingrese celular válido</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        
+            <hr>
+            <div class=" button group row m-3 ">
+
+                <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarModal2()" ><i class="fas fa-window-close"></i> Cancelar</button>
+                <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar"  [disabled]="formRegistrarCliente.invalid" (click)="registrarCliente(formRegistrarCliente.value)" ><i class="fas fa-save "></i>  Crear</button>
+
+            </div>
+              </div>
+        </form>
+     
+    </div>
+  </div>
+
+</ng-template>

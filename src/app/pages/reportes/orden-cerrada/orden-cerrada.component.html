@@ -1,0 +1,168 @@
+<app-nav-bar> </app-nav-bar>
+<app-sidebar-reporte></app-sidebar-reporte>
+
+<div class="main-panel animated fadeIn">
+    <button class="btn" id="boton-sidebar_left" style="float: right; margin-right: 1em; margin-top: 7em;"><i class="fas fa-angle-double-left" ></i></button>
+    <div class="content" id="main">
+
+      <!-- <p class="p1" style="margin-top: 2em;">Órdenes Cerradas</p> -->
+
+      <p id="titulos" style="margin-top: 3.5em; text-align: center;" >Órdenes Cerradas</p>
+    
+    <!-- ============================================= BUSCADOR POR FECHA ================================================= -->
+ 
+  <div class="container">
+    <form [formGroup]="formReporte">
+      <div class="container  mb-4 mt-4">
+        <div class="row divSelect">
+          <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-2">
+            <label  id="labelReporte" class=" text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar" >
+              Desde: <i class="far fa-calendar"></i>
+            </label>
+            <input formControlName="fechaI" type="date" class="form-control"  style="height: 1.9em;" />
+          </div>
+          <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-2">
+            <label   id="labelReporte" class="text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar">
+              Hasta: <i class="fas fa-calendar"></i>
+            </label>
+            <input formControlName="fechaF" type="date" class="form-control" style="height: 1.9em;" />
+          </div>  
+          <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12 ">
+            <button
+              class="col-sm btn btn-sm btnTrash mt-2"
+              style="font-size: small;"
+              (click)="buscarInformacionReporte(formReporte.value)"
+            ><i class="fas fa-search"></i>
+              Buscar 
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+    <!-- ==========================================   BUSCADOR TABLA REPORTES =============================================== -->
+<div class="container "  *ngIf="banderaSearchExcel">
+    <div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 divSelect mb-2" >
+      <div id="search-autocomplete" class="form-outline">
+        <input type="search" id="form1" class="form-control"  [(ngModel)]="searchText"   style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+        <label class="form-label" for="form1">Buscar orden</label>
+      </div>
+      <button type="submit" class="btn btnLupa"  >
+        <i class="fas fa-search" style="color: white;"></i>
+      </button>
+    </div>
+    <div class="col-xl-6 col-lg-5 col-md-6 col-sm-12 col-xs-12 divSelect">
+  
+      <div class="">
+        <button class="btn btn-sm btn-outline-success btO"  (click)="exportarEXCEL()"> <i class="fas fa-file-excel"></i> EXCEL</button>
+      </div>
+      <div class="">
+        <button class="btn btn-sm btn-outline-danger btO"  (click)="exportarPDF()"> <i class="fas fa-file-pdf"></i> PDF</button>
+      </div>
+    </div>
+  </div>
+  
+  </div>
+
+<!-- ============================================== TABLA REPORTES =========================================================== -->
+<div class="table-responsive" style="box-shadow: 0px 4px 8px -4px #a9a8a8; border-radius: 1%;" >
+ 
+    <table mdbTable  #tableEl="mdbTable" class="z-depth-1 mt-2" id="tablaOrdenesCerradas">
+      <thead class="thead1">
+        <tr class="text-center" > 
+        
+          <th>#Orden</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Placa</th>
+          <th> Marca</th>
+          <th> Km</th>  
+          <th>Recomendación</th>
+          <th>Fec.Prox. Mante </th>
+          <th>Km Prox. Mante</th>
+          <th>¿Quién retiró?</th>   
+          <th><i class="fas fa-tools"></i> Acciones</th>
+        </tr>
+      </thead>
+      <tbody  *ngIf="banderaPaginador">
+        <tr>
+          <td style="border-color: aliceblue;"  colspan="11" class="text-center">
+            <!-- <p style="font-weight: bold;">Sin criterios de búsqueda</p> -->
+            <img src="./assets/img/icons-no-report.svg" style="width: 100%; height: 20em;">
+          </td>
+        </tr>
+      </tbody>
+      <tbody class="tbody">
+        <tr mdbTableCol *ngFor="let el of arregloProvisional; let i = index " class="text-center"  >
+          
+          <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" >{{ el.secuencia}}</td>
+          <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{ el.fecha}}</td>
+          <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{ el.cliente | titlecase }}</td>
+              <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.arrayValAuto[0]}}</td>
+              <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex ">{{el.arrayValAuto[1]}}</td>
+              <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex ">{{el.arrayValAuto[2]}}</td>
+          <td  *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{ el.problema }}</td>
+          <td  *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.fechaPm_str}}</td>
+          <td  *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.kmProximoMan}}</td>
+          <td  *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.nombreRetira}}</td>
+       
+          <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex " >
+            <div class="button-group btn-group-sm" style="width: 14em;">
+              <button
+                type="button"
+                class="btn btR"
+                title="VER ORDEN EN PDF"
+                (click)="visualizarPDF2(el.no);"
+               
+              >
+              <i class="fas fa-print"></i>
+              </button>
+
+              <button
+              type="button"
+              class="btn btn-warning "
+              title="VER ORDEN DE TRABAJO"
+              (click)="visualizarPDF(el.no);"  
+            >
+            <i class="fas fa-file-contract" style="color: white;"></i>  
+            
+            </button>
+              <button
+                type="button"
+                class="btn btPrint"
+                title="ENVIAR ORDEN POR CORREO"
+                (click)="enviarCorreo(el.no);"   
+              >
+              <i class="fas fa-envelope"></i>
+              </button>
+              <button
+              type="button"
+              class="btn btn-success "
+              title="ENVIAR ORDEN POR WHATSAPP"
+              (click)="sendWhatsApp(el.no);"
+            >
+            <i class="fab fa-whatsapp"></i>
+            </button>
+          
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+      <td class="" colspan="11">
+           <mdb-table-pagination
+            class=""
+            hidden
+            id="pag"
+            [tableEl]="tableEl"
+            [searchDataSource]="arregloProvisional"
+              
+          ></mdb-table-pagination>
+
+      </td>
+    </table>
+</div>
+    </div>
+</div>

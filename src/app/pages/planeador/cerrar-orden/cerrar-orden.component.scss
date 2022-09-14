@@ -1,0 +1,22 @@
+ .table th {
+    padding: 0.5rem;
+    border-top: 1px solid #dee2e6;
+    vertical-align: middle;
+
+  }
+
+  .table td{
+    padding: 0.5rem;
+    border-top: 1px solid #dee2e6;
+    vertical-align: middle;
+
+  }
+
+  input[type='radio']:after {
+  }
+  
+  input[type='radio']:checked:after {
+  
+    background-color: #D51F36;
+  
+  }

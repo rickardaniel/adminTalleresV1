@@ -1,0 +1,201 @@
+.card{
+    justify-content: center; align-items: center;
+}
+
+.text-card-img{
+    width: 100%;
+    background: gray;
+    color: white;
+    /* margin: 0; */
+    /* padding: 0; */
+    position: absolute;
+    top: 0;
+    text-transform: uppercase;
+}
+
+.btn-secondary{
+  background: gray !important;
+  color: white;
+}
+
+.table td {
+  padding: 0.5rem;
+  vertical-align: middle;
+  border-top: 1px solid #dee2e6;
+}
+
+.table th {
+  padding: 0.7rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+input[type='radio']:after {
+}
+
+input[type='radio']:checked:after {
+
+  background-color: #D51F36;
+
+}
+
+
+*,
+*:after,
+*:before {
+	box-sizing: border-box;
+}
+
+$primary-color: #F51F36; // Change color here. C'mon, try it! 
+$text-color: mix(#000, $primary-color, 64%);
+
+body {
+	font-family: "Inter", sans-serif;
+	color: $text-color;
+	font-size: calc(1em + 1.25vw);
+	background-color: mix(#fff, $primary-color, 90%);
+}
+
+form {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+}
+
+label {
+	display: flex;
+	cursor: pointer;
+	font-weight: 500;
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 0.375em;
+
+	input {
+		position: absolute;
+		left: -9999px;
+		&:checked + span {
+			background-color: mix(#fff, $primary-color, 84%);
+			&:before {
+				box-shadow: inset 0 0 0 0.4375em $primary-color;
+			}
+		}
+	}
+	span {
+		display: flex;
+		align-items: center;
+		padding: 0.375em 0.75em 0.375em 0.375em;
+		border-radius: 99em; // or something higher...
+		transition: 0.25s ease;
+		&:hover {
+			background-color: mix(#fff, $primary-color, 84%);
+		}
+		&:before {
+			display: flex;
+			flex-shrink: 0;
+			content: "";
+			background-color: #fff;
+			width: 1.4em;
+			height: 1.4em;
+			border-radius: 50%;
+			margin-right: 0.375em;
+			transition: 0.25s ease;
+			box-shadow: inset 0 0 0 0.125em $primary-color;
+		}
+	}
+}
+
+
+.frame {
+  // width: 90%;
+  // margin: 40px auto;
+  text-align: center;
+}
+button {
+  // margin: 20px;
+  // height: 3em;
+  outline: none;
+}
+.custom-btn {
+  // width: 130px;
+  // height: 40px;
+  // padding: 10px 25px;
+  border-radius: 5px;
+  border: 1px solid #E4EAEA;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background:  rgb(250, 150, 150);
+  // background-color: #e9ecef;
+  // color: #818181;
+
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+.custom-btn1 {
+  // width: 130px;
+  // height: 40px;
+  // padding: 10px 25px;
+  border-radius: 5px;
+  border: 1px solid #E4EAEA;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  // background:  rgb(74, 236, 109);
+  background-color: #E4EAEA;
+  // color: #818181;
+
+  color: #F51F36;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+
+
+/* 9 */
+.btn-9 {
+  z-index: 2;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.btn-9:after {
+  position: absolute;
+  content: " ";
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+.btn-9:hover {
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.5),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);
+  color: #fff;
+}
+.btn-9:hover:after {
+  -webkit-transform: scale(2) rotate(180deg);
+  transform: scale(2) rotate(180deg);
+  background: #7A7A7A;
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.5),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);
+}
+
+@media only screen and (min-width:361px) and (max-width:1024px) {
+  #priID{
+    height: 3.5em;
+  }
+}
+
+@media only screen and (min-width:768) and (max-width:1023) {
+  #priID{
+    height: 10em;
+  }
+}
+

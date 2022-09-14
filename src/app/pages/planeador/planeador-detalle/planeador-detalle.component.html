@@ -1,0 +1,515 @@
+<!-- ========================================================== Tabla ================================================================= -->
+
+<div class="box m-1 animated animate__backInDown" >
+    <!-- <p id="titulos" style="margin-top: 1em; margin-bottom: 1em; text-align: center;" >Detalle de la Orden</p> -->
+
+    
+
+    <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%; box-shadow: 0px 2px 8px 0px #aba9a9; border-radius: 1%;">
+
+        <table mdbTable #tableEl="mdbTable" class="mt-2">
+            <thead class="thead">
+                <tr>
+                    <th scope="col" colspan="1"><i class="fas fa-hashtag"></i> No.</th>
+                    <th scope="col" colspan="1"><i class="far fa-calendar-alt"></i> Fecha</th>
+                    <th scope="col" colspan="1"><i class="fas fa-user"></i> Cliente</th>
+                    <th scope="col" colspan="1"><i class="far fa-id-card"></i> Placa</th>
+                    <th scope="col" colspan="1"><i class="fas fa-car-side"></i> Marca</th>
+                    <th scope="col" colspan="1"><i class="fas fa-tachometer-alt"></i> Km</th>
+            
+                    <!-- <th scope="col"><i class="fas fa-exclamation-triangle"></i> Problema</th> -->
+                </tr>
+            </thead>
+            <tbody class="tbody">
+
+                <tr mdbTableCol *ngFor="let el of informacionOrden">
+                    <th scope="row">{{el.secuencia}}</th>
+                    <td>{{el.fecha}}</td>
+                    <td>{{el.cliente | titlecase}}</td>
+                    <td>{{el.arrayValAuto[0]}}</td>
+                    <td>{{el.arrayValAuto[1]}}</td>
+                    <td>{{el.arrayValAuto[2]}}</td>
+                    <!-- <td>{{el.problema}}</td> -->
+                </tr>
+
+            </tbody>
+            <thead class="thead1" style="text-align: center;">
+                <th colspan="1" style="text-align: center;"> Problema</th>
+                <td  *ngFor="let el of informacionOrden" colspan="5" style="text-align: center; background-color: white; color: #393D40; font-size: small;" >{{el.problema}}</td>
+            </thead>
+        </table>
+    </div>
+  
+
+    <!-- <h3 id="titulos">Detalle de la Orden</h3> -->
+
+
+    <!-- ===================================================== FORMULARIO DE BUSQUEDA ==================================================================== -->
+    <div class="container" style="margin-top: 2em;" >
+        <div class="row  divSelect ">
+  
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+                <form [formGroup]="formBusquedaN" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                    <div class="input-group justify-content-center" style="align-items: center;">
+                        <div id="search-autocomplete" class="form-outline">
+                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                        <label class="form-label" for="form1">Nombre Producto</label>
+                        </div>
+                        <button
+                        [disabled]="formBusquedaN.invalid"
+                        type="submit" class="btn btnLupa"  (click)="buscarProductoServicio(formBusquedaN.value);">
+                        <i class="fas fa-search" style="color: white;"></i>
+                        </button>
+                    </div>
+                </form>    
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+                <form [formGroup]="formBusquedaCU" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                    <div class="input-group justify-content-center" style="align-items: center;">
+                        <div id="search-autocomplete" class="form-outline">
+                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  id="BCU" style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                        <label class="form-label" for="form1" >Código Único Producto</label>
+                        </div>
+                        <button
+                        [disabled]="formBusquedaCU.invalid"
+                        type="submit" class="btn btnLupa"  (click)="buscarProductoNombreUnico(formBusquedaCU.value);">
+                        <i class="fas fa-search" style="color: white;"></i>
+                        </button>
+                    </div>
+                </form>    
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" style="text-align: left;">
+                <form [formGroup]="formBusquedaCB" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                    <div class="input-group justify-content-center" style="align-items: center;">
+                        <div id="search-autocomplete" class="form-outline">
+                        <input type="search" id="form1" class="form-control"  formControlName="nombre"  style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+                        <label class="form-label" for="form1">Código de Barras</label>
+                        </div>
+                        <button
+                        [disabled]="formBusquedaCB.invalid"
+                        type="submit" class="btn btnLupa"  (click)="buscarProductoCodBarras(formBusquedaCB.value);">
+                        <i class="fas fa-search" style="color: white;"></i>
+                        </button>
+                    </div>
+                </form>    
+          </div>
+          <!-- <div class=" col-xl-5  col-lg-5 col-md-5 col-sm  " style="text-align: center;" >
+            <button  class="btn" style=" background-color: #03a9f4; color: white;  font-size: 12px; height: 3.5em;
+            font-family: 'Ubuntu';
+            font-weight: bold;"><i class="fas fa-plus"></i> Crear Producto</button>
+          </div> -->
+    
+        </div>
+    </div>
+
+    <!-- ================================================================ TABLA PARA SELECCIONAR PRODUCTOS O SERVICIOS ========================================================================== -->
+    <ng-template #modalSelecionarPC class="modal fade" >
+        <div class="modal-content">
+          <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%;">
+            <div class="form-header mt-4">
+                <h1 class="" id="tituloForm">Seleccionar producto o servicio</h1>
+            </div>
+
+            <form [formGroup]="formProductoServicio" class="login100-form validate-form flex-sb flex-w animated text-center">
+
+                <table class="table">
+                    <thead class="thead1" >
+                    <tr>
+                        <th scope="col">Cod</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Servicio</th>
+                        <th scope="col">Acciones </th>
+                    </tr>
+                    </thead>
+                    <tbody >
+                    <tr  *ngFor="let el of ps;let i =index">
+                      <th scope="col">
+                        {{el.id_producto}}
+                      </th>
+                      <td >
+                        
+                        {{el.pro_nom }} <i class="far fa-eye" type="btn"   (click)="desplegarAlias(i)" id="iAA{{i}}" ></i> <i class="fas fa-minus" id="iAC{{i}}" hidden (click)="ocultarAlias(i)"></i>
+                        <input hidden class="form-control form-control-sm"  style="text-transform: uppercase;" id="verAlias{{i}}" placeholder="Ingrese alias" formControlName="alias"> 
+
+                      </td>
+                      <td>{{el.stock | number: '1.0-0'}}</td>
+                      <input hidden class="form-control form-control-sm" value="{{el.stock}}" id="stock{{i}}">    
+                        <td >
+                            <input  class=" form-control form-control-sm"  id="precioItem{{i}}" value="{{el.valor |currency:'':'':'1.2-2' }}" style="width: 5.5em;" >
+                        </td>
+       
+                      <td>
+                        <input   formControlName="cantidad" type="number" class="form-control cantidad form-control-sm " id="cantidad{{i}}" style="height: 2.5em ;width: 4em;" placeholder="" min="0" oninput="this.value = 
+                        !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" value="">
+                      </td>
+                      <td>
+
+                        <select style="height: 2.5em; width: 14em;" formControlName="tecnicoS"  class="form-control form-control-sm" id="selectT" >
+                            <option *ngFor="let tec of tecnicos" value="{{ tec.id }}" 
+                            >
+                                {{ tec.nombres | titlecase }} {{ tec.apellidos | titlecase }}
+                              </option>                               
+                        </select> 
+
+                      </td>
+                      <td>
+                        <select 
+                        style="height: 2.5em ; width: 14em;"
+                        formControlName="servicio"  class="form-control form-control-sm"
+                        >
+                        
+                            <option *ngFor="let ser of servicios" value="{{ ser.id }}">
+                                {{ ser.tipo | titlecase }}
+                              </option>
+                            
+                        </select> 
+                      </td>
+                      <td>
+                        <div class="button-group btn-group-sm">
+                            <button class="btn btn-success" (click)="agregarProducto1(el,i, pedidoProductos, pedidoTecnicos[0].tys, formProductoServicio.value, el.esServicio)"><i class="fas fa-cart-plus"></i> </button>
+                        </div>
+                      </td>
+             
+                    </tr>
+                    </tbody>
+                  </table>              
+                  <div *ngIf="banderaPaginacion" class="d-flex justify-content-center mt-4 divSelect" >
+                    <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (pageChange)="refreshCountries()">
+                    </ngb-pagination>
+                  </div>           
+            </form>    
+          </div>
+        <div class=" button group row m-3 ">
+            <button type="button" class="btn col btn-md btnModal " (click)="cerrarModal()"  ><i class="fas fa-window-close"></i> Salir</button>        
+        </div>
+        </div>
+    </ng-template>
+
+
+    <!-- =============================================== DIV CUANDO ENCUENTRA PRODUCTOS =============================================== -->
+    <div id="divOrdenConProductos">
+        <form [formGroup]="formAgregarProductos">
+            <!-- <h1 class="mt-4">
+                Mano de obra - Servicios
+            </h1> -->
+            <p id="titulos1"> Mano de obra - Servicios</p>
+
+            <div class="table-responsive " style="width: 95%; margin-left: 3%; margin-right: 3%; box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 1%;">
+
+                <table mdbTable #tableEl="mdbTable" class="">
+                    <thead class="thead1">
+                        <tr>
+                            <th scope="col">Técnico</th>
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Cod.</th>
+                            <th scope="col">Mano-Obra</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Precio Unitario</th>
+                            <th scope="col">Precio Total</th>
+                            <th *ngIf="banderaAcciones"  scope="col">Acciones</th>                          
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+
+                        <ng-container *ngFor="let ped of pedidoProductos; let j =index">
+                            <tr *ngFor="let prod of ped.productos; let i=index">
+
+                                <ng-container *ngIf="prod[0].esservicio == 1 && ped.productos.length >0">
+                                    <th scope="row" >
+                                          
+                                            {{prod[0].tecnico_nombres | titlecase}} {{prod[0].tecnico_apellidos | titlecase}} 
+                                            <input hidden formControlName="tecnico_id" value="{{prod[0].tecnico_id}}">
+                                    </th>
+                                    <td>                     
+                                        {{prod[0].tipo}}
+                                       
+                                        <ng-container *ngFor="let tecS of tecnicoOrden; let i=index" >
+
+                                        <input formControlName="tiposervicio_id" value="{{tecS.tiposervicio_id}}" hidden>
+
+                                        </ng-container>
+                                    </td>
+                                
+                                    <td>{{prod[0].producto_id}}</td>
+                                    <input formControlName="producto_id" value="{{prod[0].producto_id}}" hidden>
+
+                                    <td *ngIf=" prod[0].alias != null && prod[0].alias != ''"  >
+
+                                      {{prod[0].alias  | uppercase }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                                       mdbPopover="{{prod[0].productname}}"
+                                        placement="right"
+                                       mdbPopoverHeader="Nombre del producto" ></i>
+
+                                    </td>
+                                    <input formControlName="alias" value="{{prod[0].alias}}" hidden>
+                                    <td *ngIf="prod[0].alias == '' || prod[0].alias == null"  >{{prod[0].productname}}</td>
+                                     <input formControlName="productname" value="{{prod[0].productname}}" hidden> 
+  
+                                    <input formControlName="tiposprecio" value="{{prod[0].tiposprecio}}" hidden>
+                                    <td>{{prod[0].cant}}</td>
+                                    <input id="cant{{i}}" formControlName="cant" value="{{prod[0].cant}}" hidden>
+                                    <td>$ {{prod[0].itemprecio  |currency:'':'':'1.2-2' }}</td>
+                                    <input formControlName="itemprecio" value="{{prod[0].itemprecio}}" hidden>
+                                    <input formControlName="ivaporcent" value="{{prod[0].ivaporcent}}" hidden>
+                                    <input formControlName="iva" value="{{prod[0].iva}}" hidden>
+                                    <input id="total{{i}}" formControlName="total" value="{{prod[0].total}}" hidden>
+                                    <input formControlName="bodega_id" value="{{prod[0].bodega_id}}" hidden>
+                                    <input formControlName="esservicio" value="{{prod[0].esservicio}}" hidden>
+                                    <td> $ {{prod[0].itemprecio *prod[0].cant   |currency:'':'':'1.2-2'}}</td>
+                                    <input hidden formControlName="costopromedio" value="{{prod[0].costopromedio}}">
+
+                                    <td *ngIf="banderaAcciones" >
+                                        <div class="button-group btn-group-sm">
+                                            <button type="button" class="btn btnEdit" (click)="enviarPedido(pedidoProductos, i); abrirModal(modalEditarP)"><i class="fas fa-pencil-alt"></i></button>
+                                            <button type="button" class="btn  btnTrash " data-toggle="modal" (click)="quitarProducto(i, pedidoProductos)"><i class="fas fa-trash "></i> </button>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <!-- ========================================================================= REPUESTOS - PIEZAS ============================================================================================= -->
+
+            <!-- <h1 class="mt-4">
+                Repuestos Utilizados
+            </h1> -->
+            <p id="titulos1" class="mt-3" > Repuestos Utilizados</p>
+
+            <div class="table-responsive" style="width: 95%; margin-left: 3%; margin-right: 3%; box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 1%;" >
+
+                <table mdbTable #tableEl="mdbTable" class="" >
+                    <thead class="thead1">
+
+                        <tr>
+                            <th scope="col">Técnico</th>
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Cod.</th>
+                            <th scope="col">Item</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Precio Unitario</th>
+                            <th scope="col">Precio Total</th>
+                            <th  *ngIf="banderaAcciones"  scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="tbody">
+                        <ng-container *ngFor="let ped of pedidoProductos, let i =index">
+                            <tr *ngFor="let prod of ped.productos; let i=index">
+                                <ng-container *ngIf="prod[0].esservicio == 0 && ped.productos.length >0">
+                                <th scope="row" >                              
+                                        {{prod[0].tecnico_nombres | titlecase}} {{prod[0].tecnico_apellidos | titlecase}} 
+                                         <input hidden formControlName="tecnico_id" value="{{prod[0].tecnico_id}}">
+
+                                </th>
+                                <td>                     
+                                    {{prod[0].tipo}}        
+                                    <ng-container *ngFor="let tecS of tecnicoOrden; let i=index" >
+                                    <input formControlName="tiposervicio_id" value="{{tecS.tiposervicio_id}}" hidden>
+                                    </ng-container>
+                                </td>
+                                    <td>{{prod[0].producto_id}}</td>
+                                    <input formControlName="producto_id" value="{{prod[0].producto_id}}" hidden>
+                                    <td *ngIf=" prod[0].alias != null && prod[0].alias != ''"  >
+ 
+                                      {{prod[0].alias  | uppercase }} <i class="far fa-eye"  type="button" style="color: #F51F36;"
+                                      mdbPopover="{{prod[0].productname}}"
+                                       placement="right"
+                                      mdbPopoverHeader="Nombre del producto" ></i>
+                                    </td>
+                                    <input formControlName="alias" value="{{prod[0].alias}}" hidden>
+                                    <td *ngIf="prod[0].alias == '' || prod[0].alias == null"   >{{prod[0].productname}}</td>
+                                     <input formControlName="productname" value="{{prod[0].productname}}" hidden> 
+                                    <input formControlName="tiposprecio" value="{{prod[0].tiposprecio}}" hidden>
+                                    <td>{{prod[0].cant}}</td>
+                                    <input id="cant{{i}}" formControlName="cant" value="{{prod[0].cant}}" hidden>
+                                    <td> $ {{prod[0].itemprecio | currency:'':'':'1.2-2' }}</td>
+                                    <input formControlName="itemprecio" value="{{prod[0].itemprecio}}" hidden>
+                                    <input formControlName="ivaporcent" value="{{prod[0].ivaporcent}}" hidden>
+                                    <input formControlName="iva" value="{{prod[0].iva}}" hidden>
+                                    <input formControlName="total" value="{{prod[0].total}}" hidden>
+                                    <input formControlName="bodega_id" value="{{prod[0].bodega_id}}" hidden>
+                                    <input formControlName="esservicio" value="{{prod[0].esservicio}}" hidden>
+                                    <td> $ {{prod[0].itemprecio*prod[0].cant  |currency:'':'':'1.2-2' }}</td>
+                                    <input hidden formControlName="costopromedio" value="{{prod[0].costopromedio}}">
+                                    <td *ngIf="banderaAcciones"  >
+                                        <div class="button-group  btn-group-sm">
+                                            <button type="button" class="btn btnEdit" (click)="enviarPedido(pedidoProductos, i); abrirModal(modalEditarP)"><i class="fas fa-pencil-alt"></i></button>
+                                            <button type="button" class="btn  btnTrash " data-toggle="modal" (click)="quitarProducto(i, pedidoProductos)"><i class="fas fa-trash "></i> </button>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="container-fluid pt-3">
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-4"></div>
+                    <div class="col-lg-4 col-md-4"></div>
+                    <div class="col-lg-3 col-md-4">
+                        <table class="table  table-bordered" style="box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 1%;" >
+                            <tbody class="">
+                                <tr class="thead1">
+                            
+                                    <th >SubTotal 12%</th>
+                                    <th >$ {{subTotal12 |currency:'':'':'1.2-2' }}</th>
+                                </tr>
+                                <tr >                             
+                                    <th >SubTotal 0%</th>
+                                    <th >$ {{subTotalcero |currency:'':'':'1.2-2' }}</th>
+                                    <!-- <th >$ {{subTotalcero | number:'.0-2' }}</th> -->
+                                </tr>
+                                <tr class="thead1">                             
+                                    <th >SubTotal </th>
+                                    <th >$ {{subTotal |currency:'':'':'1.2-2' }}</th>
+                                    <!-- <th >$ {{subTotal | number:'.0-2' }}</th> -->
+                                </tr>
+                                <tr >                             
+                                    <th >IVA 12%</th>
+                                    <th >$ {{iva12 |currency:'':'':'1.2-2' }}</th>
+                                    <!-- <th >$ {{iva12 | number:'.0-2' }}</th> -->
+                                </tr>
+                                <tr class="thead1">                             
+                                    <th >TOTAL </th>
+                                    <th >$ {{total |currency:'':'':'1.2-2'}}</th>
+                                    <!-- <th >$ {{total | number:'.0-2' }}</th> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+              
+
+                </div>
+            </div>
+
+            <!-- ========================================================================= GRABAR PRODUCTOS EN LA ORDEN ========================================================================= -->
+
+            <div class="divGO pt-3 ">
+                <button class="btn" style="padding-left: 2em; padding-right: 2em; background-color: #e94040; color: white;"  type="submit"  *ngIf="banderaPrefactura"    (click)="guardarPrefactura(pedidoProductos, informacionOrden[0].idOrden, formAgregarProductos.value)" ><i class="fas fa-save "> </i>
+                   Grabar 
+            </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ============================================================  BOTONERA DE FUNCIONES        ================================================================= -->
+
+
+    <div>
+
+        <button class="btn btO" style="color: white; background-color: #393D40;" data-toggle="modal"   data-target=".bd-example-modal-xl" (click)="cerrarCaso(informacionOrden)"><i class="fas fa-ban"></i> Cerrar caso</button>
+        <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar"  (click)="cerrarCaso(informacionOrden)" (click)="hacerFactura()" > <i class="fas fa-dollar-sign"></i> Facturar </button>
+        <button class="btn btO "  style="background-color: #dee2e6; color: black; font-weight: bold;border-color: #7a7a7a;" *ngIf="banderaFacturarServicio"   (click)="facturarServicio()" > <i class="fas fa-dollar-sign"></i> F.Servicio</button>
+        <button class="btn btO"  style="background-color: #dee2e6; color: black;border-color: #7a7a7a;" *ngIf="banderaFacturarProducto"   (click)="facturarProducto()" > <i class="fas fa-dollar-sign"></i> F.Producto</button>
+        
+        <button class="btn btn-warning btO" (click)="visualizarPDF(informacionOrden[0].idOrden)" ><i class="fas fa-print"></i> Imprimir</button>  
+        <button type="button " class="btn btO " style="background-color: #D51F36; color: white;"  (click)="enviarCorreoPrefactura(informacionOrden[0].idOrden)"  ><i class="fas fa-envelope"></i> Correo</button>
+
+        <button class="btn btn-success btO" type="button" (click)="sendWhatsApp(informacionOrden[0].idOrden)"  > <i class="fab fa-whatsapp"  ></i> WhatsApp</button>
+
+    </div>
+    <br>
+
+</div>
+
+<br>
+
+<!-- ================================================= MODAL EDITAR CANTIDAD PRODUCTO =============================================== -->
+<!-- Modal -->
+
+<ng-template #modalEditarP class="modal fade" >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+          
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Editar Producto/Servicio</h1>
+            <!-- <h5 class="modal-title" id="exampleModalLongTitle">Editar Producto/Servicio</h5> -->
+        </div>
+   
+        <div class="modal-body">
+            <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formCantidad" >
+
+                <div class=" ml-4 mr-4">
+
+                    <!-- SELECCIONAR TECNICO -->
+
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Técnico <i class="fas fa-user-cog"></i></label>
+                        <div class="mb-2">
+                            <select class="custom-select" formControlName="nombreT" id="selectModal">
+                                <option value="{{idTecSeleccionado}}">{{tecSeleccionado |titlecase}}</option>
+                                <ng-container *ngFor="let el of tecnicos" >
+                                    <option *ngIf="el.nombres != tecNombre  " value="{{el.id}}">{{el.nombres | titlecase}} {{el.apellidos | titlecase}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                     <!-- SELECCIONAR SERVICIO -->
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Servicio <i class="fas fa-tools"></i></label>
+                        <div class="mb-2">
+                            <select class="custom-select" formControlName="nombreS" id="selectModal">
+                                <option value="{{idServSeleccionado}}">{{servSelecccionado}}</option>
+                                <ng-container *ngFor="let el of servicios" >
+                                    <option  *ngIf="el.tipo !=  servSelecccionado  " value="{{el.id}}">{{el.tipo}}</option>
+                                </ng-container>
+                                
+
+                            </select>
+                        </div>
+                    </div>
+                             <!-- INGRESAR NOMBRE DE ALIAS -->
+
+                             <div class="form-group" >
+                                <label for="username" id="tituloF">Alias del Producto<i class="fas fa-signature"></i></label>
+                                <input   id="username"  formControlName="nombreA" type="text" name="username" class="form-control form-icon-trailing entrada1" id="floatingInputNombre" required="required"
+                                />    
+                            </div>
+                             <!-- INGRESAR CANTIDAD - PRECIO -->
+
+                             <div class="form-group">
+                                 <div class="row">
+                                     <div class="col">
+                                        <label for="username" id="tituloF">Cantidad <i class="fas fa-hashtag"></i></label>
+                                        <input formControlName="c" type="number" class="form-control cantidad" id="floatingInputNombre"  style="height: 2.5em;"  min="1" oninput="this.value = 
+                                        !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null" value="">
+                                     </div>
+                                     <div class="col">
+                                        <label for="username" id="tituloF">Precio <i class="fas fa-dollar-sign"></i></label>
+                                            <input formControlName="precio" type="number" class="form-control decimales"  id="floatingInputNombre" style="height: 2.5em;"  min="1" pattern="^[0-9]+" >
+                                     </div>
+                                 </div>
+                            </div>
+                </div>
+
+
+                <hr>
+                <div class=" button group row m-3 ">
+
+                    <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarModal()" ><i class="fas fa-window-close"></i> Cancelar</button>
+                    <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar" (click)="modificarCantidad(formCantidad.value,pedidoProductos)"><i class="fas fa-save "></i>  Guardar cambios</button>
+
+                </div>
+
+            </form>
+         
+        </div>
+    </div>
+</ng-template>
+
+<app-cerrar-orden  [elements3]="elements3" [informacionOrden]="informacionOrden" (SBCO)="banderaCerrarOrden($event)" ></app-cerrar-orden>

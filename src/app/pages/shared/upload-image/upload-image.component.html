@@ -1,0 +1,11 @@
+
+
+<div class="container text-center m-auto">
+    <div class="text-center cnt-img">
+        <!-- <img src="https://2.bp.blogspot.com/-VOonSKRlOhY/XGnf8nkZWYI/AAAAAAAAAB4/_BZpCDV-mbQrw7StyUB8SC6sDIXNpXjHgCLcBGAs/s1600/carro.png" alt="" class="image img" *ngIf="!previewUrl"> -->
+        <img src="assets/img/icon-image.svg" alt="" class="image img" *ngIf="!previewUrl">
+        <img src="{{previewUrl}}" alt="" class="image img" *ngIf="previewUrl">
+    </div>
+    <input type="file" class="custom-file-input" placeholder="Seleccione imagen" accept="image/png, .jpeg, .jpg, .JPEG, .JPG, .jfif"  (change)="processFile($event)">
+    <i class="fas fa-plus-circle icon-plus sombra" title="Seleccionar imagen"></i>
+</div>

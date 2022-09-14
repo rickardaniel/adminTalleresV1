@@ -1,0 +1,147 @@
+<app-nav-bar></app-nav-bar>
+<app-side-bar></app-side-bar>
+
+
+<div class="main-panel animated fadeIn">
+    <button class="btn" id="boton-sidebar_left" style="float: right; margin-right: 1em; margin-top: 5em;"><i class="fas fa-angle-double-left" ></i></button>
+    <div class="content" id="main">
+
+
+        <!-- <p class="p1" style="margin-top: 3em;">Administración Políticas</p> -->
+        <p id="titulos" style="margin-top: 4em; margin-bottom: 2em; text-align: center;" >Administración Políticas</p>
+
+        
+
+        <div class="container ">
+            <div class="row ">
+            
+            </div>
+          </div>
+
+        <div class="table-responsive" style="box-shadow: 0px 2px 8px 0px #a9a8a8; border-radius: 1%;">
+
+            <table mdbTable #tableEl="mdbTable" class="tt table">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col"><i class="fas fa-signature"></i> Nombre</th>
+                        <th scope="col"><i class="fas fa-book-open"></i> Detalle </th>
+                        <!-- <th scope="col"><i class="fas fa-hashtag"></i> Orden</th> -->
+                        <th scope="col"><i class="fas fa-tools"></i> Acciones</th>
+
+                    </tr>
+                </thead>
+                <tbody class="tbody">
+
+                    <tr mdbTableCol *ngFor="let el of elements; let i =index">
+                       
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.variable}}</td>
+                        <th *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" scope="row">{{el.valor2 }}</th>
+                        <!-- <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.orden}}</td> -->
+
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">
+                            <div class="button-group btn-group-sm">
+
+                                <button type="button" class="btn  btn-sm bEliminar" (click)="obtenerPorID(el.id); abrirModal(modalEditar)"><i class="fas fa-pencil-alt"></i> </button>
+                                <!-- <button type="button" class="btn  btn-sm bEditar" data-toggle="modal" data-target="#modalEditarAtributo"><i class="fas fa-pencil-alt"></i> Editar</button> -->
+                                <!-- <button type="button" class="btn  btn-sm bbb" data-toggle="modal" data-target="#modalEditarUsuario"><i class="fas fa-pencil-alt"></i> Editar</button> -->
+                                <!-- <button style="width: 12.5em;" type="button" class="btn  btn-sm botoncito" data-toggle="modal" data-target="#modalHabilitarUsuario"><i class="fas fa-check"></i> Habilitar</button> -->
+                                <!-- <button type="button" class="btn  btn-sm bEliminar" data-toggle="modal" data-target="#modalEditarAtributo"><i class="fas fa-ban "></i> Inhalibitar</button> -->
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <td hidden class="" colspan="11">
+                    <mdb-table-pagination class="" [tableEl]="tableEl" [searchDataSource]="elements"></mdb-table-pagination>
+                </td>
+            </table>
+        </div>
+
+        <p id="titulos" style="padding-top: 4em; padding-bottom: 1em; text-align: center;" >Activar Control de Stock</p>
+
+
+        <div class="table-responsive " >
+
+            <div class="container" id='tableStock' style="">
+
+            <table mdbTable #tableEl="mdbTable" class="tt table ">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col"><i class="fas fa-signature"></i> Nombre</th>
+                        <!-- <th scope="col"><i class="fas fa-book-open"></i> Detalle </th> -->
+                        <!-- <th scope="col"><i class="fas fa-hashtag"></i> Orden</th> -->
+                        <th scope="col"><i class="fas fa-tools"></i> Activar / Desactivar</th>
+
+                    </tr>
+                </thead>
+                <tbody class="tbody">
+
+                    <tr mdbTableCol *ngFor="let el of activarStock; let i =index " >
+                       
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">Activar control de Stock</td>
+                        <!-- <th *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" scope="row">{{el.valor2 }}</th> -->
+                        <!-- <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{el.orden}}</td> -->
+
+                        <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" >
+                            <div class="button-group btn-group-sm">
+
+                                <button *ngIf="el.valor =='0'" type="button" title="ACTIVAR CONTROL DE STOCK" class="btn btn-success"  (click)="habilitar(el.id);"> <i class="fas fa-check"></i>   </button>
+                                <button *ngIf="el.valor =='1'" type="button" title="DESACTIVAR CONTROL DE STOCK" class="btn btn-danger" style="opacity: 0.70;" (click)="deshabilitar(el.id);">  <i class="fas fa-ban"></i>  </button>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <td hidden class="" colspan="11">
+                    <mdb-table-pagination class="" [tableEl]="tableEl" [searchDataSource]="elements"></mdb-table-pagination>
+                </td>
+            </table>
+        </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL EDITAR ATRIBUTO-->
+
+<ng-template #modalEditar  >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <!-- <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5> -->
+          
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Editar Política</h1>
+        </div>
+   
+        <div class="modal-body">
+            <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formEditar" (ngSubmit)="editar(formEditar.value, elements[0].id)">
+
+                <div class="m-4">
+
+                    <!-- INGRESAR NOMBRE DE USUARIO -->
+
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Detalle <i class="fas fa-signature"></i></label>
+                        <textarea formControlName="nota" type="text" name='valor2' class="form-control form-icon-trailing" id="tA"></textarea>
+                
+                    </div>
+
+                </div>
+
+
+                <hr>
+                <div class=" button group row m-3 ">
+
+                    <button type="button" class="btn col btn-md  btnGuardar "  (click)="resetear();cerrarModal()"><i class="fas fa-window-close"></i> Cancelar</button>
+                    <button type="submit" class="btn col btn-md btnModal" [disabled]="formEditar.invalid" id="btnGuardar"><i class="fas fa-save "></i>  Guardar cambios</button>
+
+                </div>
+
+            </form>
+         
+        </div>
+    </div>
+</ng-template>
+

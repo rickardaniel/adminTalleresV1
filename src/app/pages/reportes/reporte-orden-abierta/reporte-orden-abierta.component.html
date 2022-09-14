@@ -1,0 +1,397 @@
+<app-nav-bar> </app-nav-bar>
+<app-sidebar-reporte></app-sidebar-reporte>
+
+<div class="main-panel animated fadeIn">
+  <button class="btn" id="boton-sidebar_left" style="float: right; margin-right: 1em; margin-top: 7em;"><i class="fas fa-angle-double-left" ></i></button>
+  <div class="content" id="main">
+
+  <!-- <p class="p1" style="margin-top: 2em;">Órdenes Abiertas</p> -->
+  <p id="titulos" style="margin-top: 3.5em; text-align: center;" >Órdenes Abiertas</p>
+  <!-- ============================================= BUSCADOR POR FECHA ================================================= -->
+
+  <div class="container ">
+    <form [formGroup]="formReporte">
+      <div class="container  mb-4 mt-4">
+        <div class="row  divSelect">
+          <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+            <label id="labelReporte" class=" text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar">
+              Desde: <i class="far fa-calendar"></i>
+            </label>
+
+            <input formControlName="fechaI" type="date" class="form-control " style="cursor: pointer; height: 1.9em;" />
+          </div>
+          <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+            <label  id="labelReporte" class="text-white p-1 font-weight-bold rounded w-100 text-center mb-0 calendar">
+              Hasta: <i class="fas fa-calendar"></i>
+            </label>
+            <input formControlName="fechaF" type="date" class="form-control " style="height: 1.9em;" />
+          </div> 
+          <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+            <label id="labelReporte" class=" text-white p-1 font-weight-bold rounded w-100 text-center mb-0" style="background-color: #828282;">
+              Estado: <i class="fas fa-flag"></i>
+            </label>
+
+            <select
+              formControlName="idEstado"
+              class="form-control"
+              style="height: 2em;"
+            >
+            <option>{{estadoActivo}}</option>
+            <ng-container *ngFor="let est of estados" >
+              <option *ngIf="est.estado != '1.ACTIVO'" value="{{ est.id }}">
+                {{ est.estado  }}
+              </option>
+            </ng-container>
+            </select>
+          </div>
+          <div class="col-xl-3 col-md-3 col-sm-6 mb-2">
+            <button
+              class="btn btn-sm  btnTrash btn-block"
+              style="font-size: small;"
+              (click)="buscarInformacionReporte(formReporte.value)"
+            ><i class="fas fa-search"></i>
+              Buscar
+          
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+ 
+  
+  <!-- ==========================================   BUSCADOR TABLA REPORTES =============================================== -->
+<div class="container  " *ngIf="banderaSearchExcel">
+  <div class="row">
+  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 divSelect mb-2" >
+    <div id="search-autocomplete" class="form-outline">
+      <input type="search" id="form1" class="form-control"  [(ngModel)]="searchText"   style="border-bottom: 1px solid silver; height: 2.5em;" placeholder=""/>
+      <label class="form-label" for="form1">Buscar orden</label>
+    </div>
+    <button type="submit" class="btn btnLupa" >
+      <i class="fas fa-search" style="color: white;"></i>
+    </button>
+  </div>
+  <div class="col-xl-6 col-lg-5 col-md-6 col-sm-12 col-xs-12 divSelect">
+
+    <div class="">
+      <button class="btn btn-sm btn-outline-success btO"  (click)="exportarEXCEL()"> <i class="fas fa-file-excel"></i> EXCEL</button>
+    </div>
+    <div class="">
+      <button class="btn btn-sm btn-outline-danger btO"  (click)="exportarPDF()"> <i class="fas fa-file-pdf"></i> PDF</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  <!-- ============================================== TABLA REPORTES =========================================================== -->
+  <div class="table-responsive "  style="box-shadow: 0px 4px 8px -4px #a9a8a8; border-radius: 1%;">
+ 
+      <table mdbTable  #tableEl="mdbTable" class="z-depth-1 mt-2" id="tableCompany"> 
+        <thead class="thead1">
+          <tr class="text-center" > 
+          
+            <th>#Orden</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Placa</th>
+            <th> Marca</th>
+            <th> Km</th>     
+            <th >Problema</th>
+            <!-- <th>Estado</th> -->
+            <th><i class="fas fa-tools"></i> Acciones</th>
+          </tr>
+        </thead>
+        <tbody  *ngIf="banderaPaginador">
+          <tr>
+            <td style="border-color: aliceblue;"  colspan="9" class="text-center">
+              <img src="./assets/img/icons-no-report.svg" style="width: 100%; height: 20em;">
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="tbody ">
+          <tr mdbTableCol *ngFor="let el of arregloProvisional; let i = index " class="text-center" >
+            <ng-container  *ngIf="el.facturado==0 && el.factventa_id == null">
+            <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">  {{ el.no}} </td>
+            <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">  {{ el.fecha | date:'fullDate'}} </td>
+            <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">  {{ el.cliente | titlecase }} </td>
+                 <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex" class="fw-bold">  {{el.arrayValAuto[0]}} </td>
+                 <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex " > {{el.arrayValAuto[1] |titlecase}}</td>
+                 <td *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex "> {{el.arrayValAuto[2]}}</td>
+            <td  *ngIf=" i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex"> {{ el.problema }}</td>
+            <!-- <td  *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex">{{ el.estado }}</td> -->
+            <td  *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex && ( el.estado == '1.ACTIVO' && el.facturado !='1')" >
+              <div class="button-group btn-group-sm" style="width: 14em; text-align:right;">
+                <button
+                  type="button"
+                  class="btn btR "
+                  title="VER ORDEN EN PDF"
+                  (click)="visualizarPDF(el.id);"  
+             
+                >
+                <i class="fas fa-print"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btPrint "
+                  title="ENVIAR ORDEN POR CORREO"
+                  (click)="enviarCorreo(el.id);"
+                >
+                <i class="fas fa-envelope"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-success "
+                  title="ENVIAR ORDEN POR WHATSAPP"
+                  (click)="sendWhatsApp(el.id);"
+                >
+                <i class="fab fa-whatsapp"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn  btnEdit"
+                  (click)="eliminarOrden(el.id);"
+                >
+                <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+            <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex && el.estado == '2.ESPERA'">
+              <div class="button-group  btn-group-sm" style="width: 14em;">
+                <button
+                  type="button"
+                  class="btn btR"
+                  title="VER ORDEN EN PDF"
+                  (click)="visualizarPDF(el.id);"
+                 >
+                 <i class="fas fa-print"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning" 
+                  title="CAMBIAR DE ESTADO Y ENVIAR AL PLANEADOR"            
+                  (click)="enviarOrden1(el)"
+                  (click)="cambiarEstado(el.id)"
+                 >
+                 <i class="fas fa-exchange-alt" style="color: white;"></i>
+                </button>
+                <button
+                type="button"
+                class="btn btPrint "
+                title="ENVIAR ORDEN POR CORREO"
+                (click)="enviarCorreo(el.id);"
+              >
+              <i class="fas fa-envelope"></i>
+              </button>
+                <button
+                type="button"
+                class="btn btn-success "
+                title="ENVIAR ORDEN POR WHATSAPP"
+                (click)="sendWhatsApp(el.id);"
+              >
+              <i class="fab fa-whatsapp"></i>
+              </button>
+              </div>
+            </td>
+            <td *ngIf="i+1 >= mdbTablePagination.firstItemIndex && i < mdbTablePagination.lastItemIndex && ( el.estado == '3.ENTREGADO')" >
+              <div class="button-group  btn-group-sm" style="width: 11em;">
+                <button
+                  type="button"
+                  class="btn btR"
+                  title="VER ORDEN EN PDF"
+                  (click)="visualizarPDF(el.id);"  
+                >
+                <i class="fas fa-print"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btPrint "
+                  title="ENVIAR ORDEN POR CORREO"
+                  (click)="enviarCorreo(el.id);"
+                >
+                <i class="fas fa-envelope"></i>
+                </button>
+                <button
+                type="button"
+                class="btn btn-success "
+                title="ENVIAR ORDEN POR WHATSAPP"
+                (click)="sendWhatsApp(el.id);"
+              >
+              <i class="fab fa-whatsapp"></i>
+              </button>
+              </div>
+            </td>
+          </ng-container>
+          </tr>
+        </tbody>
+        <td class="" colspan="11">
+             <mdb-table-pagination
+              class=""
+              hidden
+              id="pag"
+              [tableEl]="tableEl"
+              [searchDataSource]="arregloProvisional"                        
+            ></mdb-table-pagination>
+
+        </td>
+      </table>
+  </div>
+  </div>
+</div>
+
+
+  
+
+<!-- ====================================== MODAL ACTIVAR ================================= -->
+
+    <!-- <ng-template #modalCambiarEstado class="modal fade" >
+      <div class="modal-content">
+          <div class="modal-header mh">
+
+          </div>
+          <div class="modal-body  mr-3 ml-3">
+
+              <div class="form-header">
+                  <h1 class="text-primary" >Cambiar Estado de la Orden</h1>
+              </div>
+
+              <p class="mt-3" style="color: black;; " *ngFor="let dato of datosOrden"> ¿Está seguro de cambiar el estado de la orden {{dato.no}} a: ACTIVA ?</p>
+          </div>
+
+          <div class=" button-group  mt-1 mb-4 divSelect">
+            <form [formGroup]="formCambiarEstado">
+              <select hidden formControlName="estado">
+                <option value="1"> Elegir </option>
+              </select>
+              
+              <button type="button" class="btn btn-md btn-primary " (click)="cerrarModal1()"><i class="fas fa-window-close"></i> Cancelar</button>
+            </form>
+            </div>
+      </div>
+
+    </ng-template> -->
+
+
+<!-- ============================================== MODAL EDITAR ORDEN ==================================================== -->
+
+
+<!-- <ng-template #modalVerOrden class="modal fade" >
+  <div class="modal-content">
+  <div class="modal-title">
+        <div class="container mb-3" >
+
+  <h1 class="mt-4 mb-3" style="font-weight: bold; font-size: xx-large;">TALLER AUTOMOTRIZ "{{datosLS[0].nombre}}"</h1>
+
+
+  <h5  style=" color: #0d46b1; text-align: left;">ORDEN DE INGRESO NRO. {{usuario.secuencia}}</h5>
+
+      <h5 class="mt-3" style="text-align: center;">DATOS DEL VEHÍCULO</h5>
+
+ 
+    <table width=100% class="table-bordered" >
+      <thead class=" text-center" style=" background-color: #5DADE2;  height: 1.5em;">
+        <tr >
+          <td style="font-size: medium;font-weight: bold;">Placa</td>
+          <td style="font-size: medium;font-weight: bold;">Marca</td>
+          <td style="font-size: medium;font-weight: bold;">Modelo</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="text-center" >
+          <td>{{placa}}</td>
+          <td>{{marca}}</td>
+          <td>{{modelo}}</td>
+        </tr>
+      </tbody>
+    </table>
+      <h5 class="mt-3" style="text-align: center;">DATOS DE LA ORDEN</h5>
+
+ 
+      <table width=100% class="table-bordered" >
+        <thead class=" text-center" style=" background-color: #5DADE2;  height: 1.5em;">
+          <tr >
+            <td colspan="3" style="font-size: medium;font-weight: bold;">Observaciones</td>
+            <td style="font-size: medium;font-weight: bold;">Prioridad</td>
+           
+      </thead>
+      <tbody>
+        <tr class="text-center" >
+          <td colspan="3">{{usuario.problema}}</td>
+          <td>{{usuario.prioridad}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="mt-2 table-bordered" width=100% >
+      <thead class=" text-center" style=" background-color: #5DADE2;  height: 1.5em;">
+        <tr>
+          <td colspan="2" style="font-size: medium;font-weight: bold;">Técnico(s)</td>
+          <td colspan="2" style="font-size: medium;font-weight: bold;">Servicio(s)</td>
+         
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="text-center" *ngFor="let tecS of tys" >
+          <td colspan="3">{{tecS.tecnico_nombres | titlecase}} {{tecS.tecnico_apellidos | titlecase}}</td>
+          <td>{{tecS.tipo}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="mt-2 table-bordered" width=100% >
+      <thead class=" text-center" style=" background-color: #5DADE2;  height: 1.5em;">
+        <tr>
+          <td colspan="2" style="font-size: medium;font-weight: bold;">Datos del cliente</td>
+        </tr>
+      </thead>
+      <tbody >
+        <tr >
+          <td style="margin-left: 1em;" > <strong>Cliente: </strong> {{usuario.nombres | titlecase}} {{usuario.apellidos | titlecase}} </td>  
+          <td style="margin-left: 1em;" > <strong>Dirección: </strong> {{usuario.direccion}} </td>  
+        </tr>
+        <tr >
+          <td style="margin-left: 1em;"> <strong> Identificación: </strong>{{ usuario.PersonaComercio_cedulaRuc}}</td>
+          <td style="margin-left: 1em;"> <strong> Correo: </strong>{{usuario.email}}</td>
+        </tr>
+        <tr >
+          <td style="margin-left: 1em;"><strong>Téfono: </strong>{{usuario.celular}}</td>    
+          <td style="margin-left: 1em;"><strong>Fecha de ingreso: </strong>{{usuario.fecha }}</td>    
+        </tr>
+      </tbody>
+    </table>
+    <hr>
+    <div>
+      <div class="container divSelect">
+          <button class="btn  btO" (click)="enviarCorreo(usuario.id)" style="background-color: #03a9f4; color: white;">
+            <i class="fas fa-reply"></i> Reenviar 
+          </button>
+          <button type="button" class="btn  btO" (click)="cerrarModal()" style="background-color: #0d46b1; color: white;">
+            <i class="fas fa-times"></i> Salir 
+          </button>
+      </div>
+    </div>
+      
+    </div>
+
+  </div>
+  </div>
+</ng-template>
+
+<ng-template #modalVerPDF class="modal fade" >
+  <div class="modal-content">
+  <div class="modal-title">
+  <div class="table-responsive p-1">
+
+     <div id="seccionPDF">
+  
+    </div>
+
+
+<div class="modal-footer divSelect">
+  <button type="button" class="btn btn-warning btO" (click)="cerrarModal();" > <i class="fas fa-times"></i> Close</button>
+  </div>
+  </div>
+  </div>
+  </div>
+</ng-template> -->
+
+

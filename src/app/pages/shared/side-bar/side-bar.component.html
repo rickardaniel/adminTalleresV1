@@ -1,0 +1,72 @@
+<html lang="en" id="html">
+<div class="sidebar" id="sidebar" style="margin-top: 5.3em;">
+    <div class="sidebar-wrapper" >
+        <div class="logo-rc" >
+
+
+            <div class="navbar-bar" id="content-buttons" >
+
+                <button id="boton-sidebar"><img src="assets/img/talleresR2.png" type="button" style="width: 33px; height: 30px;" /></button>
+                <span>Talleres</span>
+                <!--El boton que aparecera si es que nuestro dashboard hace scroll-->
+                <div class="navbar-bar_fixed" id="content-button_fixed">
+                    <button id="boton-sidebar_fixed"><img src="assets/img/talleresR.png" type="button" style="width: 30px; height: 30px;" /></button>
+                </div>
+
+            </div>
+        </div>
+        <div class="nav">
+            <ul>
+
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_atributos' ]" routerLinkActive="active">
+
+                        <i class="fas fa-stream"></i>
+                        <span> atributos</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_servicios' ]" routerLinkActive="active">
+
+                        <i class="fas fa-tools"></i>
+
+                        <span> Servicios</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_estados' ]" routerLinkActive="active">
+                        <i class="fas fa-flag"></i>
+                        <span> Estados</span>
+                    </a>
+                </li>
+
+         
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_prioridad' ]" routerLinkActive="active">
+                        <i class="fas fa-clock"></i>
+                        <span> Prioridades</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_politicas' ]" routerLinkActive="active">
+                        <i class="fab fa-readme"></i>
+                        <span> Politicas</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/talleres/control_de_calidad' ]" routerLinkActive="active">
+                        <i class="fas fa-file-signature"></i> 
+                        <span> CONTROL ELEMENTOS ENTRADA/SALIDA</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+</html>

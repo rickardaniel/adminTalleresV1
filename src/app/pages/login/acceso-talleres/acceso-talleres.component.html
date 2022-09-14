@@ -1,0 +1,192 @@
+
+<div class="container-fluid content-login">
+  <div class="container">
+        <div class="row mt-4">
+            <div class="col-lg-6 col-md-6 col-sm-12 card card-form-login sombra" *ngIf = "!shop">
+                <form id="formempresa" [formGroup]="formRecuperarEmpresa" class="container m-auto p-5" novalidate>
+                <h3 class="text-center mb-4 text-secondary"> MÓDULO TALLERES </h3>
+                <div class="form-group pt-3">
+                    <input type="text" formControlName="ruc" placeholder="&#xf2c0; &nbsp; ruc del representante " class="form-control rounded-pill " maxlength="13">
+                  </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-danger rounded-pill pr-5 pl-5" (click)="obtenerEmpresa(settingModal)"> Ingresar </button>
+                </div>
+                </form>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-12 card card-form-login sombra" *ngIf ="shop">
+                <form [formGroup]="formIngresoTalleres" class="container m-auto pt-5">
+                <h3 class="text-center mb-4 text-secondary"> INICIO DE SESIÓN </h3>
+                <div class="form-group pt-3">
+                    <input 
+                    [class.is-invalid]="
+                    formIngresoTalleres.get('user')?.touched &&
+                    formIngresoTalleres.get('user')?.invalid
+                    "
+                    type="text" placeholder="&#xf2c0; &nbsp; Usuario" formControlName="user" class="form-control rounded-pill">
+                    <span
+                    *ngIf="credentials.user.invalid && (credentials.user.dirty || credentials.user.touched)"
+                    class="text-danger animated fadeIn"
+                    style="text-align: center"
+                  > Debe ingresar un usuario</span>
+                </div>
+      
+                <div class="form-group">
+                    <input
+                    [class.is-invalid]="
+                    formIngresoTalleres.get('pass')?.touched &&
+                    formIngresoTalleres.get('pass')?.invalid
+                    "
+                    type="password" placeholder="&#xf13e; &nbsp; Contraseña" formControlName="pass" class="form-control rounded-pill">
+                    <span
+                    *ngIf="credentials.pass.invalid && (credentials.pass.dirty || credentials.pass.touched)"
+                    class="text-danger animated fadeIn"
+                    style="text-align: center"
+                  > Debe ingresar una contraseña</span>
+                </div>
+                <div class="text-center m-4">
+                    <button  
+                    [disabled]="formIngresoTalleres.invalid"
+                    class="btn btn-danger rounded-pill pr-5 pl-5" (click)="accesoTalleres()"> Ingresar </button>
+                    <hr class="m-0 p-0 mt-2">
+                    <a href="" (click)="elements =[]"> Volver </a>
+                </div>
+                </form>
+            </div>
+            <div class="col-lg-6 col-md-6 m-auto ctn-logo">
+            <div class="ctn-image">
+                <img src="assets/img/LogoBilling.svg" class="image">
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #settingModal class="modal fade" >
+    <div class="modal-content">
+        <div class="modal-header text-center m-auto">
+          <h5 class="modal-title text-center"> SISTEMAS REGISTRADOS </h5>
+        </div>
+        <p class="text-center mt-2 mb-0 pb-0 text-secondary">Seleccione el sistema con el desea ingresar  </p>
+        <div class="modal-body">
+          <div class="row divSelect">
+            <ng-container  *ngFor="let e of elements | ObjToArray;">
+              <div class="ctn-business col-lg-6 col-md-8 col-sm-11">
+                  <!-- <div class=""> -->
+                      <div class="card  text-center p-4 card-shops sombra mb-3" (click)="saveShop(e)">
+                        <h3>{{e.nombre | titlecase }}</h3>
+                        <small>{{e.url}}</small>
+                      </div>
+                  <!-- </div> -->
+              </div>
+            </ng-container>
+          </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- <div class="accesoLogin">
+
+    <section class="login-block">
+        <div class="container1">
+            <div class="row">
+                <div class="col-md-4 login-sec">
+                    <h2 class="text-center">Acceso</h2>
+                    <div *ngIf="banderaPrimerForm">
+                    <form class="login-form" id="formRUC"   [formGroup]="formRecuperarEmpresa">
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail1" class="text-uppercase">Cédula o RUC</label>
+                            <input formControlName="ruc" type="text" class="form-control" placeholder="">
+
+                        </div>
+
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input">
+                                     <small>Recordarme</small>
+                            </label>
+                            <button type="submit" id='btnEmpresa' (click)="obtenerEmpresa(formRecuperarEmpresa.value)" class="btn  btn-md btn-login float-right">Ingresar <i class="fas fa-sign-in-alt"></i></button>
+                        </div>
+
+                    </form>
+                </div>
+
+                    <div *ngIf="banderaSegundoForm">
+
+
+
+
+                    <form class="login-form"  [formGroup]="formIngresoTalleres">
+
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail1" class="text-uppercase">Usuario</label>
+                            <input formControlName="user" type="text" class="form-control" placeholder="">
+
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1" class="text-uppercase">Contraseña</label>
+                            <input formControlName="pass" type="password" class="form-control" placeholder="" autocomplete="on">
+                        </div>
+
+
+                        <div class="form-check">
+                            <label class="form-check-label">
+      <input type="checkbox" class="form-check-input">
+      <small>Recordarme</small>
+    </label>
+                            <button type="submit" (click)="accesoTalleres(formIngresoTalleres.value, elements)" class="btn btn-login float-right btn-md">Ingresar <i class="fas fa-sign-in-alt"></i></button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+                    <div class="copy-text">Desarrollado por <i class="fa fa-heart"></i> PuntoPymes</div>
+                </div>
+                <div class="col-md-8 banner-sec">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner" role="listbox">
+                            <div class="carousel-item active">
+                                <img class="d-block img-fluid" src="https://images.pexels.com/photos/4116202/pexels-photo-4116202.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" alt="First slide">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <div class="banner-text">
+                                        <h2>This is Heaven</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img class="d-block img-fluid" src="https://images.pexels.com/photos/8986145/pexels-photo-8986145.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" alt="First slide">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <div class="banner-text">
+                                        <h2>This is Heaven</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img class="d-block img-fluid" src="https://images.pexels.com/photos/6870298/pexels-photo-6870298.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" alt="First slide">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <div class="banner-text">
+                                        <h2>This is Heaven</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div> -->

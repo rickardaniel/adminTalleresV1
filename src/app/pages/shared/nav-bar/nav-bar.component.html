@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a hidden class="nav-link active" [routerLink]="[ '/orden/nueva_orden' ]" routerLinkActive="active" aria-current="page"><i class="fas fa-plus"></i> Nueva Orden</a>
+            </li>
+            <li class="nav-item" >
+                <a  class="nav-link active" [routerLink]="[ '/cotizacion/nueva_cotizacion' ]" routerLinkActive="active" aria-current="page"><i class="fas fa-file-invoice-dollar"></i> Cotización</a>
+            </li>
+        
+            <li class="nav-item">
+                <a class="nav-link active" [routerLink]="[ '/orden/nueva_orden' ]" routerLinkActive="active" aria-current="page"><i class="fas fa-plus"></i> Nueva Orden</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" [routerLink]="[ '/reportes/reporte_orden_abierta' ]" routerLinkActive="active"><i class="fas fa-clipboard"></i> Reportes</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="[ '/talleres/ver_atributos' ]" routerLinkActive="active"><i class="fas fa-cog"></i> Configuraciones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="[ '/planeador/ver_planeador' ]" routerLinkActive="active"><i class="fas fa-clipboard-list"></i> Planeador</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="[ '/facturar/facturar_flota' ]" routerLinkActive="active"><i class="fas fa-bus-alt"></i> Facturar Flota</a>
+            </li>
+            <li  class="nav-item">
+                <a class="nav-link" (click)="salir()"><i class="fas fa-sign-out-alt"></i>Salir</a>
+            </li>
+        </ul>
+
+
+
+    </div>
+
+</nav>

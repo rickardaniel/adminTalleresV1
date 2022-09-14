@@ -1,0 +1,78 @@
+<html lang="en" id="html">
+<div class="sidebar" id="sidebar" style="margin-top: 5.3em;">
+    <div class="sidebar-wrapper">
+        <div class="logo-rc">
+
+
+            <div class="navbar-bar" id="content-buttons">
+
+                <button id="boton-sidebar"><img src="assets/img/reportes2.png" type="button" style="width: 25px; height: 33px;" /></button>
+                <span>REPORTES</span>
+                <!--El boton que aparecera si es que nuestro dashboard hace scroll-->
+                <div class="navbar-bar_fixed" id="content-button_fixed">
+                    <button id="boton-sidebar_fixed"><img src="assets/img/reportes4.png" type="button" style="width: 25px; height: 33px;" /></button>
+                </div>
+
+            </div>
+        </div>
+        <div class="nav">
+            <ul>
+
+                <li>
+                    <a [routerLink]="[ '/reportes/reporte_orden_abierta' ]" routerLinkActive="active">
+
+                        <i class="fas fa-file-import"></i>
+                        <span> Órdenes Abiertas</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/reportes/orden_cerrada' ]" routerLinkActive="active">
+
+                        <i class="fas fa-file-export"></i>
+
+                        <span> Órdenes Cerradas</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/reportes/cotizacion' ]" routerLinkActive="active">
+                        <i class="far fa-money-bill-alt"></i>
+                        <span>Cotizaciones</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/reportes/reporte_tecnico' ]" routerLinkActive="active">
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <span>Reporte por Técnico</span>
+                    </a>
+                </li>
+                <!-- <li>
+                    <a [routerLink]="[ '/reportes/orden_agendada' ]" routerLinkActive="active">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Órdenes Agendadas</span>
+                    </a>
+                </li> -->
+
+         
+                <!-- <li>
+                    <a [routerLink]="[ '/talleres/ver_prioridad' ]" routerLinkActive="active">
+                        <i class="fas fa-clock"></i>
+                        <span> Prioridadades</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[ '/talleres/ver_politicas' ]" routerLinkActive="active">
+                        <i class="fab fa-readme"></i>
+                        <span> Politicas</span>
+                    </a>
+                </li> -->
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+</html>
