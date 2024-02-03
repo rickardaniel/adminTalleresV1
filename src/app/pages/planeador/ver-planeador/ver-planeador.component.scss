@@ -508,4 +508,19 @@ body {
     animation-name: backInDown;
   }
 
-  
+  .swiper-container {
+    // height: 330px;
+    width: 100%;
+}
+
+.swiper-button-prev, .swiper-button-next {
+  padding-top: 2.5em;
+  // background-color: black;
+  width: 2vh;
+  height: 2vh;
+  border-radius: 50%;
+  // top: 50%;
+  // transform: translateY(-50%);
+}
+
+

@@ -27,7 +27,7 @@ export class AllServiceService {
   empresa:any;
   datosLocalStorage:any;
   datosOnlyEmpresa:any;
-  //EMPRESA
+  //EMPRESAF
 
   // urlEMPRESAINI = localStorage.getItem('linkEmpresa');
   // urlEMPRESAFIN = "common/talleres/";
@@ -75,6 +75,8 @@ export class AllServiceService {
   }
 
   getUrlBaseTaller(){
+    // console.log('urlbase tallere',this.urlCors + localStorage.getItem('api_system') + this.urlTaller);
+    
     return this.urlCors + localStorage.getItem('api_system') + this.urlTaller;
   }
   getUrlBaseTallerSINCORS(){
@@ -100,6 +102,9 @@ export class AllServiceService {
   }
 
   getForOrden( id:string, tipo:string,accion:string){
+
+    // console.log(this.getUrlBaseTaller()+'hacer_pdf/'+accion+'?oa_id='+id+'&tipo='+tipo);
+    
     return new Promise ((resolve)=>{
       this.http.get(this.getUrlBaseTaller()+'hacer_pdf/'+accion+'?oa_id='+id+'&tipo='+tipo).subscribe(data=>{
         resolve(data);
@@ -135,6 +140,8 @@ getProductosServicios( item:string){
  })
 }
 getProductoMap( item:string){
+  console.log(this.getUrlBaseCommonSINCORS()+'search_product_name_code?search='+item);
+  
   return this.http.get(this.getUrlBaseCommonSINCORS()+'search_product_name_code?search='+item)
   .pipe(
       map((res:any)=>{        
@@ -174,6 +181,8 @@ getProductoMap( item:string){
 
 
   getALL(url:string, i:any):Observable<any[]>{
+    // console.log(this.getUrlBaseTaller()+url+'/all');
+    
     return this.http.get<any[]>(this.getUrlBaseTaller()+url+'/all');
   }
   getVC(url:string, i:any):Observable<any[]>{
@@ -221,15 +230,22 @@ getProductoMap( item:string){
 
   getSimple(url:any){
     return new Promise((resolve)=>{
+      console.log(this.getUrlBaseTaller()+url);
+      
         this.http.get(this.getUrlBaseTaller()+url).subscribe(data =>{
           resolve(data);
         })
     })
   }
   getPlaneador(url:any){
+    // console.log(this.getUrlBaseTaller()+url);
     return this.http.get(this.getUrlBaseTaller()+url)
+
+    
             .pipe(
                 map((resp:any)=>{
+                  console.log('resp',resp);
+                  
                   return resp.map((pla:any) => ({
                     cliente: pla.cliente, 
                     estado_id:pla.estado_id, 
@@ -239,17 +255,21 @@ getProductoMap( item:string){
                     id:pla.id,
                     no:pla.no,
                     prioridad:pla.prioridad,
-                    tecnico:pla.tecnico[0].tecnico,
+                    tecnico:pla.tecnico[0]?.tecnico,
                     atributo: pla.atributo,
                     atrs: pla.atributo[0].valor,
                     atrs1: pla.atributo[1].valor,
-                    completa:pla.cliente+' '+pla.no+' '+pla.tecnico[0].tecnico+' '+pla.atributo[0].valor+' '+pla.atributo[1].valor
+                    atrs2: pla.atributo[2].valor,
+                    completa:pla.cliente+' '+pla.no+' '+pla.tecnico[0]?.tecnico+' '+pla.atributo[0].valor+' '+pla.atributo[1].valor+' '+pla.atributo[2].valor
                   }))    
                 })                
                  );
   }
   getSimpleCommon(url:any){
     return new Promise((resolve)=>{
+
+      // console.log(this.getUrlBaseCommonSINCORS()+url);
+      
         this.http.get(this.getUrlBaseCommonSINCORS()+url).subscribe(data =>{
           resolve(data);
         })
@@ -259,6 +279,8 @@ getProductoMap( item:string){
   // ===================================== METODO GET VEHÍCULO =======================================
   getCliente( ci:string){
     return new Promise((resolve)=>{
+      console.log(this.getUrlBaseCommonSINCORS()+this.urlClient+ci);
+      
       this.http.get( this.getUrlBaseCommonSINCORS()+this.urlClient+ci ).subscribe(data=>{
         resolve(data);
 
@@ -288,6 +310,8 @@ getProductoMap( item:string){
 
 // ======================== SEND WHATSAPP ==========================
 sendWhatsApp(id:any, tipo:any){
+  console.log(this.getUrlBaseTaller()+'hacer_pdf/enviar_wa?oa_id='+id+'&tipo='+tipo);
+  
   return new Promise((resolve)=>{
 return this.http.get(this.getUrlBaseTaller()+'hacer_pdf/enviar_wa?oa_id='+id+'&tipo='+tipo).subscribe((data:any)=>{
   resolve(data);
@@ -310,6 +334,8 @@ enviarCorreo(id:any, tipo:any){
 }
 
 get(contenido:any){
+  console.log(this.getUrlBaseTaller()+contenido);
+  
   return new Promise((resolve)=>{
     this.http.get(this.getUrlBaseTaller()+contenido).subscribe(data=>{
       resolve(data);
@@ -322,7 +348,11 @@ get(contenido:any){
 
   getForID( url:string, id:string){
     return new Promise ((resolve)=>{
+      // console.log(this.getUrlBaseTaller()+url+'/by_id?id='+id);
+      
       this.http.get(this.getUrlBaseTaller()+url+'/by_id?id='+id).subscribe(data=>{
+        // console.log(data);
+        
         resolve(data);
 
         // console.log("url por ID = ", this.urlTalleres+url+'/oneByID?id='+id);
@@ -343,6 +373,8 @@ get(contenido:any){
 
 
   postALL(form:any, url:string){
+    console.log(this.getUrlBaseTaller()+url+'/insert');
+    
     return this.http.post(this.getUrlBaseTaller()+url+'/insert', form);
   }
   postG1(url:string,form:any ){
@@ -351,16 +383,20 @@ get(contenido:any){
     return this.http.post(this.getUrlBaseTallerSINCORS1()+url, form);
   }
   postG( url:string, form:any){
+    console.log(this.getUrlBaseTaller()+url);
+    
     return this.http.post(this.getUrlBaseTaller()+url, form);
   }
 
   // POST GENERAL
   postAL(form:any, url:string){
-    // console.log(this.getUrlBaseTaller()+url);
+    console.log(this.getUrlBaseTaller()+url);
     
     return this.http.post(this.getUrlBaseTaller()+url, form);
   }
   postALCommon(JSON:any, url:string){
+    console.log('===',this.getUrlBaseCommon()+url);
+    
     return this.http.post(this.getUrlBaseCommon()+url, JSON);
   }
 
@@ -378,6 +414,8 @@ get(contenido:any){
 
  postFacturar(JSON:any){
 //  return this.http.post(this.urlCors+"https://sofpymes.com/demotalleres/common/movil/insert_factura_o_prefactura", JSON);
+console.log( this.getUrlBaseCommon()+'insert_factura_o_prefactura');
+
  return this.http.post( this.getUrlBaseCommon()+'insert_factura_o_prefactura', JSON);
  }
 
@@ -430,6 +468,29 @@ get(contenido:any){
       body:form
     }
     return this.http.get(this.getUrlBaseTaller()+url+'/disable?id='+id, Options)
+  }
+
+  funcionDatosLocalStorage(){
+    const dato = localStorage.getItem('Inflogueo');
+    // $('#box').addClass("verde");
+
+    if(dato) {
+    this.datosLocalStorage=JSON.parse(dato);
+
+  }else
+   console.log("ERROR");
+
+  //  console.log(this.datosLocalStorage.puntosventa);
+   let puntosVenta = this.datosLocalStorage.puntosventa;
+
+  //  if(puntosVenta.length>1){
+  //   this.banderaPuntosVenta = true;
+  //  }else if(puntosVenta.length==1){
+  //   this.banderaPuntosVenta = false;
+  //  }
+  //  console.log('PuntosVenta', puntosVenta);
+
+   return puntosVenta;
   }
 
 }

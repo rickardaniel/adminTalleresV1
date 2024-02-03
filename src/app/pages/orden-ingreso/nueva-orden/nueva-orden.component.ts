@@ -40,6 +40,7 @@ export class NuevaOrdenComponent implements OnInit {
   @ViewChild("modalControl") modalControl: TemplateRef<any> | undefined;
   @ViewChild("modalRegistrarCliente") modalRegistrarCliente: TemplateRef<any> | undefined;
   @ViewChild("modalRegistrarClienteCARD") modalRegistrarClienteCARD: TemplateRef<any> | undefined;
+  @ViewChild("modalPUNTOVENTA") modalPUNTOVENTA: TemplateRef<any> | undefined;
 
   //MODAL
   modal:any;
@@ -182,8 +183,8 @@ export class NuevaOrdenComponent implements OnInit {
   opcionBusquedaRUC:any;
 
  
-  
-
+  puntosVenta:any=[];
+  banderaPuntosVenta:any;
 
   constructor(
     private allService: AllServiceService,
@@ -199,7 +200,8 @@ export class NuevaOrdenComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+this.funcionDatosLocalStorage();
+this.enviarTipoCliente()
 
     this.celular;
 
@@ -252,7 +254,7 @@ export class NuevaOrdenComponent implements OnInit {
       this.cliente = PRS
       .map((blablabla: any, i: number) => ({id: i + 1, ...blablabla}))
       .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
-      console.log(this.cliente);
+      // console.log(this.cliente);
       
   }
 
@@ -394,6 +396,8 @@ cerrarModal2(){
   enviarTipoCliente(){
     this.allService.getSimpleCommon('get_clientetipo').then((data:any)=>{
       this.tipoUsuario = data;
+      // console.log(this.tipoUsuario);
+      
       this.tipoUsuarioDefecto = this.tipoUsuario[0].tipo;
       this.tipoUsuarioID = this.tipoUsuario[0].idclientetipo;    
     })
@@ -700,6 +704,9 @@ obtenerVehiculo(form: any) {
         Swal.close();
         if(data.clientes.length == 1){
           this.clienteCard = data.clientes;
+
+         
+          
        
           this.formEditarCliente.setValue({
                         'PersonaComercio_cedulaRuc':this.clienteCard[0].PersonaComercio_cedulaRuc,
@@ -1528,6 +1535,26 @@ obtenerVehiculo(form: any) {
 
   }
 
+  funcionDatosLocalStorage(){
+    const dato = localStorage.getItem('Inflogueo');
+    // $('#box').addClass("verde");
+
+    if(dato) {
+    this.datosLocalStorage=JSON.parse(dato);
+
+  }else
+   console.log("ERROR");
+
+   this.puntosVenta = this.datosLocalStorage.puntosventa;
+   if(this.puntosVenta.length>1){
+    this.banderaPuntosVenta = true;
+   }else if(this.puntosVenta.length==1){
+    this.banderaPuntosVenta = false;
+   }
+  //  console.log('PuntosVenta',this.puntosVenta);
+   
+  }
+
  // ============================= METODO CREAR ORDEN ==============================
 
   crearOrden(form: any) {
@@ -1536,9 +1563,8 @@ obtenerVehiculo(form: any) {
     
 
     this.bandera = false;
-    const dato = localStorage.getItem("Inflogueo");
-
-    $('#box').addClass("verde");
+    const dato = localStorage.getItem('Inflogueo');
+    // $('#box').addClass("verde");
 
     if(dato) {
     this.datosLocalStorage=JSON.parse(dato);
@@ -1547,11 +1573,39 @@ obtenerVehiculo(form: any) {
    console.log("ERROR");
 
   let infAcceso = this.datosLocalStorage;
+  let pVID = this.datosLocalStorage.puntosventa.length;
+  // console.log(pVID);
+  
 
   this.user_id = infAcceso.empleado[0].id;
-  this.puntoventa_id = infAcceso.puntosventa[0].puntoventa_id;
+  // console.log(infAcceso);
 
-  console.log(this.tamAtributos);
+ 
+  // this.puntoventa_id = infAcceso.puntosventa[pVID].puntoventa_id;
+
+  if(this.banderaPuntosVenta == true){
+    this.puntoventa_id = form.puntoventa_id;
+  }else if(this.banderaPuntosVenta == true){
+    this.puntoventa_id = infAcceso.puntosventa[0].puntoventa_id;
+  }
+
+  if(this.puntoventa_id == ''){
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Debe seleccionar un punto de venta',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  }else{
+
+  
+  
+
+  // console.log(this.puntoventa_id);
+  
+
+  // console.log(this.tamAtributos);
   
 
     if (this.tamAtributos != 0) {
@@ -1591,6 +1645,7 @@ obtenerVehiculo(form: any) {
         });
 
       }else{
+        
 
     let dataform = new FormData();
     // console.log("form Donde entra",form);
@@ -1602,6 +1657,8 @@ obtenerVehiculo(form: any) {
     }
     else
     {
+
+
  
     form.items = this.arregloCalificacion[1];
     form.revision = this.arregloCalificacion[0];
@@ -1619,6 +1676,11 @@ obtenerVehiculo(form: any) {
         confirmButtonText: '!Si, crear ahora!',
       }).then((result) => {
         if (result.isConfirmed) {
+
+            
+  // if(infAcceso.count_puntosventa > 1){
+  //   console.log("ENTRA ACA primera",this.datosLocalStorage.puntosventa );
+  //   this.modal = this.modalService.open(this.modalPUNTOVENTA, {size:'sm'});
           
           // console.log(form);
     
@@ -1639,27 +1701,10 @@ obtenerVehiculo(form: any) {
           if(Object.keys(this.images).length ) {
             Object.entries(this.images).forEach(([key, value])=>{
               dataform.append('evidencias[]', value);
-              // console.log(dataform.get('evidencias[]'));
+              console.log(dataform.get('evidencias[]'));
             });
           }
-      
-          //   if(this.images.front) {
-          //     dataform.append('evidencias[]', this.images.front);
-          //   }
-          //   if(this.images.right) {
-          //     dataform.append('evidencias[]', this.images.right);
-          //   }
-          //   if(this.images.back) {
-          //     dataform.append('evidencias[]', this.images.back);
-          //   }
-          //   if(this.images.left) {
-          //     dataform.append('evidencias[]', this.images.left);
-          //   }
-          // } else {
-          //   dataform.append('evidencias[]', '');
-          // }
-      
-          // console.log("==============================================================");
+    
       
         //  ====== PROBLEMA REPORTE============
       
@@ -1722,6 +1767,10 @@ obtenerVehiculo(form: any) {
 
           
         }
+      // }else if(infAcceso.count_puntosventa = 1){
+      //   console.log('ENTRA ACA 2');
+        
+      // }
       }); 
     }else{
 
@@ -1742,7 +1791,7 @@ obtenerVehiculo(form: any) {
       if(Object.keys(this.images).length ) {
         Object.entries(this.images).forEach(([key, value])=>{
           dataform.append('evidencias[]', value);
-          // console.log(dataform.get('evidencias[]'));
+          console.log(dataform.get('evidencias[]'));
         });
       }
   
@@ -1779,7 +1828,8 @@ obtenerVehiculo(form: any) {
                   icon: 'success',
                   title: 'Orden Creada',
                   text: 'Orden creada correctamente',
-                  timer: 2000
+                  timer: 2000,
+                  showConfirmButton: false
                 })
                 setTimeout(() => {
                   this.locationreload(); 
@@ -1810,65 +1860,9 @@ obtenerVehiculo(form: any) {
     return this.bandera;
     }
   }
+}
+
   }
-
- // ============================= METODO ANULAR ORDEN ==============================
-  // anular() {
-  //   console.log('id orden a eliminar es => ', this.id);
-  //   if (this.id != undefined) {
-  //     Swal.fire({
-  //       title: 'Anular Orden',
-  //       text: '¿Está seguro de anular la orden? ' + (this.secuencia - 1),
-  //       icon: 'warning',
-  //       showCancelButton: true,
-  //       confirmButtonColor: '#3085d6',
-  //       cancelButtonColor: '#d33',
-  //       confirmButtonText: 'Si, anular ahora!',
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         Swal.fire({ title: 'Orden Anulada!',
-  //         text:  'La orden ha sido anulada',
-  //         icon: 'success',timer:400});
-
-
-  //         // /delete_id?id=
-  //         this.allService.getAl('orden_abierta/delete_id?id='+ this.id).then((data) => {
-  //           console.log('orden eliminada', data);
-  //           // let id = Object.values(data);
-  //           let a = this.getSecuencia() - 1;
-  //           this.secuencia = a;
-
-  //           console.log('this.secuencia ', this.secuencia);
-
-  //         });
-  //         let a = this.getSecuencia() - 1;
-  //         this.secuencia = a;
-  //         this.id = undefined;
-
-  //         this.formNuevaOrden.reset();
-  //         this.formAuto.reset();
-  //         this.formCliente.reset();
-  //         // this.ocultarTarjetaCliente();
-  //         this.banderaCardCliente = false;
-
-  //         this.banderaAutoExiste =false;
-  //         this.banderaAutoCrea = false;
-  //         // this.borrarTS();
-  //       }
-  //     });
-  //   } else {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: '¡Error!',
-  //       // text: msg
-  //       text: 'No existe orden a eliminar',
-  //       timer:500
-  //     });
-  //   }
-  // }
-
-
-
 
   getImageFront(image:any) {
     // console.log(image);
@@ -2100,7 +2094,8 @@ validarDocumento(form:any){
            this.bandera= false;
            this.banderaCliente = true;
           //  this.banderaValidarDOC = true;
-
+        // console.log(this.tipoUsuarioID);
+        
         this.formRegistrarCliente.get('cedula')?.setValue(this.cedulaGlobal);
         this.formRegistrarCliente.get('tipoCli')?.setValue(this.tipoUsuarioID);
         
@@ -2318,7 +2313,8 @@ Swal.fire({
   icon:'success',
   title:'Cliente actualizado',
   text:'Cliente se ha actualizado con éxito' ,
-  timer:900
+  timer:900,
+  showConfirmButton:false
   });
 
 })

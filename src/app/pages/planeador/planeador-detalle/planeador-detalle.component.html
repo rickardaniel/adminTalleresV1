@@ -356,7 +356,30 @@
             <div class="container-fluid pt-3">
 
                 <div class="row">
-                    <div class="col-lg-4 col-md-4"></div>
+                    <div class="col-lg-4 col-md-4" >
+                        <div class="form-group" *ngIf="banderaFacturarConPunto">
+                            <label for="username" id="tituloF">ELEGIR PUNTO DE VENTA <i class="fas fa-user-cog"></i></label>
+                            <div class="mb-2">
+                                <form [formGroup]="formPuntoVenta">
+                                    <select  formControlName="puntoventa_id" 
+                                    [(ngModel)]="opcionSeleccionado" (change)="capturar2(puntosVenta)"
+                                    class="custom-select" style="width: 14em;font-size: 0.85em;" >
+                                        <option selected value="" disabled>Elija punto de venta</option>
+                                        <ng-container   *ngFor="let pv of puntosVenta" >
+                                        <option  style="font-size: 0.85em;" [value]="pv.puntoventa_id ">
+                                        {{ pv.pto_razon_social| uppercase }}-{{pv.pto_ruc}}-{{pv.nombre|uppercase}}-
+                                        {{pv.establecimiento}}-{{pv.puntoemision}}-00000{{pv.secuenciaultima}}
+                                        </option>
+                                        <!-- <option  style="font-size: 0.85em;"  value="{{ pv.puntoventa_id }}">
+                                        {{ pv.pto_razon_social| uppercase }}-{{pv.pto_ruc}}-{{pv.nombre|uppercase}}-
+                                        {{pv.establecimiento}}-{{pv.puntoemision}}-00000{{pv.secuenciaultima}}
+                                        </option> -->
+                                    </ng-container>   
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-lg-4 col-md-4"></div>
                     <div class="col-lg-3 col-md-4">
                         <table class="table  table-bordered" style="box-shadow: 0px 2px 8px 0px #d9c4c4; border-radius: 1%;" >
@@ -410,9 +433,14 @@
     <div>
 
         <button class="btn btO" style="color: white; background-color: #393D40;" data-toggle="modal"   data-target=".bd-example-modal-xl" (click)="cerrarCaso(informacionOrden)"><i class="fas fa-ban"></i> Cerrar caso</button>
-        <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar"  (click)="cerrarCaso(informacionOrden)" (click)="hacerFactura()" > <i class="fas fa-dollar-sign"></i> Facturar </button>
-        <button class="btn btO "  style="background-color: #dee2e6; color: black; font-weight: bold;border-color: #7a7a7a;" *ngIf="banderaFacturarServicio"   (click)="facturarServicio()" > <i class="fas fa-dollar-sign"></i> F.Servicio</button>
-        <button class="btn btO"  style="background-color: #dee2e6; color: black;border-color: #7a7a7a;" *ngIf="banderaFacturarProducto"   (click)="facturarProducto()" > <i class="fas fa-dollar-sign"></i> F.Producto</button>
+        <!-- <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar"  (click)="cerrarCaso(informacionOrden)" (click)="hacerFactura()" > <i class="fas fa-dollar-sign"></i> Facturar </button> -->
+        <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar && !banderaFacturarConPunto"  (click)="cerrarCaso(informacionOrden)" (click)="hacerFactura()" > <i class="fas fa-dollar-sign"></i> Facturar </button>
+        <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar && banderaFacturarConPunto"  (click)="cerrarCaso(informacionOrden)"  (click)="hacerFacturaconPunto()" > <i class="fas fa-dollar-sign"></i> Facturar PV</button>
+        <!-- <button class="btn btO"  style="background-color: #7A7A7A; color: white;" *ngIf="banderaFacturar"  (click)="cerrarCaso(informacionOrden)" (click)="abrirModalPuntoVenta()" > <i class="fas fa-dollar-sign"></i> Facturar 2 </button> -->
+        <button class="btn btO "  style="background-color: #dee2e6; color: black; font-weight: bold;border-color: #7a7a7a;" *ngIf="banderaFacturarServicio && !banderaFacturarConPunto"   (click)="facturarServicio()" > <i class="fas fa-dollar-sign"></i> F.Servicio</button>
+        <button class="btn btO "  style="background-color: #dee2e6; color: black; font-weight: bold;border-color: #7a7a7a;" *ngIf="banderaFacturarServicio && banderaFacturarConPunto"   (click)="facturarServicioPV()" > <i class="fas fa-dollar-sign"></i> F.Servicio PV</button>
+        <button class="btn btO"  style="background-color: #dee2e6; color: black;border-color: #7a7a7a;" *ngIf="banderaFacturarProducto && !banderaFacturarConPunto"   (click)="facturarProducto()" > <i class="fas fa-dollar-sign"></i> F.Producto</button>
+        <button class="btn btO"  style="background-color: #dee2e6; color: black;border-color: #7a7a7a;" *ngIf="banderaFacturarProducto && banderaFacturarConPunto"   (click)="facturarProductoPV()" > <i class="fas fa-dollar-sign"></i> F.Producto PV</button>
         
         <button class="btn btn-warning btO" (click)="visualizarPDF(informacionOrden[0].idOrden)" ><i class="fas fa-print"></i> Imprimir</button>  
         <button type="button " class="btn btO " style="background-color: #D51F36; color: white;"  (click)="enviarCorreoPrefactura(informacionOrden[0].idOrden)"  ><i class="fas fa-envelope"></i> Correo</button>
@@ -503,6 +531,55 @@
 
                     <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarModal()" ><i class="fas fa-window-close"></i> Cancelar</button>
                     <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar" (click)="modificarCantidad(formCantidad.value,pedidoProductos)"><i class="fas fa-save "></i>  Guardar cambios</button>
+
+                </div>
+
+            </form>
+         
+        </div>
+    </div>
+</ng-template>
+<ng-template #modalElegirPuntoVenta class="modal fade" >
+    <div class="modal-content">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>
+          
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Elejir punto de venta</h1>
+            <!-- <h5 class="modal-title" id="exampleModalLongTitle">Editar Producto/Servicio</h5> -->
+        </div>
+   
+        <div class="modal-body">
+            <form class="login100-form validate-form flex-sb flex-w animated text-center" style="color: #757575;" [formGroup]="formPuntoVenta" >
+
+                <div class=" ml-4 mr-4">
+
+                    <!-- SELECCIONAR TECNICO -->
+
+                    <div class="form-group">
+                        <label for="username" id="tituloF">Técnico <i class="fas fa-user-cog"></i></label>
+                        <div class="mb-2">
+                            <select  formControlName="puntoventa_id" class="custom-select" style="width: 12em;font-size: 0.85em;" >
+                                <option selected value="" disabled>Elija punto de venta</option>
+                                <ng-container   *ngFor="let pv of puntosVenta" >
+                                <option  style="font-size: 0.85em;" value="{{ pv.puntoventa_id }}">
+                                  {{ pv.pto_razon_social| uppercase }}-{{pv.pto_ruc}}-{{pv.nombre|uppercase}}-
+                                  {{pv.establecimiento}}-{{pv.puntoemision}}-00000{{pv.secuenciaultima}}
+                                </option>
+                              </ng-container>
+                      
+                              </select>
+                        </div>
+                    </div>
+                </div>
+                     <!-- SELECCIONAR SERVICIO -->
+                   
+                <div class=" button group row m-3 ">
+
+                    <button type="button" class="btn col btn-md  btnGuardar "  (click)="cerrarModal2()" ><i class="fas fa-window-close"></i> Cancelar</button>
+                    <button type="submit" class="btn col btn-md btnModal"  id="btnGuardar" (click)="elegirPuntoVenta(formPuntoVenta.value)"><i class="fas fa-check "></i> Seleccionar </button>
 
                 </div>
 

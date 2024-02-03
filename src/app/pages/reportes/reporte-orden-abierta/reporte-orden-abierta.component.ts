@@ -426,11 +426,13 @@ enviarCorreo(id:any){
     let band:any;
     let empresa = this.getNombreEmpresa();
     
+    // this.allService.getSimple('hacer_pdf/'+accion+'?oa_id='+id+'&tipo='+tipo+'&emp='+empresa).then((data:any)=>{
     this.allService.getAl('hacer_pdf/'+accion+'?oa_id='+id+'&tipo='+tipo+'&emp='+empresa).then((data:any)=>{
+    // this.allService.getAl('hacer_pdf/'+accion+'?oa_id='+id+'&tipo='+tipo+'&emp='+empresa).then((data:any)=>{
 
       // console.log('RES',data);
       
-      if(data.rta == undefined){
+      if(data.rta == (undefined)){
         Swal.close(); 
         Swal.fire({
           allowOutsideClick:false,
@@ -644,7 +646,7 @@ eliminarOrden(id:any){
             allowOutsideClick: false,
             icon: 'success',
             title: '¡Orden Eliminar!',
-            text: "Se ha elimnador la orden correctamente",
+            text: "Se ha eliminado la orden correctamente",
            
             showConfirmButton:false,
             timer:1600

@@ -1153,7 +1153,7 @@ form.user_id = user_id;
         //   timer:2000,
         //   showConfirmButton:false       
         // });
-        location.reload();
+        // location.reload();
       }else{
     Swal.fire({
       allowOutsideClick: false,

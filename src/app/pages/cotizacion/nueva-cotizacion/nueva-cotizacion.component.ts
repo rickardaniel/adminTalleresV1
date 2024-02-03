@@ -2147,7 +2147,16 @@ crearCotizacion(form:any,ps:any){
     }else console.log("ERROR");
     let infAcceso1 =  Object.values(this.datosLocalStorage);
     // console.log('inf login', infAcceso1);
-    let ptvid = infAcceso1[2][0].puntoventa_id;
+    let pVID = infAcceso1[2].length -1;
+  // console.log(pVID);
+  
+
+  // this.user_id = infAcceso.empleado[0].id;
+  // console.log(infAcceso);
+
+ 
+  // this.puntoventa_id = infAcceso.puntosventa[pVID].puntoventa_id;
+    let ptvid = infAcceso1[2][pVID].puntoventa_id;
     let b_id = infAcceso1[2][0].bodega_id;
     let uid = infAcceso1[1][0].id;
     // console.log('punto venta_id',ptvid);

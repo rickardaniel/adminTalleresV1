@@ -573,7 +573,7 @@
             "
             formControlName="prioridad_id"
             class="custom-select"
-            id="priID"
+           
           >
             <option selected value="">{{priDefectoNombre |titlecase}}</option>
             <ng-container *ngFor="let prio of prioridades">
@@ -672,7 +672,7 @@
             <h5>
               <mdb-badge id="subTitulo1"> Técnico <i class="fas fa-tools"></i></mdb-badge>
             </h5>
-            <select [formControlName]="i" class="custom-select divSelect " id="priID" >
+            <select [formControlName]="i" class="custom-select divSelect " >
 
 
                 <option selected value="">{{tecDefectoNombre |titlecase}}</option>
@@ -696,7 +696,7 @@
             <select
               [formControlName]="i"
               class="custom-select divSelect"
-id="priID"
+              
             >
               <option selected value="">{{servDefectoNombre |titlecase}}</option>
               <ng-container   *ngFor="let ser of servicios" >
@@ -734,6 +734,19 @@ id="priID"
         <button type="button" (click)="listarTodos()" (click)="listarTodos1()" class="btn btnTrash" id="btnAbrirCheck" >
           Control de Ingreso
         </button>
+        <!-- <button type="button" (click)="listarTodos()" (click)="listarTodos1()" class="btn btnTrash" id="btnAbrirCheck" >
+          Control de Ingreso
+        </button> -->
+        <select *ngIf="banderaPuntosVenta" formControlName="puntoventa_id" class="custom-select" style="width: 12em;font-size: 0.85em;" >
+          <option selected value="" disabled>Elija punto de venta</option>
+          <ng-container   *ngFor="let pv of puntosVenta" >
+          <option  style="font-size: 0.85em;" value="{{ pv.puntoventa_id }}">
+            {{ pv.pto_razon_social| uppercase }}-{{pv.pto_ruc}}-{{pv.nombre|uppercase}}-
+            {{pv.establecimiento}}-{{pv.puntoemision}}-00000{{pv.secuenciaultima}}
+          </option>
+        </ng-container>
+
+        </select>
 
     </div>
 
@@ -831,6 +844,28 @@ id="priID"
             <button class="btn btO bSave" (click)="guardarCheck(formCheck.value)"><i class="fas fa-save"></i> Guardar </button>
           </div>
           </form> 
+
+          </div>
+
+
+
+        </div>
+    </div>
+</ng-template>
+
+<!-- SELECCIONAR PUNTO DE VENTA -->
+  <ng-template #modalPUNTOVENTA class="modal fade " >
+    <div class="modal-content animated fadeIn">
+
+        <div class="modal-header mh">
+            <h5 class="modal-title w-100 text-center " id="exampleModalLabel"></h5>        
+        </div>
+        <div class="form-header mt-3">
+            <h1 class="" id="tituloForm">Seleccione Punto de Venta</h1>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+
 
           </div>
 

@@ -166,10 +166,22 @@ export class PlaneadorDetalleComponent implements OnInit {
   facturadoServ = false;
   facturadoProd = false;
 
+  puntosVenta:any=[];
+  banderaPuntosVenta:any;
+
+  opcionSeleccionado:string ='';
+  verSeleccion:string ='';
+
+  banderaFacturarConPunto = false;
+  banderaFacturarSinPunto= false;
+
   // ARREGLO PARA QUE NO FACTURE SI HAY PRODUCTOS EN CERO
   arregloPrecioUnitarioProductosFacturar:any=[];
 
   @ViewChild('modalSelecionarPC') modalSelecionarPC:
+    | TemplateRef<any>
+    | undefined;
+  @ViewChild('modalElegirPuntoVenta') modalElegirPuntoVenta:
     | TemplateRef<any>
     | undefined;
 
@@ -187,7 +199,7 @@ export class PlaneadorDetalleComponent implements OnInit {
     // this.getControlStock();
     // SelectDefecto();
     // console.log("elements 2", this.elements2);
-    
+    this.funcionLocalStorage();
     combineLatest([
       this.allService.getAl('tecnico/todos'),
       this.allService.getAl('producto/activo'),
@@ -254,6 +266,11 @@ export class PlaneadorDetalleComponent implements OnInit {
     nombre : new FormControl('',[ Validators.required, Validators.minLength(4), Validators.pattern('[0-9]{4,20}')]),
    
   })
+
+  formPuntoVenta = new FormGroup({
+    puntoventa_id: new FormControl(''),
+
+  })
   // ================================== FORM PRODUCTO-SERVICIO ========================================
 
   formProductoServicio = new FormGroup({
@@ -313,10 +330,18 @@ export class PlaneadorDetalleComponent implements OnInit {
   cerrarModal() {
     this.modal.close();
   }
+  cerrarModal2() {
+    this.modalService.dismissAll();
+  }
   cerrarCaso(el: any) {
     this.informacionOrden = el;
     this.elements3 = el;
     // console.log("esto debe enviarse por el Input", this.informacionOrden);
+  }
+
+  funcionDatosLocalStorage(){
+   
+   
   }
 
   desplegarAlias(i: any) {
@@ -1966,6 +1991,8 @@ export class PlaneadorDetalleComponent implements OnInit {
     let infAcceso1 = Object.values(this.datosLocalStorage);
     // console.log('inf login', infAcceso1);
     let ptvid = infAcceso1[2][0].puntoventa_id;
+    // console.log('PUNTO DE VENTA QUE ENVIO ', ptvid);
+    
     let b_id = infAcceso1[2][0].bodega_id;
     // console.log('OBJ',ptvid);
 
@@ -2153,6 +2180,7 @@ export class PlaneadorDetalleComponent implements OnInit {
     pro_id: new FormControl(),
   });
 
+  
   // ==================================== MÉTODO FACTURAR =======================================
 
   // VALIDAR QUE FACTURE SI TIENE PRODUCTOS CON PRECIO 0
@@ -2173,7 +2201,56 @@ export class PlaneadorDetalleComponent implements OnInit {
      return contPSP;
   }
 
+  abrirModalPuntoVenta(){
+    let datoPuntoVenta = this.allService.funcionDatosLocalStorage();
+   this.puntosVenta = datoPuntoVenta;
+
+   console.log(datoPuntoVenta.length);
+
+   this.modalService.open(this.modalElegirPuntoVenta);
+
+  //  if(datoPuntoVenta.length > 1){
+  // this.modalService.open(this.modalElegirPuntoVenta);
+
+  
+  //  }else{
+
+  //  }
+  }
+
+  elegirPuntoVenta(form:any){
+
+    // let datoPuntoVenta = this.allService.funcionDatosLocalStorage();
+    this.puntosVenta = form.puntoventa_id;
+    // this.modalService.open(this.modalElegirPuntoVenta);
+   
+  }
+  funcionLocalStorage(){
+    this.puntosVenta = this.allService.funcionDatosLocalStorage();
+    if(this.puntosVenta.length >1){
+      // console.log('ENTRA ACA');
+      
+   this.banderaFacturarConPunto = true;
+    }else if(this.puntosVenta.length == 1){
+
+
+      this.banderaFacturarConPunto = false;
+    }
+  //  this.puntosVenta = datoPuntoVenta;
+  }
+  capturar2(rol:string) {
+
+    this.verSeleccion = this.opcionSeleccionado;
+    // console.log('Esto se captura =>', this.verSeleccion );
+    
+}
   hacerFactura() {
+   
+    // console.log('SLECT',this.verSeleccion);
+
+
+   
+
 
     let condicion = this.validarPrecios(this.pedidoProductos[0].productos);
     // console.log(condicion);
@@ -2432,58 +2509,54 @@ export class PlaneadorDetalleComponent implements OnInit {
       fecha_vence,
     };
 
-    // console.log(json);
+    console.log(json);
     
     let estadoF = this.elements2[0].usuario[0].facturado;
 
-  this.allService.postFacturar(json).subscribe(
-      (data: any) => {
-        this.banderaCard = false;
+  // this.allService.postFacturar(json).subscribe(
+  //     (data: any) => {
+  //       this.banderaCard = false;
 
-        Swal.close();
+  //       Swal.close();
 
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'success',
-          title: 'Factura generada ',
-          text: data.rta.msg,
-          timer: 1600,
-          showConfirmButton: false,
-        });
+  //       Swal.fire({
+  //         allowOutsideClick: false,
+  //         icon: 'success',
+  //         title: 'Factura generada ',
+  //         text: data.rta.msg,
+  //         timer: 1600,
+  //         showConfirmButton: false,
+  //       });
 
-        abrirModalCerrarOrden();
+  //       abrirModalCerrarOrden();
 
-        this.banderaFacturar = false;
-        this.banderaFacturarServicio = false;
-        this.banderaFacturarProducto = false;
-        this.banderaPrefactura = false;
-        this.banderaAcciones = false;
-        this.banderaBusqueda = false;
+  //       this.banderaFacturar = false;
+  //       this.banderaFacturarServicio = false;
+  //       this.banderaFacturarProducto = false;
+  //       this.banderaPrefactura = false;
+  //       this.banderaAcciones = false;
+  //       this.banderaBusqueda = false;
 
-        this.idFactura = data.rta.venta_id;
-        if (this.idFactura) {
-          this.allService
-            .getAl(
-              'orden_abierta/add_factura?id=' +
-                this.idOrden +
-                '&fv=' +
-                this.idFactura+
-                '&m='+0
-            )
-            .then((data: any) => {
-            });
-        }
-      },
-      (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Error, no se pudo guardar factura',
-          timer: 2000, 
-          showConfirmButton: false,
-        });
-      }
-    );
+  //       this.idFactura = data.rta.venta_id;
+  //       if (this.idFactura) {
+  //         this.allService
+  //           .getAl(
+  //             'orden_abierta/add_factura?id='+this.idOrden+'&fv='+this.idFactura+'&m='+0
+  //           )
+  //           .then((data: any) => {
+  //           });
+  //       }
+  //     },
+  //     (err) => {
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Oops...',
+  //         text: 'Error, no se pudo guardar factura',
+  //         timer: 2000, 
+  //         showConfirmButton: false,
+  //       });
+  //     }
+  //   );
       }
     });
 
@@ -2729,7 +2802,633 @@ export class PlaneadorDetalleComponent implements OnInit {
 
     let estadoF = this.elements2[0].usuario[0].facturado;
 // Swal.close();
-//     console.log("factura", json);
+    console.log("factura", json);
+    
+
+    this.allService.postFacturar(json).subscribe(
+      (data: any) => {
+        this.banderaCard = false;
+
+        Swal.close();
+
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'success',
+          title: 'Factura generada ',
+          text: data.rta.msg,
+          timer: 1600,
+          showConfirmButton: false,
+        });
+
+        abrirModalCerrarOrden();
+
+        this.banderaFacturar = false;
+        this.banderaFacturarServicio = false;
+        this.banderaFacturarProducto = false;
+        this.banderaPrefactura = false;
+        this.banderaAcciones = false;
+        this.banderaBusqueda = false;
+
+        // console.log("THIS BANDERA PADRE HIJO ", this.banderaHijoaPadre);
+        // this.cerrarPlaneadorDetalle();
+
+        this.idFactura = data.rta.venta_id;
+        if (this.idFactura) {
+          this.allService
+            .getAl(
+              'orden_abierta/add_factura?id='+this.idOrden+'&fv='+this.idFactura+'&m='+0
+            )
+            .then((data: any) => {
+              // console.log("LO QUE DEVUELVE",data);
+            });
+        }
+      },
+      (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error, no se pudo guardar factura',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    );
+  }
+
+  }
+  hacerFacturaconPunto() {
+   
+    // console.log('SLECT',this.verSeleccion);
+
+    if(this.verSeleccion ==''){
+
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'error',
+        title: 'Seleccione punto de venta',
+        text: 'Tiene que seleccionar un punto de eventa para generar la factura',
+        confirmButtonColor: '#B5B5B5',
+      });
+
+    }else {
+
+    
+    let condicion = this.validarPrecios(this.pedidoProductos[0].productos);
+    console.log(this.pedidoProductos[0].productos);
+ 
+    if(condicion>=1){
+     Swal.close();
+     Swal.fire({
+      title: 'Factura incompleta',
+      text: 'Falta de asignar precio a servicios/productos,¿Desea facturar la orden de todos modos?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#B5B5B5',
+      cancelButtonColor: '#F51F36',
+      cancelButtonText:'Cancelar',
+      confirmButtonText: 'Si, facturar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: 'info',
+          text: 'Realizando Factura, espere por favor',
+        });
+        Swal.showLoading();
+    
+    let pedido = this.pedidoProductos[0].productos;
+    let tamArreglo = pedido.length;
+
+    this.idOrden = this.informacionOrden[0].idOrden;
+
+    //  DETALLE FACTURA
+
+    let Producto_codigo = '';
+    let itemcantidad = 1;
+    let itempreciobruto = 1;
+    let itemprecioxcantidadbruto = 1;
+    let descuentofactporcent = 0;
+    let descuentofactvalor = 0;
+    let recargofactporcent = 0;
+    let recargofactvalor = 0;
+    //  ----------------------
+    let itemprecioneto = 1;
+    let itemprecioxcantidadneto = 1;
+    let ivaporcent = 12;
+    let ivavalitemprecioneto = 0;
+    let itemprecioiva = 1;
+    let ivavalprecioxcantidadneto = 0;
+    let itemxcantidadprecioiva = 1;
+    let estaAnulada = 0;
+    let bodega_id = this.bodega_id;
+    let tiposprecio_tipoprecio = '';
+    let itembaseiva = 1;
+    let totitembaseiva = 1;
+    let iceporcent = null;
+    let iceval = 0; /// TAMBIEN VA EN FACTURA
+    let priceice = null;
+    let totalpriceice = null;
+    let totivaval = 0;
+    let priceiva = 1;
+    let totalpriceiva = 1;
+    //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+    let meses_garantia = 0;
+    let unidad = 0;
+
+    //totalServicios
+    let sts = 0;
+
+    //TotalProductos
+    let stp = 0;
+
+    //Tarifas
+    let tt12 = 0;
+    let tt0 = 0;
+    let tt8 = 0;
+
+    //ARREGLO DETALLE
+    const arrDetalle = new Array();
+    let detalle = 0;
+
+    let detalleProducto;
+
+    for (let i = 0; i < tamArreglo; i++) {
+      Producto_codigo = pedido[i][0].producto_id;
+      itemcantidad = pedido[i][0].cant;
+      itempreciobruto = pedido[i][0].itemprecio;
+      itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+      itemprecioneto = itempreciobruto;
+      itemprecioxcantidadneto = itemprecioxcantidadbruto;
+      ivaporcent = pedido[i][0].ivaporcent;
+      ivavalitemprecioneto = pedido[i][0].iva;
+      itemprecioiva = itemcantidad * pedido[i][0].total;
+      ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+      itemxcantidadprecioiva = itemprecioiva;
+      bodega_id = pedido[i][0].bodega_id;
+      tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+      itembaseiva = itempreciobruto;
+      totitembaseiva = itemprecioxcantidadbruto;
+      totivaval = ivavalprecioxcantidadneto;
+      priceiva = pedido[i][0].total;
+      totalpriceiva = itemcantidad * priceiva;
+
+      if (pedido[i][0].esservicio == '1') {
+        sts += itemcantidad * itempreciobruto;
+      } else if (pedido[i][0].esservicio == '0') {
+        stp += itemcantidad * itempreciobruto;
+      }
+
+      // if ((pedido[i][0].ivaporcent = '12')) {
+      //   tt12 += itemcantidad * itempreciobruto;
+      // } else if ((pedido[i][0].ivaporcent = '0')) {
+      //   tt0 += itemcantidad * itempreciobruto;
+      // } else if ((pedido[i][0].ivaporcent = '8')) {
+      //   tt8 += itemcantidad * itempreciobruto;
+      // }
+      if ((ivaporcent == 12)) {
+        // console.log("aqio",tt12);
+        
+        tt12 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 0)) {
+        // console.log("en cero");
+        tt0 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 8)) {
+        tt8 += itemcantidad * itempreciobruto;
+      }
+
+      // let detalle = 0;
+      detalleProducto = {
+        Producto_codigo,
+        itemcantidad,
+        itempreciobruto,
+        itemprecioxcantidadbruto,
+        descuentofactporcent,
+        descuentofactvalor,
+        recargofactporcent,
+        recargofactvalor,
+        itemprecioneto,
+        itemprecioxcantidadneto,
+        ivaporcent,
+        ivavalitemprecioneto,
+        itemprecioiva,
+        ivavalprecioxcantidadneto,
+        itemxcantidadprecioiva,
+        estaAnulada,
+        bodega_id,
+        tiposprecio_tipoprecio,
+        itembaseiva,
+        totitembaseiva,
+        iceporcent,
+        iceval,
+        priceice,
+        totalpriceice,
+        totivaval,
+        priceiva,
+        totalpriceiva,
+        detalle,
+        meses_garantia,
+        unidad,
+      };
+      arrDetalle.push(detalleProducto);
+    }
+
+    // =================== FACTURA
+
+    let tival = 0;
+
+    // console.log('que es esto',arrDetalle);
+
+    for (let i = 0; i < arrDetalle.length; i++) {
+      tival = tival + arrDetalle[i].totivaval;
+    }
+
+    let ivaval = tival;
+
+    let creditoval = 0; //ya
+    let recargovalor = 0; //ya
+    let descuentovalor = 0;
+
+    let baseiva = tt12;
+    let nro_orden = '';
+    let servicios = 0;
+    let subtbrutoservicios = sts;
+    let subtbrutobienes = stp;
+    let tarifadocebruto = baseiva;
+    let tarifacerobruto = tt0;
+    let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+    let subtotalNeto = tarifacerobruto + tarifadocebruto;
+    // let ivaval = baseiva * (0.12);
+    let totalCompra = subtotalNeto + ivaval;
+    let observaciones = '';
+    let valorrecibidoefectivo = 0;
+    let valorcambio = 0;
+    let subtnetobienes = subtbrutobienes;
+    let subtnetoservicios = subtbrutoservicios;
+    let tarifaceroneto = tarifacerobruto;
+    let tarifadoceneto = tarifadocebruto;
+    let efectivoval = 0;
+
+    let factura = {
+      creditoval,
+      recargovalor,
+      subtotalBruto,
+      descuentovalor,
+      subtotalNeto,
+      ivaval,
+      totalCompra,
+      observaciones,
+      valorrecibidoefectivo,
+      valorcambio,
+      tarifacerobruto,
+      tarifaceroneto,
+      tarifadocebruto,
+      tarifadoceneto,
+      subtbrutobienes,
+      subtbrutoservicios,
+      subtnetobienes,
+      subtnetoservicios,
+      iceval,
+      efectivoval,
+      baseiva,
+      nro_orden,
+      servicios,
+    };
+
+    const dato = localStorage.getItem('Inflogueo');
+
+    if (dato) {
+      this.datosLocalStorage = JSON.parse(dato);
+    } else console.log('ERROR');
+
+    let infAcceso = Object.values(this.datosLocalStorage);
+    let user_id = infAcceso[1][0].id;
+
+    // this.user_id = user_id;
+    let puntoventa_id = this.verSeleccion;
+    this.puntoventa_id = puntoventa_id;
+    let type = 'prefactura';
+    let PersonaComercio_cedulaRuc =
+      this.informacionOrden[0].PersonaComercio_cedulaRuc;
+
+    let efecval = totalCompra;
+    let fecha_vence = '';
+
+    let cliente = {
+      PersonaComercio_cedulaRuc,
+    };
+
+    let json = {
+      factura,
+      detalle: arrDetalle,
+      user_id,
+      puntoventa_id,
+      type,
+      cliente,
+      efectivo_val: efecval,
+      credito_val: creditoval,
+      fecha_vence,
+    };
+    Swal.close();
+
+    console.log(json);
+    
+    let estadoF = this.elements2[0].usuario[0].facturado;
+
+  // this.allService.postFacturar(json).subscribe(
+  //     (data: any) => {
+  //       this.banderaCard = false;
+
+  //       Swal.close();
+
+  //       Swal.fire({
+  //         allowOutsideClick: false,
+  //         icon: 'success',
+  //         title: 'Factura generada ',
+  //         text: data.rta.msg,
+  //         timer: 1600,
+  //         showConfirmButton: false,
+  //       });
+
+  //       abrirModalCerrarOrden();
+
+  //       this.banderaFacturar = false;
+  //       this.banderaFacturarServicio = false;
+  //       this.banderaFacturarProducto = false;
+  //       this.banderaPrefactura = false;
+  //       this.banderaAcciones = false;
+  //       this.banderaBusqueda = false;
+
+  //       this.idFactura = data.rta.venta_id;
+  //       if (this.idFactura) {
+  //         this.allService
+  //           .getAl(
+  //             'orden_abierta/add_factura?id=' +
+  //               this.idOrden +
+  //               '&fv=' +
+  //               this.idFactura+
+  //               '&m='+0
+  //           )
+  //           .then((data: any) => {
+  //           });
+  //       }
+  //     },
+  //     (err) => {
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Oops...',
+  //         text: 'Error, no se pudo guardar factura',
+  //         timer: 2000, 
+  //         showConfirmButton: false,
+  //       });
+  //     }
+  //   );
+      }
+    });
+
+    }else{
+
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'info',
+        title: 'info',
+        text: 'Realizando Factura, espere por favor',
+      });
+      Swal.showLoading();
+  
+    let pedido = this.pedidoProductos[0].productos;
+    // console.log(pedido);
+    
+    let tamArreglo = pedido.length;
+
+    this.idOrden = this.informacionOrden[0].idOrden;
+
+    //  DETALLE FACTURA
+
+    let Producto_codigo = '';
+    let itemcantidad = 1;
+    let itempreciobruto = 1;
+    let itemprecioxcantidadbruto = 1;
+    let descuentofactporcent = 0;
+    let descuentofactvalor = 0;
+    let recargofactporcent = 0;
+    let recargofactvalor = 0;
+    //  ----------------------
+    let itemprecioneto = 1;
+    let itemprecioxcantidadneto = 1;
+    let ivaporcent = 12;
+    let ivavalitemprecioneto = 0;
+    let itemprecioiva = 1;
+    let ivavalprecioxcantidadneto = 0;
+    let itemxcantidadprecioiva = 1;
+    let estaAnulada = 0;
+    let bodega_id = this.bodega_id;
+    let tiposprecio_tipoprecio = '';
+    let itembaseiva = 1;
+    let totitembaseiva = 1;
+    let iceporcent = null;
+    let iceval = 0; /// TAMBIEN VA EN FACTURA
+    let priceice = null;
+    let totalpriceice = null;
+    let totivaval = 0;
+    let priceiva = 1;
+    let totalpriceiva = 1;
+    //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+    let meses_garantia = 0;
+    let unidad = 0;
+
+    //totalServicios
+    let sts = 0;
+
+    //TotalProductos
+    let stp = 0;
+
+    //Tarifas
+    let tt12 = 0;
+    let tt0 = 0;
+    let tt8 = 0;
+
+    //ARREGLO DETALLE
+    const arrDetalle = new Array();
+    let detalle = 0;
+
+    let detalleProducto;
+
+    for (let i = 0; i < tamArreglo; i++) {
+      Producto_codigo = pedido[i][0].producto_id;
+      itemcantidad = pedido[i][0].cant;
+      itempreciobruto = pedido[i][0].itemprecio;
+      itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+      itemprecioneto = itempreciobruto;
+      itemprecioxcantidadneto = itemprecioxcantidadbruto;
+      ivaporcent = pedido[i][0].ivaporcent;
+      // console.log("ivaporcent => ", ivaporcent);
+      
+      ivavalitemprecioneto = pedido[i][0].iva;
+      itemprecioiva = itemcantidad * pedido[i][0].total;
+      ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+      itemxcantidadprecioiva = itemprecioiva;
+      bodega_id = pedido[i][0].bodega_id;
+      tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+      itembaseiva = itempreciobruto;
+      totitembaseiva = itemprecioxcantidadbruto;
+      totivaval = ivavalprecioxcantidadneto;
+      priceiva = pedido[i][0].total;
+      totalpriceiva = itemcantidad * priceiva;
+
+      if (pedido[i][0].esservicio == '1') {
+        sts += itemcantidad * itempreciobruto;
+      } else if (pedido[i][0].esservicio == '0') {
+        stp += itemcantidad * itempreciobruto;
+      }
+
+      if ((ivaporcent == 12)) {
+        // console.log("aqio",tt12);
+        
+        tt12 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 0)) {
+        // console.log("en cero");
+        tt0 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 8)) {
+        tt8 += itemcantidad * itempreciobruto;
+      }
+
+      // let detalle = 0;
+      detalleProducto = {
+        Producto_codigo,
+        itemcantidad,
+        itempreciobruto,
+        itemprecioxcantidadbruto,
+        descuentofactporcent,
+        descuentofactvalor,
+        recargofactporcent,
+        recargofactvalor,
+        itemprecioneto,
+        itemprecioxcantidadneto,
+        ivaporcent,
+        ivavalitemprecioneto,
+        itemprecioiva,
+        ivavalprecioxcantidadneto,
+        itemxcantidadprecioiva,
+        estaAnulada,
+        bodega_id,
+        tiposprecio_tipoprecio,
+        itembaseiva,
+        totitembaseiva,
+        iceporcent,
+        iceval,
+        priceice,
+        totalpriceice,
+        totivaval,
+        priceiva,
+        totalpriceiva,
+        detalle,
+        meses_garantia,
+        unidad,
+      };
+      arrDetalle.push(detalleProducto);
+    }
+
+    // =================== FACTURA
+
+    let tival = 0;
+
+    // console.log('que es esto',arrDetalle);
+
+    for (let i = 0; i < arrDetalle.length; i++) {
+      tival = tival + arrDetalle[i].totivaval;
+    }
+
+    let ivaval = tival;
+
+    let creditoval = 0; //ya
+    let recargovalor = 0; //ya
+    let descuentovalor = 0;
+
+    let baseiva = tt12;
+    let nro_orden = '';
+    let servicios = 0;
+    let subtbrutoservicios = sts;
+    let subtbrutobienes = stp;
+    let tarifadocebruto = baseiva;
+    let tarifacerobruto = tt0;
+    let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+    let subtotalNeto = tarifacerobruto + tarifadocebruto;
+    // let ivaval = baseiva * (0.12);
+    let totalCompra = subtotalNeto + ivaval;
+    let observaciones = '';
+    let valorrecibidoefectivo = 0;
+    let valorcambio = 0;
+    let subtnetobienes = subtbrutobienes;
+    let subtnetoservicios = subtbrutoservicios;
+    let tarifaceroneto = tarifacerobruto;
+    let tarifadoceneto = tarifadocebruto;
+    let efectivoval = 0;
+
+    let factura = {
+      creditoval,
+      recargovalor,
+      subtotalBruto,
+      descuentovalor,
+      subtotalNeto,
+      ivaval,
+      totalCompra,
+      observaciones,
+      valorrecibidoefectivo,
+      valorcambio,
+      tarifacerobruto,
+      tarifaceroneto,
+      tarifadocebruto,
+      tarifadoceneto,
+      subtbrutobienes,
+      subtbrutoservicios,
+      subtnetobienes,
+      subtnetoservicios,
+      iceval,
+      efectivoval,
+      baseiva,
+      nro_orden,
+      servicios,
+    };
+
+    const dato = localStorage.getItem('Inflogueo');
+
+    if (dato) {
+      this.datosLocalStorage = JSON.parse(dato);
+    } else console.log('ERROR');
+
+    let infAcceso = Object.values(this.datosLocalStorage);
+    let user_id = infAcceso[1][0].id;
+
+    // this.user_id = user_id;
+    let puntoventa_id = this.verSeleccion;
+    this.puntoventa_id = puntoventa_id;
+    let type = 'prefactura';
+    let PersonaComercio_cedulaRuc =
+      this.informacionOrden[0].PersonaComercio_cedulaRuc;
+
+    let efecval = totalCompra;
+    let fecha_vence = '';
+
+    let cliente = {
+      PersonaComercio_cedulaRuc,
+    };
+
+    let json = {
+      factura,
+      detalle: arrDetalle,
+      user_id,
+      puntoventa_id,
+      type,
+      cliente,
+      efectivo_val: efecval,
+      credito_val: creditoval,
+      fecha_vence,
+    };
+
+    let estadoF = this.elements2[0].usuario[0].facturado;
+Swal.close();
+    console.log("factura", json);
     
 
     this.allService.postFacturar(json).subscribe(
@@ -2785,6 +3484,7 @@ export class PlaneadorDetalleComponent implements OnInit {
       }
     );
   }
+}
 
   }
 
@@ -2824,7 +3524,7 @@ export class PlaneadorDetalleComponent implements OnInit {
     // console.log("pedido => ", pedido);
     
     let condicion = this.validarPrecios(pedido);
-    console.log(condicion);
+    // console.log(condicion);
  if(condicion>=1){
 
   Swal.fire({
@@ -3094,6 +3794,8 @@ export class PlaneadorDetalleComponent implements OnInit {
       } else {
         this.allService.postFacturar(json).subscribe(
           (data: any) => {
+            // console.log('data', data);
+            
             this.banderaCard = false;
             Swal.close();
   
@@ -3121,15 +3823,11 @@ export class PlaneadorDetalleComponent implements OnInit {
             if (this.idFactura) {
               this.allService
                 .postG(
-                  'orden_abierta/add_factura_prod_ser/id/' +
-                    this.idOrden +
-                    '/fv/' +
-                    this.idFactura,
-                  this.formIDServicio.value
+                  'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,this.formIDServicio.value
                 )
                 .subscribe((data: any) => {
   
-                  // console.log('data');
+                  // console.log('data 2', data);
                   
                   if (
                     this.facturadoServ == true &&  (this.totalProductosC == 0 || this.facturadoP == 1)) {
@@ -3462,15 +4160,10 @@ export class PlaneadorDetalleComponent implements OnInit {
           if (this.idFactura) {
             this.allService
               .postG(
-                'orden_abierta/add_factura_prod_ser/id/' +
-                  this.idOrden +
-                  '/fv/' +
-                  this.idFactura,
-                this.formIDServicio.value
-              )
+                'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,this.formIDServicio.value)
               .subscribe((data: any) => {
 
-                // console.log('data');
+                // console.log('data 2.1', data);
                 
                 if (
                   this.facturadoServ == true &&  (this.totalProductosC == 0 || this.facturadoP == 1)) {
@@ -3517,6 +4210,738 @@ export class PlaneadorDetalleComponent implements OnInit {
     }
  }
   }
+  facturarServicioPV() {
+    if(this.verSeleccion ==''){
+
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'error',
+        title: 'Seleccione punto de venta',
+        text: 'Tiene que seleccionar un punto de eventa para generar la factura',
+        confirmButtonColor: '#B5B5B5',
+      });
+
+    }else {
+
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'info',
+      title: 'info',
+      text: 'Realizando Factura Servicios, espere por favor',
+    });
+    Swal.showLoading();
+
+    let pedido1 = this.pedidoProductos[0].productos;
+
+    let item1: any;
+
+    for (let x = 0; x < pedido1.length; x++) {
+      if (pedido1[x][0].esservicio == 0) {
+        item1 = pedido1[x];
+        this.totalProductos.push(item1);
+      }
+    }
+    // console.log(this.totalProductos);
+    
+
+    
+    this.totalProductosC = this.totalProductos.length;
+    let pedido = new Array();
+    let item: any;
+    for (let z = 0; z < pedido1.length; z++) {
+      if (pedido1[z][0].esservicio == 1) {
+        item = pedido1[z];
+        pedido.push(item);
+      }
+    }
+    // console.log("pedido => ", pedido);
+    
+    let condicion = this.validarPrecios(pedido);
+    // console.log(condicion);
+ if(condicion>=1){
+
+  Swal.fire({
+    title: 'Factura incompleta',
+    text: 'Falta de asignar precio a servicios,¿Desea facturar la orden de todos modos?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#B5B5B5',
+    cancelButtonColor: '#F51F36',
+    cancelButtonText:'Cancelar',
+    confirmButtonText: 'Si, facturar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+
+      let tamArreglo = pedido.length;
+
+      this.idOrden = this.informacionOrden[0].idOrden;
+  
+      //  DETALLE FACTURA
+  
+      let Producto_codigo = '';
+      let itemcantidad = 1;
+      let itempreciobruto = 1;
+      let itemprecioxcantidadbruto = 1;
+      let descuentofactporcent = 0;
+      let descuentofactvalor = 0;
+      let recargofactporcent = 0;
+      let recargofactvalor = 0;
+      //  ----------------------
+      let itemprecioneto = 1;
+      let itemprecioxcantidadneto = 1;
+      let ivaporcent = 12;
+      let ivavalitemprecioneto = 0;
+      let itemprecioiva = 1;
+      let ivavalprecioxcantidadneto = 0;
+      let itemxcantidadprecioiva = 1;
+      let estaAnulada = 0;
+      let bodega_id = this.bodega_id;
+      let tiposprecio_tipoprecio = '';
+      let itembaseiva = 1;
+      let totitembaseiva = 1;
+      let iceporcent = null;
+      let iceval = 0; /// TAMBIEN VA EN FACTURA
+      let priceice = null;
+      let totalpriceice = null;
+      let totivaval = 0;
+      let priceiva = 1;
+      let totalpriceiva = 1;
+      //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+      let meses_garantia = 0;
+      let unidad = 0;
+  
+      //totalServicios
+      let sts = 0;
+  
+      //TotalProductos
+      let stp = 0;
+  
+      //Tarifas
+      let tt12 = 0;
+      let tt0 = 0;
+      let tt8 = 0;
+  
+      //ARREGLO DETALLE
+      const arrDetalle = new Array();
+      let detalle = 0;
+  
+      let detalleProducto;
+  
+      for (let i = 0; i < tamArreglo; i++) {
+        Producto_codigo = pedido[i][0].producto_id;
+        itemcantidad = pedido[i][0].cant;
+        itempreciobruto = pedido[i][0].itemprecio;
+        itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+        itemprecioneto = itempreciobruto;
+        itemprecioxcantidadneto = itemprecioxcantidadbruto;
+        ivaporcent = pedido[i][0].ivaporcent;
+        ivavalitemprecioneto = pedido[i][0].iva;
+        itemprecioiva = itemcantidad * pedido[i][0].total;
+        ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+        itemxcantidadprecioiva = itemprecioiva;
+        bodega_id = pedido[i][0].bodega_id;
+        tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+        itembaseiva = itempreciobruto;
+        totitembaseiva = itemprecioxcantidadbruto;
+        totivaval = ivavalprecioxcantidadneto;
+        priceiva = pedido[i][0].total;
+        totalpriceiva = itemcantidad * priceiva;
+  
+        if (pedido[i][0].esservicio == '1') {
+          sts += itemcantidad * itempreciobruto;
+        } else if (pedido[i][0].esservicio == '0') {
+          stp += itemcantidad * itempreciobruto;
+        }
+  
+        if ((ivaporcent == 12)) {
+          // console.log("aqio",tt12);
+          
+          tt12 += itemcantidad * itempreciobruto;
+        } else if ((ivaporcent == 0)) {
+          // console.log("en cero");
+          tt0 += itemcantidad * itempreciobruto;
+        } else if ((ivaporcent == 8)) {
+          tt8 += itemcantidad * itempreciobruto;
+        }
+  
+        // let detalle = 0;
+        detalleProducto = {
+          Producto_codigo,
+          itemcantidad,
+          itempreciobruto,
+          itemprecioxcantidadbruto,
+          descuentofactporcent,
+          descuentofactvalor,
+          recargofactporcent,
+          recargofactvalor,
+          itemprecioneto,
+          itemprecioxcantidadneto,
+          ivaporcent,
+          ivavalitemprecioneto,
+          itemprecioiva,
+          ivavalprecioxcantidadneto,
+          itemxcantidadprecioiva,
+          estaAnulada,
+          bodega_id,
+          tiposprecio_tipoprecio,
+          itembaseiva,
+          totitembaseiva,
+          iceporcent,
+          iceval,
+          priceice,
+          totalpriceice,
+          totivaval,
+          priceiva,
+          totalpriceiva,
+          detalle,
+          meses_garantia,
+          unidad,
+        };
+        arrDetalle.push(detalleProducto);
+      }
+  
+      // =================== FACTURA
+  
+      let tival = 0;
+  
+      for (let i = 0; i < arrDetalle.length; i++) {
+        tival = tival + arrDetalle[i].totivaval;
+      }
+  
+      let ivaval = tival;
+  
+      let creditoval = 0; //ya
+      let recargovalor = 0; //ya
+      let descuentovalor = 0;
+  
+      let baseiva = tt12;
+      let nro_orden = '';
+      let servicios = 0;
+      let subtbrutoservicios = sts;
+      let subtbrutobienes = stp;
+      let tarifadocebruto = baseiva;
+      let tarifacerobruto = tt0;
+      let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+      let subtotalNeto = tarifacerobruto + tarifadocebruto;
+      // let ivaval = baseiva * (0.12);
+      let totalCompra = subtotalNeto + ivaval;
+      let observaciones = '';
+      let valorrecibidoefectivo = 0;
+      let valorcambio = 0;
+      let subtnetobienes = subtbrutobienes;
+      let subtnetoservicios = subtbrutoservicios;
+      let tarifaceroneto = tarifacerobruto;
+      let tarifadoceneto = tarifadocebruto;
+      let efectivoval = 0;
+  
+      let factura = {
+        creditoval,
+        recargovalor,
+        subtotalBruto,
+        descuentovalor,
+        subtotalNeto,
+        ivaval,
+        totalCompra,
+        observaciones,
+        valorrecibidoefectivo,
+        valorcambio,
+        tarifacerobruto,
+        tarifaceroneto,
+        tarifadocebruto,
+        tarifadoceneto,
+        subtbrutobienes,
+        subtbrutoservicios,
+        subtnetobienes,
+        subtnetoservicios,
+        iceval,
+        efectivoval,
+        baseiva,
+        nro_orden,
+        servicios,
+      };
+  
+      const dato = localStorage.getItem('Inflogueo');
+  
+      if (dato) {
+        this.datosLocalStorage = JSON.parse(dato);
+      } else console.log('ERROR');
+  
+      let infAcceso = Object.values(this.datosLocalStorage);
+      let user_id = infAcceso[1][0].id;
+  
+      // this.user_id = user_id;
+      let puntoventa_id = this.verSeleccion;
+      this.puntoventa_id = puntoventa_id;
+      let type = 'prefactura';
+      let PersonaComercio_cedulaRuc =
+        this.informacionOrden[0].PersonaComercio_cedulaRuc;
+  
+      let efecval = totalCompra;
+      let fecha_vence = '';
+  
+      let cliente = {
+        PersonaComercio_cedulaRuc,
+      };
+  
+      let json = {
+        factura,
+        detalle: arrDetalle,
+        user_id,
+        puntoventa_id,
+        type,
+        cliente,
+        efectivo_val: efecval,
+        credito_val: creditoval,
+        fecha_vence,
+      };
+  
+      let estadoF = this.elements2[0].usuario[0].facturado;
+  
+      let arrIDServicios = new Array();
+      // let arrIDProductos = new Array;
+      for (let y = 0; y < arrDetalle.length; y++) {
+        let idS = arrDetalle[y].Producto_codigo;
+        //  let idT = arrDetalle[y].Producto_codigo;
+        arrIDServicios.push(idS);
+      }
+  // Swal.close();
+      // console.log('json => ', json);
+  
+      let pro_id = arrIDServicios;
+  
+      this.totalServicios = pro_id;
+  
+      this.formIDServicio.get('pro_id')?.setValue(pro_id);
+  
+      if (pro_id.length == 0) {
+        Swal.close();
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'error',
+          title: '¡Factura Vacía!',
+          text: 'No tiene servicios para facturar ',
+          timer: 2600,
+          showConfirmButton: false,
+        });
+      
+      } else {
+        this.allService.postFacturar(json).subscribe(
+          (data: any) => {
+            this.banderaCard = false;
+            Swal.close();
+  
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'success',
+              title: 'Factura generada ',
+              text: data.rta.msg,
+              timer: 1600,
+              showConfirmButton: false,
+            });
+  
+            // abrirModalCerrarOrden();
+  
+            this.banderaFacturar = false;
+            this.banderaFacturarServicio = false;
+            this.banderaPrefactura = false;
+            this.banderaAcciones = false;
+            this.banderaBusqueda = false;
+  
+            this.facturadoServ = true;
+            this.idFactura = data.rta.venta_id;
+            // console.log("servicios => ",    this.formIDServicio.value);
+            
+            if (this.idFactura) {
+              this.allService
+                .postG(
+                  'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,this.formIDServicio.value)
+                .subscribe((data: any) => {
+  
+                  // console.log('data');
+                  
+                  if (
+                    this.facturadoServ == true &&  (this.totalProductosC == 0 || this.facturadoP == 1)) {
+                   
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    abrirModalCerrarOrden();
+                    // console.log("caso 1 ");
+                    
+                  } else if ( this.facturadoServ == true && this.facturadoProd == true ) {
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    // console.log("caso 2 ");
+                    abrirModalCerrarOrden();
+                  } else if (this.facturadoServ == true && (this.totalProductosC >= 1 || this.facturadoP==0)) {
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = true;
+                    // console.log("caso 3 ");
+                    // this.banderaFacturarServicio = false;
+                  } else
+                  
+                  if(this.facturadoServ == true && this.facturadoProd == true){
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    abrirModalCerrarOrden();
+                    // console.log("Caso 4");
+                  }
+                },(err)=>{
+                  // console.log("VIENE ACA");
+                  this.facturadoServ == true;
+                  abrirModalCerrarOrden();
+                });
+            }
+          },
+          (err) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Error, no se pudo guardar factura',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }
+        );
+      }
+    }
+  });
+
+ }else{
+
+    let tamArreglo = pedido.length;
+
+    this.idOrden = this.informacionOrden[0].idOrden;
+
+    //  DETALLE FACTURA
+
+    let Producto_codigo = '';
+    let itemcantidad = 1;
+    let itempreciobruto = 1;
+    let itemprecioxcantidadbruto = 1;
+    let descuentofactporcent = 0;
+    let descuentofactvalor = 0;
+    let recargofactporcent = 0;
+    let recargofactvalor = 0;
+    //  ----------------------
+    let itemprecioneto = 1;
+    let itemprecioxcantidadneto = 1;
+    let ivaporcent = 12;
+    let ivavalitemprecioneto = 0;
+    let itemprecioiva = 1;
+    let ivavalprecioxcantidadneto = 0;
+    let itemxcantidadprecioiva = 1;
+    let estaAnulada = 0;
+    let bodega_id = this.bodega_id;
+    let tiposprecio_tipoprecio = '';
+    let itembaseiva = 1;
+    let totitembaseiva = 1;
+    let iceporcent = null;
+    let iceval = 0; /// TAMBIEN VA EN FACTURA
+    let priceice = null;
+    let totalpriceice = null;
+    let totivaval = 0;
+    let priceiva = 1;
+    let totalpriceiva = 1;
+    //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+    let meses_garantia = 0;
+    let unidad = 0;
+
+    //totalServicios
+    let sts = 0;
+
+    //TotalProductos
+    let stp = 0;
+
+    //Tarifas
+    let tt12 = 0;
+    let tt0 = 0;
+    let tt8 = 0;
+
+    //ARREGLO DETALLE
+    const arrDetalle = new Array();
+    let detalle = 0;
+
+    let detalleProducto;
+
+    for (let i = 0; i < tamArreglo; i++) {
+      Producto_codigo = pedido[i][0].producto_id;
+      itemcantidad = pedido[i][0].cant;
+      itempreciobruto = pedido[i][0].itemprecio;
+      itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+      itemprecioneto = itempreciobruto;
+      itemprecioxcantidadneto = itemprecioxcantidadbruto;
+      ivaporcent = pedido[i][0].ivaporcent;
+      ivavalitemprecioneto = pedido[i][0].iva;
+      itemprecioiva = itemcantidad * pedido[i][0].total;
+      ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+      itemxcantidadprecioiva = itemprecioiva;
+      bodega_id = pedido[i][0].bodega_id;
+      tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+      itembaseiva = itempreciobruto;
+      totitembaseiva = itemprecioxcantidadbruto;
+      totivaval = ivavalprecioxcantidadneto;
+      priceiva = pedido[i][0].total;
+      totalpriceiva = itemcantidad * priceiva;
+
+      if (pedido[i][0].esservicio == '1') {
+        sts += itemcantidad * itempreciobruto;
+      } else if (pedido[i][0].esservicio == '0') {
+        stp += itemcantidad * itempreciobruto;
+      }
+
+      if ((ivaporcent == 12)) {
+        // console.log("aqio",tt12);
+        
+        tt12 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 0)) {
+        // console.log("en cero");
+        tt0 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 8)) {
+        tt8 += itemcantidad * itempreciobruto;
+      }
+
+      // let detalle = 0;
+      detalleProducto = {
+        Producto_codigo,
+        itemcantidad,
+        itempreciobruto,
+        itemprecioxcantidadbruto,
+        descuentofactporcent,
+        descuentofactvalor,
+        recargofactporcent,
+        recargofactvalor,
+        itemprecioneto,
+        itemprecioxcantidadneto,
+        ivaporcent,
+        ivavalitemprecioneto,
+        itemprecioiva,
+        ivavalprecioxcantidadneto,
+        itemxcantidadprecioiva,
+        estaAnulada,
+        bodega_id,
+        tiposprecio_tipoprecio,
+        itembaseiva,
+        totitembaseiva,
+        iceporcent,
+        iceval,
+        priceice,
+        totalpriceice,
+        totivaval,
+        priceiva,
+        totalpriceiva,
+        detalle,
+        meses_garantia,
+        unidad,
+      };
+      arrDetalle.push(detalleProducto);
+    }
+
+    // =================== FACTURA
+
+    let tival = 0;
+
+    for (let i = 0; i < arrDetalle.length; i++) {
+      tival = tival + arrDetalle[i].totivaval;
+    }
+
+    let ivaval = tival;
+
+    let creditoval = 0; //ya
+    let recargovalor = 0; //ya
+    let descuentovalor = 0;
+
+    let baseiva = tt12;
+    let nro_orden = '';
+    let servicios = 0;
+    let subtbrutoservicios = sts;
+    let subtbrutobienes = stp;
+    let tarifadocebruto = baseiva;
+    let tarifacerobruto = tt0;
+    let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+    let subtotalNeto = tarifacerobruto + tarifadocebruto;
+    // let ivaval = baseiva * (0.12);
+    let totalCompra = subtotalNeto + ivaval;
+    let observaciones = '';
+    let valorrecibidoefectivo = 0;
+    let valorcambio = 0;
+    let subtnetobienes = subtbrutobienes;
+    let subtnetoservicios = subtbrutoservicios;
+    let tarifaceroneto = tarifacerobruto;
+    let tarifadoceneto = tarifadocebruto;
+    let efectivoval = 0;
+
+    let factura = {
+      creditoval,
+      recargovalor,
+      subtotalBruto,
+      descuentovalor,
+      subtotalNeto,
+      ivaval,
+      totalCompra,
+      observaciones,
+      valorrecibidoefectivo,
+      valorcambio,
+      tarifacerobruto,
+      tarifaceroneto,
+      tarifadocebruto,
+      tarifadoceneto,
+      subtbrutobienes,
+      subtbrutoservicios,
+      subtnetobienes,
+      subtnetoservicios,
+      iceval,
+      efectivoval,
+      baseiva,
+      nro_orden,
+      servicios,
+    };
+
+    const dato = localStorage.getItem('Inflogueo');
+
+    if (dato) {
+      this.datosLocalStorage = JSON.parse(dato);
+    } else console.log('ERROR');
+
+    let infAcceso = Object.values(this.datosLocalStorage);
+    let user_id = infAcceso[1][0].id;
+
+    // this.user_id = user_id;
+    let puntoventa_id = this.verSeleccion;
+    this.puntoventa_id = puntoventa_id;
+    let type = 'prefactura';
+    let PersonaComercio_cedulaRuc =
+      this.informacionOrden[0].PersonaComercio_cedulaRuc;
+
+    let efecval = totalCompra;
+    let fecha_vence = '';
+
+    let cliente = {
+      PersonaComercio_cedulaRuc,
+    };
+
+    let json = {
+      factura,
+      detalle: arrDetalle,
+      user_id,
+      puntoventa_id,
+      type,
+      cliente,
+      efectivo_val: efecval,
+      credito_val: creditoval,
+      fecha_vence,
+    };
+
+    let estadoF = this.elements2[0].usuario[0].facturado;
+
+    let arrIDServicios = new Array();
+    // let arrIDProductos = new Array;
+    for (let y = 0; y < arrDetalle.length; y++) {
+      let idS = arrDetalle[y].Producto_codigo;
+      //  let idT = arrDetalle[y].Producto_codigo;
+      arrIDServicios.push(idS);
+    }
+
+    // console.log('json => ', json);
+
+    let pro_id = arrIDServicios;
+
+    this.totalServicios = pro_id;
+
+    this.formIDServicio.get('pro_id')?.setValue(pro_id);
+
+    if (pro_id.length == 0) {
+      Swal.close();
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'error',
+        title: '¡Factura Vacía!',
+        text: 'No tiene servicios para facturar ',
+        timer: 2600,
+        showConfirmButton: false,
+      });
+    
+    } else {
+      this.allService.postFacturar(json).subscribe(
+        (data: any) => {
+          this.banderaCard = false;
+          Swal.close();
+
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'success',
+            title: 'Factura generada ',
+            text: data.rta.msg,
+            timer: 1600,
+            showConfirmButton: false,
+          });
+
+          // abrirModalCerrarOrden();
+
+          this.banderaFacturar = false;
+          this.banderaFacturarServicio = false;
+          this.banderaPrefactura = false;
+          this.banderaAcciones = false;
+          this.banderaBusqueda = false;
+
+          this.facturadoServ = true;
+          this.idFactura = data.rta.venta_id;
+          // console.log("servicios => ",    this.formIDServicio.value);
+          
+          if (this.idFactura) {
+            this.allService
+              .postG(
+                'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,this.formIDServicio.value
+              )
+              .subscribe((data: any) => {
+
+                // console.log('data', data);
+                
+                if (
+                  this.facturadoServ == true &&  (this.totalProductosC == 0 || this.facturadoP == 1)) {
+                 
+                  this.banderaFacturarServicio = false;
+                  this.banderaFacturarProducto = false;
+                  abrirModalCerrarOrden();
+                  // console.log("caso 1 ");
+                  
+                } else if ( this.facturadoServ == true && this.facturadoProd == true ) {
+                  this.banderaFacturarServicio = false;
+                  this.banderaFacturarProducto = false;
+                  // console.log("caso 2 ");
+                  abrirModalCerrarOrden();
+                } else if (this.facturadoServ == true && (this.totalProductosC >= 1 || this.facturadoP==0)) {
+                  this.banderaFacturarServicio = false;
+                  this.banderaFacturarProducto = true;
+                  // console.log("caso 3 ");
+                  // this.banderaFacturarServicio = false;
+                } else
+                
+                if(this.facturadoServ == true && this.facturadoProd == true){
+                  this.banderaFacturarServicio = false;
+                  this.banderaFacturarProducto = false;
+                  abrirModalCerrarOrden();
+                  // console.log("Caso 4");
+                }
+              },(err)=>{
+                // console.log("VIENE ACA");
+                this.facturadoServ == true;
+              });
+          }
+        },
+        (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error, no se pudo guardar factura',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }
+      );
+    }
+ }
+  }
+}
 
   // ================================== FACTURAR PRODUCTO ======================================
 
@@ -3846,10 +5271,7 @@ export class PlaneadorDetalleComponent implements OnInit {
                   
                   this.allService
                     .postG(
-                      'orden_abierta/add_factura_prod_ser/id/'+
-                        this.idOrden+
-                        '/fv/'+
-                        this.idFactura,
+                      'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,
                       this.formIDProductos.value
                     )
                     .subscribe(
@@ -4204,10 +5626,7 @@ export class PlaneadorDetalleComponent implements OnInit {
             
             this.allService
               .postG(
-                'orden_abierta/add_factura_prod_ser/id/'+
-                  this.idOrden+
-                  '/fv/'+
-                  this.idFactura,
+                'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,
                 this.formIDProductos.value
               )
               .subscribe(
@@ -4272,6 +5691,767 @@ export class PlaneadorDetalleComponent implements OnInit {
       );
     }
   }
+  }
+  facturarProductoPV() {
+    if(this.verSeleccion ==''){
+
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'error',
+        title: 'Seleccione punto de venta',
+        text: 'Tiene que seleccionar un punto de eventa para generar la factura',
+        confirmButtonColor: '#B5B5B5',
+      });
+
+    }else {
+
+
+
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'info',
+      title: 'info',
+      text: 'Realizando Factura Productos, espere por favor',
+    });
+    Swal.showLoading();
+
+    let pedido1 = this.pedidoProductos[0].productos;
+    let item1: any;
+
+    for (let x = 0; x < pedido1.length; x++) {
+      if (pedido1[x][0].esservicio == 1) {
+        item1 = pedido1[x];
+        this.totalServicios.push(item1);
+      }
+    }
+
+    this.totalServiciosC = this.totalServicios.length;
+    let pedido = new Array();
+    let item: any;
+    for (let z = 0; z < pedido1.length; z++) {
+      if (pedido1[z][0].esservicio == 0) {
+        item = pedido1[z];
+        pedido.push(item);
+      }
+    }
+    let condicion = this.validarPrecios(pedido);
+    if(condicion){
+      Swal.fire({
+        title: 'Factura incompleta',
+        text: 'Falta de asignar precio a productos,¿Desea facturar la orden de todos modos?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#B5B5B5',
+        cancelButtonColor: '#F51F36',
+        cancelButtonText:'Cancelar',
+        confirmButtonText: 'Si, facturar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let tamArreglo = pedido.length;
+
+          this.idOrden = this.informacionOrden[0].idOrden;
+      
+          //  DETALLE FACTURA
+      
+          let Producto_codigo = '';
+          let itemcantidad = 1;
+          let itempreciobruto = 1;
+          let itemprecioxcantidadbruto = 1;
+          let descuentofactporcent = 0;
+          let descuentofactvalor = 0;
+          let recargofactporcent = 0;
+          let recargofactvalor = 0;
+          //  ----------------------
+          let itemprecioneto = 1;
+          let itemprecioxcantidadneto = 1;
+          let ivaporcent = 12;
+          let ivavalitemprecioneto = 0;
+          let itemprecioiva = 1;
+          let ivavalprecioxcantidadneto = 0;
+          let itemxcantidadprecioiva = 1;
+          let estaAnulada = 0;
+          let bodega_id = this.bodega_id;
+          let tiposprecio_tipoprecio = '';
+          let itembaseiva = 1;
+          let totitembaseiva = 1;
+          let iceporcent = null;
+          let iceval = 0; /// TAMBIEN VA EN FACTURA
+          let priceice = null;
+          let totalpriceice = null;
+          let totivaval = 0;
+          let priceiva = 1;
+          let totalpriceiva = 1;
+          //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+          let meses_garantia = 0;
+          let unidad = 0;
+      
+          //totalServicios
+          let sts = 0;
+      
+          //TotalProductos
+          let stp = 0;
+      
+          //Tarifas
+          let tt12 = 0;
+          let tt0 = 0;
+          let tt8 = 0;
+      
+          //ARREGLO DETALLE
+          const arrDetalle = new Array();
+          let detalle = 0;
+      
+          let detalleProducto;
+      
+          for (let i = 0; i < tamArreglo; i++) {
+            Producto_codigo = pedido[i][0].producto_id;
+            itemcantidad = pedido[i][0].cant;
+            itempreciobruto = pedido[i][0].itemprecio;
+            itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+            itemprecioneto = itempreciobruto;
+            itemprecioxcantidadneto = itemprecioxcantidadbruto;
+            ivaporcent = pedido[i][0].ivaporcent;
+            ivavalitemprecioneto = pedido[i][0].iva;
+            itemprecioiva = itemcantidad * pedido[i][0].total;
+            ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+            itemxcantidadprecioiva = itemprecioiva;
+            bodega_id = pedido[i][0].bodega_id;
+            tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+            itembaseiva = itempreciobruto;
+            totitembaseiva = itemprecioxcantidadbruto;
+            totivaval = ivavalprecioxcantidadneto;
+            priceiva = pedido[i][0].total;
+            totalpriceiva = itemcantidad * priceiva;
+      
+            if (pedido[i][0].esservicio == '1') {
+              sts += itemcantidad * itempreciobruto;
+            } else if (pedido[i][0].esservicio == '0') {
+              stp += itemcantidad * itempreciobruto;
+            }
+      
+            if ((ivaporcent == 12)) {
+              // console.log("aqio",tt12);
+              
+              tt12 += itemcantidad * itempreciobruto;
+            } else if ((ivaporcent == 0)) {
+              // console.log("en cero");
+              tt0 += itemcantidad * itempreciobruto;
+            } else if ((ivaporcent == 8)) {
+              tt8 += itemcantidad * itempreciobruto;
+            }
+      
+            // let detalle = 0;
+            detalleProducto = {
+              Producto_codigo,
+              itemcantidad,
+              itempreciobruto,
+              itemprecioxcantidadbruto,
+              descuentofactporcent,
+              descuentofactvalor,
+              recargofactporcent,
+              recargofactvalor,
+              itemprecioneto,
+              itemprecioxcantidadneto,
+              ivaporcent,
+              ivavalitemprecioneto,
+              itemprecioiva,
+              ivavalprecioxcantidadneto,
+              itemxcantidadprecioiva,
+              estaAnulada,
+              bodega_id,
+              tiposprecio_tipoprecio,
+              itembaseiva,
+              totitembaseiva,
+              iceporcent,
+              iceval,
+              priceice,
+              totalpriceice,
+              totivaval,
+              priceiva,
+              totalpriceiva,
+              detalle,
+              meses_garantia,
+              unidad,
+            };
+            arrDetalle.push(detalleProducto);
+          }
+      
+          // =================== FACTURA
+      
+          let tival = 0;
+      
+          // console.log('que es esto',arrDetalle);
+      
+          for (let i = 0; i < arrDetalle.length; i++) {
+            tival = tival + arrDetalle[i].totivaval;
+          }
+      
+          let ivaval = tival;
+      
+          let creditoval = 0; //ya
+          let recargovalor = 0; //ya
+          let descuentovalor = 0;
+      
+          let baseiva = tt12;
+          let nro_orden = '';
+          let servicios = 0;
+          let subtbrutoservicios = sts;
+          let subtbrutobienes = stp;
+          let tarifadocebruto = baseiva;
+          let tarifacerobruto = tt0;
+          let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+          let subtotalNeto = tarifacerobruto + tarifadocebruto;
+          // let ivaval = baseiva * (0.12);
+          let totalCompra = subtotalNeto + ivaval;
+          let observaciones = '';
+          let valorrecibidoefectivo = 0;
+          let valorcambio = 0;
+          let subtnetobienes = subtbrutobienes;
+          let subtnetoservicios = subtbrutoservicios;
+          let tarifaceroneto = tarifacerobruto;
+          let tarifadoceneto = tarifadocebruto;
+          let efectivoval = 0;
+      
+          let factura = {
+            creditoval,
+            recargovalor,
+            subtotalBruto,
+            descuentovalor,
+            subtotalNeto,
+            ivaval,
+            totalCompra,
+            observaciones,
+            valorrecibidoefectivo,
+            valorcambio,
+            tarifacerobruto,
+            tarifaceroneto,
+            tarifadocebruto,
+            tarifadoceneto,
+            subtbrutobienes,
+            subtbrutoservicios,
+            subtnetobienes,
+            subtnetoservicios,
+            iceval,
+            efectivoval,
+            baseiva,
+            nro_orden,
+            servicios,
+          };
+      
+          const dato = localStorage.getItem('Inflogueo');
+      
+          if (dato) {
+            this.datosLocalStorage = JSON.parse(dato);
+          } else console.log('ERROR');
+      
+          let infAcceso = Object.values(this.datosLocalStorage);
+          let user_id = infAcceso[1][0].id;
+      
+          // this.user_id = user_id;
+          let puntoventa_id = this.verSeleccion;
+          this.puntoventa_id = puntoventa_id;
+          let type = 'prefactura';
+          let PersonaComercio_cedulaRuc =
+            this.informacionOrden[0].PersonaComercio_cedulaRuc;
+      
+          let efecval = totalCompra;
+          let fecha_vence = '';
+      
+          let cliente = {
+            PersonaComercio_cedulaRuc,
+          };
+      
+          let json = {
+            factura,
+            detalle: arrDetalle,
+            user_id,
+            puntoventa_id,
+            type,
+            cliente,
+            efectivo_val: efecval,
+            credito_val: creditoval,
+            fecha_vence,
+          };
+      
+          let estadoF = this.elements2[0].usuario[0].facturado;
+      
+          let arrIDProductos = new Array();
+          for (let y = 0; y < arrDetalle.length; y++) {
+            let idT = arrDetalle[y].Producto_codigo;
+            arrIDProductos.push(idT);
+          }
+
+          // Swal.close();
+          // console.log('json => ', json);
+      
+          let pro_id = arrIDProductos;
+          this.formIDProductos.get('pro_id')?.setValue(pro_id);
+      
+          // console.log("tam pro_id", pro_id.length);
+      
+          if (pro_id.length == 0) {
+            Swal.close();
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: '¡Factura Vacía!',
+              text: 'No tiene productos para facturar ',
+              timer: 2600,
+              showConfirmButton: false,
+            });
+          } else {
+            this.allService.postFacturar(json).subscribe(
+              (data: any) => {
+                this.banderaCard = false;
+      
+                Swal.close();
+      
+                Swal.fire({
+                  allowOutsideClick: false,
+                  icon: 'success',
+                  title: 'Factura generada ',
+                  text: data.rta.msg,
+                  timer: 1600,
+                  showConfirmButton: false,
+                });
+      
+                // abrirModalCerrarOrden();
+      
+                this.banderaFacturar = false;
+                this.banderaFacturarProducto = false;
+                this.banderaAcciones = false;
+                this.banderaBusqueda = false;
+      
+                // console.log("THIS BANDERA PADRE HIJO ", this.banderaHijoaPadre);
+                // this.cerrarPlaneadorDetalle();
+      
+                this.facturadoProd = true;
+      
+                this.idFactura = data.rta.venta_id;
+                if (this.idFactura) {
+      
+                  // console.log("enviado ",      this.formIDProductos.value);
+                  
+                  this.allService
+                    .postG(
+                      'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura, this.formIDProductos.value
+                    )
+                    .subscribe(
+                      (data: any) => {
+                        if (
+                          this.facturadoProd == true && (this.totalServiciosC == 0 || this.facturadoS == 1)) {
+                          abrirModalCerrarOrden();
+                          this.banderaFacturarServicio = false;
+                          this.banderaFacturarProducto = false;
+                          // console.log("Caso 1");
+                          
+                        } else if (this.facturadoServ == true && this.facturadoProd == true ) {
+                          this.banderaFacturarServicio = false;
+                          this.banderaFacturarProducto = false;
+                          // console.log("Caso 2");
+                          abrirModalCerrarOrden();
+                        } else if ( this.facturadoServ == true &&  (this.totalProductosC >= 1 || this.facturadoP == 0))  {
+                          this.banderaFacturarServicio = false;
+                          this.banderaFacturarProducto = true;
+                          // console.log("Caso 3");
+                        }
+      
+                      },
+                      (err) => {
+      
+                        this.facturadoProd = true;
+                        if(this.facturadoProd = true && this.facturadoServ == true){
+                 
+                          
+                          abrirModalCerrarOrden();
+      
+                        }else if(this.facturadoProd = true &&  this.facturadoS == 0){
+                          // console.log('this.facturadoS => ', this.facturadoS);
+                          // console.log('this.facturadoServ => ', this.facturadoServ ); 
+                          this.banderaFacturarServicio = true;
+                          this.banderaFacturarProducto = false;
+                          // console.log('cerrado');
+                            
+                        }else if(this.facturadoProd = true && this.facturadoS == 1 ){
+                          this.banderaFacturarServicio = false;
+                          this.banderaFacturarProducto = false;
+                          // console.log('cerrado2');
+                          abrirModalCerrarOrden();
+                        }else if(this.facturadoProd = true && this.facturadoServ == false){
+                          this.banderaFacturarServicio = true;
+                          this.banderaFacturarProducto = false;
+                          // console.log("caso 3");
+                        }         
+                      }
+                    );
+                }
+              },
+              (err) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Error, no se pudo guardar factura',
+                  timer: 2000,
+                  showConfirmButton: false,
+                });
+              }
+            );
+          }
+        }
+      });
+
+
+    }else {
+
+    let tamArreglo = pedido.length;
+
+    this.idOrden = this.informacionOrden[0].idOrden;
+
+    //  DETALLE FACTURA
+
+    let Producto_codigo = '';
+    let itemcantidad = 1;
+    let itempreciobruto = 1;
+    let itemprecioxcantidadbruto = 1;
+    let descuentofactporcent = 0;
+    let descuentofactvalor = 0;
+    let recargofactporcent = 0;
+    let recargofactvalor = 0;
+    //  ----------------------
+    let itemprecioneto = 1;
+    let itemprecioxcantidadneto = 1;
+    let ivaporcent = 12;
+    let ivavalitemprecioneto = 0;
+    let itemprecioiva = 1;
+    let ivavalprecioxcantidadneto = 0;
+    let itemxcantidadprecioiva = 1;
+    let estaAnulada = 0;
+    let bodega_id = this.bodega_id;
+    let tiposprecio_tipoprecio = '';
+    let itembaseiva = 1;
+    let totitembaseiva = 1;
+    let iceporcent = null;
+    let iceval = 0; /// TAMBIEN VA EN FACTURA
+    let priceice = null;
+    let totalpriceice = null;
+    let totivaval = 0;
+    let priceiva = 1;
+    let totalpriceiva = 1;
+    //  this.detalle= 0; // TAMBIEN VA EN FACTURA
+    let meses_garantia = 0;
+    let unidad = 0;
+
+    //totalServicios
+    let sts = 0;
+
+    //TotalProductos
+    let stp = 0;
+
+    //Tarifas
+    let tt12 = 0;
+    let tt0 = 0;
+    let tt8 = 0;
+
+    //ARREGLO DETALLE
+    const arrDetalle = new Array();
+    let detalle = 0;
+
+    let detalleProducto;
+
+    for (let i = 0; i < tamArreglo; i++) {
+      Producto_codigo = pedido[i][0].producto_id;
+      itemcantidad = pedido[i][0].cant;
+      itempreciobruto = pedido[i][0].itemprecio;
+      itemprecioxcantidadbruto = itemcantidad * itempreciobruto;
+      itemprecioneto = itempreciobruto;
+      itemprecioxcantidadneto = itemprecioxcantidadbruto;
+      ivaporcent = pedido[i][0].ivaporcent;
+      ivavalitemprecioneto = pedido[i][0].iva;
+      itemprecioiva = itemcantidad * pedido[i][0].total;
+      ivavalprecioxcantidadneto = itemcantidad * ivavalitemprecioneto;
+      itemxcantidadprecioiva = itemprecioiva;
+      bodega_id = pedido[i][0].bodega_id;
+      tiposprecio_tipoprecio = pedido[i][0].tiposprecio;
+      itembaseiva = itempreciobruto;
+      totitembaseiva = itemprecioxcantidadbruto;
+      totivaval = ivavalprecioxcantidadneto;
+      priceiva = pedido[i][0].total;
+      totalpriceiva = itemcantidad * priceiva;
+
+      if (pedido[i][0].esservicio == '1') {
+        sts += itemcantidad * itempreciobruto;
+      } else if (pedido[i][0].esservicio == '0') {
+        stp += itemcantidad * itempreciobruto;
+      }
+
+      if ((ivaporcent == 12)) {
+        // console.log("aqio",tt12);
+        
+        tt12 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 0)) {
+        // console.log("en cero");
+        tt0 += itemcantidad * itempreciobruto;
+      } else if ((ivaporcent == 8)) {
+        tt8 += itemcantidad * itempreciobruto;
+      }
+
+      // let detalle = 0;
+      detalleProducto = {
+        Producto_codigo,
+        itemcantidad,
+        itempreciobruto,
+        itemprecioxcantidadbruto,
+        descuentofactporcent,
+        descuentofactvalor,
+        recargofactporcent,
+        recargofactvalor,
+        itemprecioneto,
+        itemprecioxcantidadneto,
+        ivaporcent,
+        ivavalitemprecioneto,
+        itemprecioiva,
+        ivavalprecioxcantidadneto,
+        itemxcantidadprecioiva,
+        estaAnulada,
+        bodega_id,
+        tiposprecio_tipoprecio,
+        itembaseiva,
+        totitembaseiva,
+        iceporcent,
+        iceval,
+        priceice,
+        totalpriceice,
+        totivaval,
+        priceiva,
+        totalpriceiva,
+        detalle,
+        meses_garantia,
+        unidad,
+      };
+      arrDetalle.push(detalleProducto);
+    }
+
+    // =================== FACTURA
+
+    let tival = 0;
+
+    // console.log('que es esto',arrDetalle);
+
+    for (let i = 0; i < arrDetalle.length; i++) {
+      tival = tival + arrDetalle[i].totivaval;
+    }
+
+    let ivaval = tival;
+
+    let creditoval = 0; //ya
+    let recargovalor = 0; //ya
+    let descuentovalor = 0;
+
+    let baseiva = tt12;
+    let nro_orden = '';
+    let servicios = 0;
+    let subtbrutoservicios = sts;
+    let subtbrutobienes = stp;
+    let tarifadocebruto = baseiva;
+    let tarifacerobruto = tt0;
+    let subtotalBruto = subtbrutobienes + subtbrutoservicios;
+    let subtotalNeto = tarifacerobruto + tarifadocebruto;
+    // let ivaval = baseiva * (0.12);
+    let totalCompra = subtotalNeto + ivaval;
+    let observaciones = '';
+    let valorrecibidoefectivo = 0;
+    let valorcambio = 0;
+    let subtnetobienes = subtbrutobienes;
+    let subtnetoservicios = subtbrutoservicios;
+    let tarifaceroneto = tarifacerobruto;
+    let tarifadoceneto = tarifadocebruto;
+    let efectivoval = 0;
+
+    let factura = {
+      creditoval,
+      recargovalor,
+      subtotalBruto,
+      descuentovalor,
+      subtotalNeto,
+      ivaval,
+      totalCompra,
+      observaciones,
+      valorrecibidoefectivo,
+      valorcambio,
+      tarifacerobruto,
+      tarifaceroneto,
+      tarifadocebruto,
+      tarifadoceneto,
+      subtbrutobienes,
+      subtbrutoservicios,
+      subtnetobienes,
+      subtnetoservicios,
+      iceval,
+      efectivoval,
+      baseiva,
+      nro_orden,
+      servicios,
+    };
+
+    const dato = localStorage.getItem('Inflogueo');
+
+    if (dato) {
+      this.datosLocalStorage = JSON.parse(dato);
+    } else console.log('ERROR');
+
+    let infAcceso = Object.values(this.datosLocalStorage);
+    let user_id = infAcceso[1][0].id;
+
+    // this.user_id = user_id;
+    let puntoventa_id = this.verSeleccion;
+    this.puntoventa_id = puntoventa_id;
+    let type = 'prefactura';
+    let PersonaComercio_cedulaRuc =
+      this.informacionOrden[0].PersonaComercio_cedulaRuc;
+
+    let efecval = totalCompra;
+    let fecha_vence = '';
+
+    let cliente = {
+      PersonaComercio_cedulaRuc,
+    };
+
+    let json = {
+      factura,
+      detalle: arrDetalle,
+      user_id,
+      puntoventa_id,
+      type,
+      cliente,
+      efectivo_val: efecval,
+      credito_val: creditoval,
+      fecha_vence,
+    };
+
+    let estadoF = this.elements2[0].usuario[0].facturado;
+
+    let arrIDProductos = new Array();
+    for (let y = 0; y < arrDetalle.length; y++) {
+      let idT = arrDetalle[y].Producto_codigo;
+      arrIDProductos.push(idT);
+    }
+//  Swal.close();
+    // console.log('json => ', json);
+
+    let pro_id = arrIDProductos;
+    this.formIDProductos.get('pro_id')?.setValue(pro_id);
+
+    // console.log("tam pro_id", pro_id.length);
+
+    if (pro_id.length == 0) {
+      Swal.close();
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'error',
+        title: '¡Factura Vacía!',
+        text: 'No tiene productos para facturar ',
+        timer: 2600,
+        showConfirmButton: false,
+      });
+    } else {
+      this.allService.postFacturar(json).subscribe(
+        (data: any) => {
+          this.banderaCard = false;
+
+          Swal.close();
+
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'success',
+            title: 'Factura generada ',
+            text: data.rta.msg,
+            timer: 1600,
+            showConfirmButton: false,
+          });
+
+          // abrirModalCerrarOrden();
+
+          this.banderaFacturar = false;
+          this.banderaFacturarProducto = false;
+          this.banderaAcciones = false;
+          this.banderaBusqueda = false;
+
+          // console.log("THIS BANDERA PADRE HIJO ", this.banderaHijoaPadre);
+          // this.cerrarPlaneadorDetalle();
+
+          this.facturadoProd = true;
+
+          this.idFactura = data.rta.venta_id;
+          if (this.idFactura) {
+
+            // console.log("enviado ",      this.formIDProductos.value);
+            
+            this.allService
+              .postG(
+                'orden_abierta/add_factura_prod_ser/id/'+this.idOrden+'/fv/'+this.idFactura,this.formIDProductos.value
+              )
+              .subscribe(
+                (data: any) => {
+                  if (
+                    this.facturadoProd == true && (this.totalServiciosC == 0 || this.facturadoS == 1)) {
+                    abrirModalCerrarOrden();
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    // console.log("Caso 1");
+                    
+                  } else if (this.facturadoServ == true && this.facturadoProd == true ) {
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    // console.log("Caso 2");
+                    abrirModalCerrarOrden();
+                  } else if ( this.facturadoServ == true &&  (this.totalProductosC >= 1 || this.facturadoP == 0))  {
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = true;
+                    // console.log("Caso 3");
+                  }
+
+                },
+                (err) => {
+
+                  this.facturadoProd = true;
+                  if(this.facturadoProd = true && this.facturadoServ == true){
+           
+                    
+                    abrirModalCerrarOrden();
+
+                  }else if(this.facturadoProd = true &&  this.facturadoS == 0){
+                    // console.log('this.facturadoS => ', this.facturadoS);
+                    // console.log('this.facturadoServ => ', this.facturadoServ ); 
+                    this.banderaFacturarServicio = true;
+                    this.banderaFacturarProducto = false;
+                    // console.log('cerrado');
+                      
+                  }else if(this.facturadoProd = true && this.facturadoS == 1 ){
+                    this.banderaFacturarServicio = false;
+                    this.banderaFacturarProducto = false;
+                    // console.log('cerrado2');
+                    abrirModalCerrarOrden();
+                  }else if(this.facturadoProd = true && this.facturadoServ == false){
+                    this.banderaFacturarServicio = true;
+                    this.banderaFacturarProducto = false;
+                    // console.log("caso 3");
+                  }         
+                }
+              );
+          }
+        },
+        (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error, no se pudo guardar factura',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }
+      );
+    }
+  }
+}
   }
   // ========================================== METODOS BOTONERA =============================================
 
@@ -4418,8 +6598,8 @@ export class PlaneadorDetalleComponent implements OnInit {
             Swal.fire({
               allowOutsideClick: false,
               icon: 'success',
-              title: 'Cotización envíada al correo',
-              html: 'Se ha enviado cotización al correo:'+'<strong>'+ this.informacionOrden[0].correo +'</strong>', 
+              title: 'Prefactura envíada al correo',
+              html: 'Se ha enviado Prefactura al correo:'+'<strong>'+ this.informacionOrden[0].correo +'</strong>', 
          
               timer: 3000,
               showConfirmButton: false,
@@ -4450,7 +6630,7 @@ export class PlaneadorDetalleComponent implements OnInit {
     let tipo = 'prefactura';
     let accion = 'ver';
     this.allService.getForOrden(id, tipo, accion).then((data: any) => {
-      // console.log(data);
+      console.log(data);
 
       let url = data.slice(1);
       // console.log(url);

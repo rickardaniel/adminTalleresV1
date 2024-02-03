@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, OnInit, TemplateRef, ViewChild ,} from '@angular/core';
+import { AfterContentInit, Component, OnInit, TemplateRef, ViewChild ,AfterViewInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +8,7 @@ import { PlaneadorModel } from '../../Modelos/planeador.model';
 import { Location, TitleCasePipe } from '@angular/common';
 import { Cliente } from '../../Modelos/cliente.model';
 import { combineLatest } from 'rxjs';
-
+import Swiper from 'swiper';
 
 
 // declare function slider6Refresh():any;
@@ -23,7 +23,7 @@ declare function abrirModalCodigo1(modal:string):any;
   templateUrl: './ver-planeador.component.html',
   styleUrls: ['./ver-planeador.component.scss']
 })
-export class VerPlaneadorComponent implements AfterContentInit,  OnInit{
+export class VerPlaneadorComponent implements AfterContentInit,  OnInit, AfterViewInit{
   
   public isCollapsed1 = false;
   public isCollapsed2 = true;
@@ -168,7 +168,7 @@ banderaClienteCreado =false;
   banderaCardC = false;
   banderaCardP = false;
   banderaAC = false;
-
+  public mySwiper: Swiper;
 @ViewChild("modalRegistrarCliente") modalRegistrarCliente: TemplateRef<any> | undefined;
 @ViewChild("modalSelecionarCliente") modalSelecionarCliente: TemplateRef<any> | undefined; 
 @ViewChild("modalCambiarEstado") myModal: TemplateRef <any> | undefined;
@@ -200,6 +200,28 @@ constructor(private allService:AllServiceService,  private modalService  : NgbMo
               this.prioridades = prioridad;
               this.estados = estado
              })
+
+            //  setTimeout(() => {
+            //   this.mySwiper = new Swiper('.swiper-container', {
+            //    slidesPerView: 4.3,
+            //    freeMode: true,
+            //    spaceBetween: 15,
+       
+            //  });
+            // }, 2000);
+    }
+
+    ngAfterViewInit() {
+
+
+
+    }
+    onSlideNext(){
+      this.mySwiper.slideNext();
+    }
+  
+    onSlidePrev(){
+      this.mySwiper.slidePrev();
     }
             
             ngAfterContentInit(): void {
@@ -396,7 +418,7 @@ await this.allService.getSimple('orden_abierta/planeador').then((data:any)=>{
  async dataTarjetas(){
 
 
-  await this.allService.getPlaneador('orden_abierta/planeador').subscribe((data:any)=>{
+  await this.allService.getPlaneador('orden_abierta/planeador').subscribe(async (data:any)=>{
   // console.log(data);
 this.elements =[];
 this.dataCorrectivo =[];

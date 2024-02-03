@@ -258,7 +258,7 @@ visualizarPDF2(id:any){
 }
 visualizarPDF(id:any){
   // console.log("QUE PASA ", id);
-  let tipo = 'oa';
+  let tipo = 'prefactura';
   let accion="ver";
   this.allService.getForOrden(id,tipo,accion).then((data:any)=>{
 
